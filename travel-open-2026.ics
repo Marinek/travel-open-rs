@@ -1,0 +1,194 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Golfreise Tunesien 2026//DE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Tunesien 2026 – Travel Open
+X-WR-TIMEZONE:Africa/Tunis
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VEVENT
+UID:2026-11-07-anreise-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261107
+DTEND;VALUE=DATE:20261108
+TRANSP:TRANSPARENT
+SUMMARY:Travel Open: Anreise
+DESCRIPTION:Anreise\, Einchecken im Hotel\, Willkommen\nAusklang an der Bar
+ \n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-08-golf-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261108T090000Z
+DTEND:20261108T164500Z
+SUMMARY:⛳ Travel Open: Scramble Stableford – GC Oliver
+LOCATION:GC Oliver
+DESCRIPTION:Bus 10:00\, erster Abschlag 11:58\, Abholung 17:45\n\nab 09:00 
+  Frühstück\n10:00  Privater Bustransfer zum GC Oliver\n10:20  Teambespre
+ chung auf der Range – alle!\nGemeinsames Dehnen\, Einschlagen auf der Ra
+ nge\, Putten\n11:58  Abschlag Scramble Stableford\n17:45  Abholung mit dem
+  privaten Bus ins Hotel\n19:30  Treffen an der Bar – Siegerehrung – Ab
+ endessen\nAusklang an der Bar\n\nAbschlagzeiten:\nTeam 1: 11:58\nTeam 2: 1
+ 2:06\nTeam 3: 12:14\nTeam 4: 12:22\nTeam 5: 12:30\n\nÄnderungen können 
+ – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-08-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261108T183000Z
+DTEND:20261108T213000Z
+SUMMARY:Travel Open: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:30  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-09-golf-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261109T091500Z
+DTEND:20261109T164500Z
+SUMMARY:⛳ Travel Open: Auswahl-Drive & Klassischer Vierer – GC Foret
+LOCATION:GC Foret
+DESCRIPTION:Bus 10:15\, erster Abschlag 11:58\, Abholung 17:45\n\n„Die sc
+ hützende Hand Hamsa“ – der Glücksbringer\n9 Loch Auswahl-Drive + 9 L
+ och Klassischer Vierer\, Stableford im 2er-Team\nab 09:00  Frühstück\n10
+ :15  Privater Bustransfer zum GC Foret\n10:30  Gemeinsames Dehnen\, Einsch
+ lagen auf der Range\, Putten\n11:58  Abschlag: 9 Loch Auswahl-Drive + 9 Lo
+ ch Klassischer Vierer\n17:45  Abholung mit dem privaten Bus ins Hotel\n19:
+ 30  Treffen an der Bar – Siegerehrung – Abendessen\nAusklang an der Ba
+ r\n\nAbschlagzeiten:\nTeam 1: 11:58\nTeam 2: 12:06\nTeam 3: 12:14\nTeam 4:
+  12:22\nTeam 5: 12:30\n\nÄnderungen können – müssen aber nicht – vo
+ rkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-09-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261109T183000Z
+DTEND:20261109T213000Z
+SUMMARY:Travel Open: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:30  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-10-frei-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261110
+DTEND;VALUE=DATE:20261111
+TRANSP:TRANSPARENT
+SUMMARY:Travel Open: Freier Tag
+DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar\n\n
+ - Einige von euch spielen Golf\n- Einige spannen aus und genießen das Mee
+ r\n- Einige erleben die Angebote vom Magic Club\n- Einige lassen sich bei 
+ einer Massage verwöhnen\n\nÄnderungen können – müssen aber nicht –
+  vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-10-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261110T173000Z
+DTEND:20261110T203000Z
+SUMMARY:Travel Open: Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-11-ausflug-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+TRANSP:TRANSPARENT
+SUMMARY:Travel Open: Ausflug El Djem & Kairouan
+DESCRIPTION:Kölle Alaaf!\n18:30  Treffen an der Bar\, Abendessen\nAusklang
+  an der Bar\n\n- Kolosseum El Djem\n- Moschee Kairouan\n\nKein Mittagessen
+  unterwegs – vorher im Hotel essen. Verpflegung und Getränke bitte selb
+ st mitnehmen.\n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-11-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261111T173000Z
+DTEND:20261111T203000Z
+SUMMARY:Travel Open: Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-12-golf-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261112T084500Z
+DTEND:20261112T163000Z
+SUMMARY:⛳ Travel Open: Bingo Golf – GC Oliver
+LOCATION:GC Oliver
+DESCRIPTION:Bus 09:45\, erster Abschlag 11:34\, Abholung 17:30\n\nEinzel\na
+ b 08:30  Frühstück\n09:45  Privater Bustransfer zum GC Oliver\n10:00  Ge
+ meinsames Dehnen\, Einschlagen auf der Range\, Putten\n11:34  Abschlag Bin
+ go Golf Einzel\n17:30  Abholung mit dem privaten Bus ins Hotel\n19:00  Tre
+ ffen an der Bar – Siegerehrung – Abendessen\nAusklang an der Bar\n\nAb
+ schlagzeiten:\nTeam 1: 11:34\nTeam 2: 11:42\nTeam 3: 11:50\nTeam 4: 11:58\
+ nTeam 5: 12:06\n\nÄnderungen können – müssen aber nicht – vorkommen
+ !
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-12-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261112T180000Z
+DTEND:20261112T210000Z
+SUMMARY:Travel Open: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-13-golf-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261113T084500Z
+DTEND:20261113T163000Z
+SUMMARY:⛳ Travel Open: Wünsch dir was! – GC Foret
+LOCATION:GC Foret
+DESCRIPTION:Bus 09:45\, erster Abschlag 11:34\, Abholung 17:30\n\nScramble\
+ , Einzel\, Klassischer Vierer\, Auswahl-Drive\nab 08:00  Frühstück\n09:4
+ 5  Privater Bustransfer zum GC Foret\n10:00  Gemeinsames Dehnen\, Einschla
+ gen auf der Range\, Putten\n11:34  Abschlag „Wünsch dir was!“\n17:30 
+  Abholung mit dem privaten Bus ins Hotel\n18:45  Treffen an der Bar – Si
+ egerehrung: Wer wird Travel-Open-Sieger? Vergabe des Wanderpokals\n19:15  
+ Gala-Abend\nGroße Party an der Bar – wir feiern den neuen Travel-Open-S
+ ieger. Offenes Ende.\n\nAbschlagzeiten:\nTeam 1: 11:34\nTeam 2: 11:42\nTea
+ m 3: 11:50\nTeam 4: 11:58\nTeam 5: 12:06\n\nÄnderungen können – müsse
+ n aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-13-abend-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261113T174500Z
+DTEND:20261113T225900Z
+SUMMARY:Travel Open: Siegerehrung & Gala-Abend
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:18:45  Treffen an der Bar – Siegerehrung: Wer wird Travel-Ope
+ n-Sieger? Vergabe des Wanderpokals\n19:15  Gala-Abend\nGroße Party an der
+  Bar – wir feiern den neuen Travel-Open-Sieger. Offenes Ende.
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-14-abreise-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+TRANSP:TRANSPARENT
+SUMMARY:Travel Open: Abreise
+DESCRIPTION:Frühstück\, Auschecken\nGegebenenfalls die letzten warmen Son
+ nenstrahlen genießen\nGroßer tränenreicher Abschied – auf Wiedersehen
+ \, bis bald und auf die Revanche 2027!\n18:00  Abholung zum Flug nach Köl
+ n (ca.)\n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-14-flug-travel-open@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261114T170000Z
+DTEND:20261114T180000Z
+SUMMARY:✈ Abholung zum Flug nach Köln (ca. 18:00)
+LOCATION:Hotel
+DESCRIPTION:Flug nach Köln\, Abholung ca. 18:00 Uhr\n\nÄnderungen können
+  – müssen aber nicht – vorkommen!
+END:VEVENT
+END:VCALENDAR

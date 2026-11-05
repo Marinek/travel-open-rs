@@ -1,0 +1,220 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Golfreise Tunesien 2026//DE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Tunesien 2026 – Schwarz gegen Rot
+X-WR-TIMEZONE:Africa/Tunis
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VEVENT
+UID:2026-11-14-geburtstag-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+TRANSP:TRANSPARENT
+SUMMARY:🎂 Geburtstag Michael Breuer
+DESCRIPTION:Happy Birthday\, Michael Breuer!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-14-anreise-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+TRANSP:TRANSPARENT
+SUMMARY:Schwarz gegen Rot: Anreise
+DESCRIPTION:Anreise\, Einchecken im Hotel\, Willkommen\nAusklang an der Bar
+ \n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-15-geburtstag-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261115
+DTEND;VALUE=DATE:20261116
+TRANSP:TRANSPARENT
+SUMMARY:🎂 Geburtstag Sabine Thürmel
+DESCRIPTION:Happy Birthday\, Sabine Thürmel!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-15-golf-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261115T081500Z
+DTEND:20261115T160000Z
+SUMMARY:⛳ Schwarz gegen Rot: Scramble Stableford – GC Oliver
+LOCATION:GC Oliver
+DESCRIPTION:Bus 09:15\, erster Abschlag 11:02\, Abholung 17:00\n\nab 08:00 
+  Frühstück\n09:15  Privater Bustransfer zum GC Oliver\n09:30  Teambespre
+ chung auf der Range – alle!\nGemeinsames Dehnen\, Einschlagen auf der Ra
+ nge\, Putten\n11:02  Abschlag Scramble Stableford\n17:00  Abholung mit dem
+  privaten Bus ins Hotel\n19:00  Treffen an der Bar – Siegerehrung – Ab
+ endessen\nAusklang an der Bar\n\nAbschlagzeiten:\nTeam 1: 11:02\nTeam 2: 1
+ 1:10\nTeam 3: 11:18\nTeam 4: 11:26\nTeam 5: 11:36\n\nSonderpreise\, gespon
+ sert von Sabine:\n- Longest Drive Damen & Herren an Loch 8\n- Nearest to t
+ he Pin an Loch 4\n\nÄnderungen können – müssen aber nicht – vorkomm
+ en!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-15-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261115T180000Z
+DTEND:20261115T210000Z
+SUMMARY:Schwarz gegen Rot: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-16-golf-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261116T083000Z
+DTEND:20261116T160000Z
+SUMMARY:⛳ Schwarz gegen Rot: The Power of History – GC Foret
+LOCATION:GC Foret
+DESCRIPTION:Bus 09:30\, erster Abschlag 10:54\, Abholung 17:00\n\nStablefor
+ d-Lochwettspiel Einzel\nab 08:00  Frühstück\n09:30  Privater Bustransfer
+  zum GC Foret\n10:00  Gemeinsames Dehnen\, Einschlagen auf der Range\, Put
+ ten\n10:54  Abschlag „The Power of History“ – Stableford-Lochwettspi
+ el Einzel\n17:00  Abholung mit dem privaten Bus ins Hotel\n19:00  Treffen 
+ an der Bar – Siegerehrung – Abendessen\nAusklang an der Bar\n\nAbschla
+ gzeiten:\nFlight 1: 10:54\nFlight 2: 11:02\nFlight 3: 11:10\nFlight 4: 11:
+ 18\nFlight 5: 11:26\n\nÄnderungen können – müssen aber nicht – vork
+ ommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-16-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261116T180000Z
+DTEND:20261116T210000Z
+SUMMARY:Schwarz gegen Rot: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-17-golf-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261117T083000Z
+DTEND:20261117T161500Z
+SUMMARY:⛳ Schwarz gegen Rot: Chapman-Vierer – GC Jasmin
+LOCATION:GC Jasmin
+DESCRIPTION:Bus 09:30\, erster Abschlag 11:00\, Abholung 17:15\n\nDie Erobe
+ rung der Gebiete von Karthago\nStableford-Lochwettspiel\nab 08:00  Frühst
+ ück\n09:30  Privater Bustransfer zum GC Jasmin\n10:00  Gemeinsames Dehnen
+ \, Einschlagen auf der Range\, Putten\, Teambesprechung\n11:00  Abschlag 
+ „Chapman-Vierer“ – Stableford-Lochwettspiel\n17:15  Abholung mit dem
+  privaten Bus ins Hotel\n19:15  Treffen an der Bar – Siegerehrung – Ab
+ endessen\nAusklang an der Bar\n\nAbschlagzeiten:\nTeam 1: 11:00\nTeam 2: 1
+ 1:08\nTeam 3: 11:16\nTeam 4: 11:24\nTeam 5: 11:32\n\nÄnderungen können 
+ – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-17-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261117T181500Z
+DTEND:20261117T211500Z
+SUMMARY:Schwarz gegen Rot: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:15  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-18-frei-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261118
+DTEND;VALUE=DATE:20261119
+TRANSP:TRANSPARENT
+SUMMARY:Schwarz gegen Rot: Freier Tag
+DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar\n\n
+ - Einige von euch spielen Golf\n- Einige spannen aus und genießen das Mee
+ r\n- Einige erleben die Angebote vom Magic Club\n- Einige lassen sich bei 
+ einer Massage verwöhnen\n\nÄnderungen können – müssen aber nicht –
+  vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-18-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261118T173000Z
+DTEND:20261118T203000Z
+SUMMARY:Schwarz gegen Rot: Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-19-golf-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261119T080000Z
+DTEND:20261119T153000Z
+SUMMARY:⛳ Schwarz gegen Rot: Lochwettspiel im 2er-Team – GC Oliver
+LOCATION:GC Oliver
+DESCRIPTION:Bus 09:00\, erster Abschlag 10:30\, Abholung 16:30\n\n9 Loch Au
+ swahl-Drive + 9 Loch Klassischer Vierer\nab 08:00  Frühstück\n09:00  Pri
+ vater Bustransfer zum GC Oliver\n09:30  Gemeinsames Dehnen\, Einschlagen a
+ uf der Range\, Putten\n10:30  Abschlag Lochwettspiel 2er-Team: 9 Loch Ausw
+ ahl-Drive + 9 Loch Klassischer Vierer\n16:30  Abholung mit dem privaten Bu
+ s ins Hotel\n19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAu
+ sklang an der Bar\n\nAbschlagzeiten:\nTeam 1: 10:30\nTeam 2: 10:38\nTeam 3
+ : 10:46\nTeam 4: 10:54\nTeam 5: 11:02\n\nÄnderungen können – müssen a
+ ber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-19-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261119T180000Z
+DTEND:20261119T210000Z
+SUMMARY:Schwarz gegen Rot: Siegerehrung & Abendessen
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
+ lang an der Bar
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-20-golf-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261120T080000Z
+DTEND:20261120T153000Z
+SUMMARY:⛳ Schwarz gegen Rot: Kampf der Titanen – GC Foret
+LOCATION:GC Foret
+DESCRIPTION:Bus 09:00\, erster Abschlag 10:30\, Abholung 16:30\n\nLochwetts
+ piel Einzel – Schwarz gegen Rot\nab 08:00  Frühstück\n09:00  Privater 
+ Bustransfer zum GC Foret\n09:30  Gemeinsames Dehnen\, Einschlagen auf der 
+ Range\, Putten\n10:30  Abschlag „Kampf der Titanen“ – Lochwettspiel 
+ Einzel\, Schwarz gegen Rot\n16:30  Abholung mit dem privaten Bus ins Hotel
+ \n18:30  Treffen an der Bar – Siegerehrung: Welches Team hat gewonnen? K
+ ürung des Golf-Präsidenten\n19:00  Gala-Abend\nGroße Party an der Bar 
+ – wir feiern die Siegergruppe. Offenes Ende.\n\nAbschlagzeiten:\nFlight 
+ 1: 10:30\nFlight 2: 10:38\nFlight 3: 10:46\nFlight 4: 10:54\nFlight 5: 11:
+ 02\n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-20-abend-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261120T173000Z
+DTEND:20261120T225900Z
+SUMMARY:Schwarz gegen Rot: Siegerehrung & Gala-Abend
+LOCATION:Hotel\, Treffpunkt an der Bar
+DESCRIPTION:18:30  Treffen an der Bar – Siegerehrung: Welches Team hat ge
+ wonnen? Kürung des Golf-Präsidenten\n19:00  Gala-Abend\nGroße Party an 
+ der Bar – wir feiern die Siegergruppe. Offenes Ende.
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-21-abreise-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART;VALUE=DATE:20261121
+DTEND;VALUE=DATE:20261122
+TRANSP:TRANSPARENT
+SUMMARY:Schwarz gegen Rot: Abreise
+DESCRIPTION:Frühstück\, Auschecken\nGegebenenfalls die letzten warmen Son
+ nenstrahlen genießen\nGroßer tränenreicher Abschied – auf Wiedersehen
+ \, bis bald und auf die Revanche 2027!\n18:00  Abholung zum Flug nach Köl
+ n (ca.)\n\nÄnderungen können – müssen aber nicht – vorkommen!
+END:VEVENT
+BEGIN:VEVENT
+UID:2026-11-21-flug-schwarz-gegen-rot@golfreise-tunesien-2026
+DTSTAMP:20261104T213342Z
+DTSTART:20261121T170000Z
+DTEND:20261121T180000Z
+SUMMARY:✈ Abholung zum Flug nach Köln (ca. 18:00)
+LOCATION:Hotel
+DESCRIPTION:Flug nach Köln\, Abholung ca. 18:00 Uhr\n\nÄnderungen können
+  – müssen aber nicht – vorkommen!
+END:VEVENT
+END:VCALENDAR
