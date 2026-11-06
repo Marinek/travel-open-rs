@@ -28,6 +28,10 @@ const REISE = {
   // Travel Open: Sieger nach der Siegerehrung eintragen, z. B. "Erika Muster"
   sieger: null,
 
+  // Fotos (eigene Seite fotos.html): Adresse des Cloud-Run-Dienstes,
+  // gibt fotos-dienst/setup.sh aus. Leer = Fotoseite zeigt „noch nicht eingerichtet“.
+  fotos: { dienst: "https://fotos-dienst-zddr4hc3fa-ey.a.run.app" },
+
   wochen: [
     {
       id: "travel-open",

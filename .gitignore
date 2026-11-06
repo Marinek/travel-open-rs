@@ -1,0 +1,4 @@
+# Lokale Einstellungen und Passwörter nie committen
+.env
+.env.*
+!.env.example

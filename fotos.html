@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fotos – Golfreise Tunesien 2026</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1C4E9E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --kalk:#F6F7F4; --tinte:#12213F; --grau:#4A5672; --linie:#D8DDE5;
+  --kobalt:#1C4E9E; --sonne:#F3B61F; --rot:#D3132F;
+  --bg:var(--kalk); --ink:var(--tinte); --muted:var(--grau); --line:var(--linie); --accent:var(--kobalt);
+  --display:"Big Shoulders Display", "Arial Narrow", sans-serif;
+  --text:"Atkinson Hyperlegible", system-ui, sans-serif;
+}
+body.w2{--bg:#000; --ink:#F4F4F2; --muted:#B8B8B8; --line:#2B2B2B; --accent:var(--rot)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.55 var(--text);
+  transition:background-color .45s ease,color .45s ease;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){body,*{transition:none!important;animation:none!important}}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sonne);outline-offset:3px;border-radius:4px}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+[hidden]{display:none!important}
+
+.kopf{border-bottom:1px solid var(--line)}
+.kopf .wrap{display:flex;align-items:center;gap:1rem;padding-top:.75rem;padding-bottom:.75rem}
+.marke{font:800 1.15rem/1 var(--display);letter-spacing:.01em;white-space:nowrap;text-decoration:none}
+.marke span{display:block;font:400 .8rem/1.2 var(--text);color:var(--muted);letter-spacing:0}
+
+.knopfzeile{margin-top:1.1rem;display:flex;flex-wrap:wrap;gap:.6rem}
+.knopf{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;border-radius:.6rem;font-weight:700;text-decoration:none;border:2px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer;font-size:1rem;font-family:inherit}
+.knopf.voll{background:var(--accent);border-color:var(--accent);color:#fff}
+.knopf:disabled{opacity:.5;cursor:default}
+.link{all:unset;cursor:pointer;text-decoration:underline;color:var(--muted)}
+.link:focus-visible{outline:3px solid var(--sonne);outline-offset:2px}
+.leise{color:var(--muted)}
+
+.kopfbereich{padding:2rem 0 1.5rem}
+.kopfbereich h1{margin:0;font:900 clamp(2.8rem,11vw,4rem)/.9 var(--display)}
+.kopfbereich p{margin:.6rem 0 0;max-width:34rem}
+.feldname{display:block;margin-top:1.1rem;font-weight:700;font-size:.95rem}
+.feldname span{font-weight:400;color:var(--muted)}
+.feld{display:block;margin-top:.35rem;width:100%;max-width:26rem;font:inherit;padding:.6rem .75rem;border:2px solid var(--line);border-radius:.6rem;background:#fff;color:var(--tinte)}
+textarea.feld{max-width:34rem;resize:vertical;min-height:4.5rem}
+.fehler{margin:.8rem 0 0;font-weight:700;color:var(--rot)}
+body.w2 .fehler{color:#ff5a6e}
+
+
+.fortschritt{margin-top:1rem;max-width:30rem}
+.fortschritt .balken{height:.6rem;border-radius:999px;background:var(--line);overflow:hidden}
+.fortschritt .balken span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.fortschritt p{margin:.45rem 0 0;font-weight:700}
+
+.galerie-tag{border-top:2px solid var(--ink);padding:1.2rem 0 1.6rem}
+.galerie-tag h2{margin:0 0 .8rem;font:800 1.7rem/1.05 var(--display)}
+.galerie-tag h2 small{display:block;margin-top:.2rem;font:400 .92rem/1.3 var(--text);color:var(--muted)}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr));gap:.35rem}
+.raster button{all:unset;position:relative;cursor:pointer;aspect-ratio:1;overflow:hidden;border-radius:.35rem;background:var(--line)}
+.raster button:focus-visible{outline:3px solid var(--sonne);outline-offset:2px}
+.raster img{width:100%;height:100%;object-fit:cover;display:block}
+.raster .blase{position:absolute;right:.3rem;bottom:.3rem;width:1.6rem;height:1.6rem;display:grid;place-items:center;border-radius:50%;background:var(--sonne);color:var(--tinte)}
+
+dialog.gross{border:0;padding:0;width:100vw;height:100dvh;max-width:none;max-height:none;background:#000;color:#fff}
+dialog.gross::backdrop{background:#000}
+dialog.gross figure{margin:0;height:100%;display:flex;flex-direction:column}
+dialog.gross img{flex:1;min-height:0;width:100%;object-fit:contain}
+dialog.gross figcaption{padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom))}
+dialog.gross .wer{font-weight:700}
+dialog.gross .geschichte{margin:.3rem 0 0;white-space:pre-wrap;max-height:30vh;overflow:auto}
+dialog.gross .knoepfe{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}
+dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
+
+.diashow{position:fixed;inset:0;z-index:50;background:#000;color:#fff}
+.diashow img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1.2s ease}
+.diashow img.an{opacity:1}
+.diashow .unterschrift{position:absolute;left:0;right:0;bottom:0;padding:3rem 2rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+.diashow .unterschrift b{display:block;font:800 clamp(1.4rem,3vw,2.4rem)/1.1 var(--display)}
+.diashow .unterschrift span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:.4rem;max-width:60rem;font-size:clamp(1rem,2vw,1.5rem);line-height:1.35;white-space:pre-wrap}
+.diashow .leer{position:absolute;inset:0;margin:0;display:grid;place-items:center;padding:2rem;text-align:center;font:800 clamp(1.6rem,4vw,2.6rem)/1.1 var(--display)}
+.diashow .zu{all:unset;position:absolute;top:1rem;right:1rem;width:3rem;height:3rem;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.5);font:400 2rem/1 var(--text);cursor:pointer;opacity:.6}
+.diashow .zu:hover,.diashow .zu:focus-visible{opacity:1}
+
+.fuss{padding:2.5rem 1.25rem 3rem;color:var(--muted);font-size:.95rem;display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
+</style>
+</head>
+<body>
+<header class="kopf">
+  <div class="wrap">
+    <span class="marke">Tunesien 2026<span>Fotos der Reisegruppe</span></span>
+  </div>
+</header>
+
+<main class="wrap" id="inhalt"><p class="leise" style="padding-top:2rem">Lädt …</p></main>
+
+<footer class="wrap fuss">
+  <a href="./">Programm der Reise</a>
+  <button class="link" type="button" id="abmelden" hidden>Abmelden</button>
+</footer>
+
+<script src="daten.js"></script>
+<script>
+(function(){
+  const R = REISE, F = R.fotos || {};
+  const $ = (s, el=document) => el.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const heute = window.HEUTE || new Intl.DateTimeFormat("en-CA",{timeZone:R.zeitzone,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  const dt = d => new Date(d + "T12:00:00Z");
+  const wtLang = d => new Intl.DateTimeFormat("de-DE",{weekday:"long",timeZone:"UTC"}).format(dt(d));
+  const kurz = d => d.slice(8,10) + "." + d.slice(5,7) + ".";
+  const tagText = d => `${wtLang(d)}, ${kurz(d)}`;
+  const anzahl = n => `${n} ${n === 1 ? "Foto" : "Fotos"}`;
+  const merke = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
+  const lies = k => { try { return localStorage.getItem(k) || ""; } catch(e) { return ""; } };
+  const ICON = {
+    kamera:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+    blase:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>'
+  };
+
+  if (!F.dienst) {
+    $("#inhalt").innerHTML = `<section class="kopfbereich"><h1>Fotos</h1><p>Der Fotobereich ist noch nicht eingerichtet.</p></section>`;
+    return;
+  }
+
+  // ---------- Gruppen und Passwörter ----------
+  // Jede Woche ist eine eigene Reisegruppe mit eigenem Passwort und eigenen Fotos.
+  // Das Passwort bestimmt die Gruppe; es wird einmal eingegeben und im Handy gemerkt.
+  // Pro Gerät gibt es genau eine Gruppe (für die andere: abmelden, anderes Passwort).
+  const gruppenName = g => (R.wochen.find(w => w.id === g) || {}).name || g;
+  let zugang = {};
+  try { zugang = JSON.parse(lies("fotos-passwoerter") || "{}") || {}; } catch(e) {}
+  const speichern = () => merke("fotos-passwoerter", JSON.stringify(zugang));
+  let fotoGruppe = Object.keys(zugang)[0];
+
+  const ERLAUBT = ["image/jpeg", "image/png", "image/heic", "image/heif", "image/webp", "image/gif"];
+  const typVon = f => f.type || (/\.hei[cf]$/i.test(f.name) ? "image/heic" : "image/jpeg");
+  // Titel des Tages aus dem Programm der Gruppe (der 14.11. gehört zu beiden Wochen)
+  const tagTitel = (d, g) => {
+    for (const w of [R.wochen.find(w => w.id === g), ...R.wochen].filter(Boolean)) {
+      const t = w.tage.find(t => t.datum === d); if (t) return t.titel;
+    }
+    return "";
+  };
+  const fehlerText = e => e && e.message === "gesperrt"
+    ? "Zu viele falsche Versuche. Bitte in 15 Minuten noch einmal."
+    : "Die Fotos lassen sich gerade nicht laden. Bitte gleich noch einmal versuchen.";
+
+  async function api(pfad, opt = {}, passwort = zugang[fotoGruppe]){
+    const headers = {"X-Fotos-Passwort": encodeURIComponent(passwort || "")};
+    if (opt.body) headers["Content-Type"] = "application/json";
+    const r = await fetch(F.dienst.replace(/\/+$/, "") + pfad, {...opt, headers});
+    if (r.status === 401) throw new Error("passwort");
+    if (r.status === 429) throw new Error("gesperrt");
+    if (!r.ok) throw new Error("http " + r.status);
+    return r.json();
+  }
+
+  function farben(){
+    const zweite = fotoGruppe === R.wochen[1].id;   // Schwarz gegen Rot: dunkles Farbschema
+    document.body.classList.toggle("w2", zweite);
+    $('meta[name="theme-color"]').content = zweite ? "#000000" : "#1C4E9E";
+  }
+
+  // ---------- Anmelden ----------
+  function zeigeAnmeldung(hinweis){
+    document.body.classList.remove("w2");
+    $('meta[name="theme-color"]').content = "#1C4E9E";
+    $("#abmelden").hidden = true;
+    $("#inhalt").innerHTML = `<section class="kopfbereich">
+      <h1>Fotos</h1>
+      <p>Gib das Passwort deiner Reisegruppe ein. Das musst du nur einmal machen.</p>
+      <form id="anmelden" novalidate>
+        <label class="feldname" for="passwort">Passwort</label>
+        <input class="feld" id="passwort" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <div class="knopfzeile">
+          <button class="knopf voll" type="submit">Weiter</button>
+        </div>
+        <p class="fehler" id="anmelde-fehler" role="alert" ${hinweis ? "" : "hidden"}>${esc(hinweis || "")}</p>
+      </form>
+    </section>`;
+    const feld = $("#passwort"), fehler = $("#anmelde-fehler"), knopf = $('#anmelden [type="submit"]');
+    feld.focus();
+    $("#anmelden").addEventListener("submit", async e => {
+      e.preventDefault();
+      const passwort = feld.value.trim();
+      if (!passwort) { feld.focus(); return; }
+      knopf.disabled = true; knopf.textContent = "Prüfe …"; fehler.hidden = true;
+      try {
+        const { gruppe } = await api("/api/anmelden", {}, passwort);
+        zugang = { [gruppe]: passwort }; speichern();
+        fotoGruppe = gruppe;
+        zeigeFotos();
+        if (location.hash === "#diashow") diashowStart(false);
+      } catch(err) {
+        fehler.textContent = err.message === "passwort" ? "Das Passwort stimmt nicht."
+          : err.message === "gesperrt" ? "Zu viele falsche Versuche. Bitte in 15 Minuten noch einmal."
+          : "Keine Verbindung. Bitte gleich noch einmal versuchen.";
+        fehler.hidden = false;
+        knopf.disabled = false; knopf.textContent = "Weiter";
+        feld.select();
+      }
+    });
+  }
+
+  // Passwort gilt nicht mehr (z. B. geändert): vergessen und neu fragen
+  function passwortUngueltig(gruppe){
+    zugang = {}; speichern(); fotoGruppe = undefined;
+    zeigeAnmeldung("Das Passwort hat sich geändert. Bitte neu eingeben.");
+  }
+
+  $("#abmelden").addEventListener("click", () => {
+    if (!confirm("Auf diesem Gerät abmelden? Danach brauchst du das Passwort wieder.")) return;
+    zugang = {}; speichern(); fotoGruppe = undefined;
+    zeigeAnmeldung();
+  });
+
+  // ---------- Fotos ----------
+  function zeigeFotos(){
+    if (!fotoGruppe) return zeigeAnmeldung();
+    farben();
+    $("#abmelden").hidden = false;
+    $("#inhalt").innerHTML = `<section class="kopfbereich">
+      <h1>Fotos</h1>
+      <p>Teile deine Bilder mit der Gruppe <strong>${esc(gruppenName(fotoGruppe))}</strong>. Nur ihr seht sie, sortiert nach Tagen und abends in der Diashow.</p>
+      <label class="feldname" for="foto-name">Dein Name <span>(freiwillig)</span></label>
+      <input class="feld" id="foto-name" autocomplete="given-name" maxlength="40" value="${esc(lies("fotos-name"))}">
+      <label class="feldname" for="foto-geschichte">Kleine Geschichte <span>(freiwillig, gilt für die Fotos, die du jetzt hinzufügst)</span></label>
+      <textarea class="feld" id="foto-geschichte" maxlength="500" rows="3" placeholder="Was ist da gerade passiert?"></textarea>
+      <div class="knopfzeile">
+        <button class="knopf voll" type="button" id="foto-knopf">${ICON.kamera}Fotos hinzufügen</button>
+        <button class="knopf" type="button" id="diashow-knopf">Diashow heute</button>
+      </div>
+      <input type="file" id="foto-datei" accept="image/*" multiple hidden>
+      <div class="fortschritt" id="fortschritt" role="status" hidden><div class="balken"><span></span></div><p></p></div>
+    </section>
+    <div id="galerie"><p class="leise">Fotos werden geladen …</p></div>`;
+
+    $("#foto-knopf").addEventListener("click", () => $("#foto-datei").click());
+    $("#foto-datei").addEventListener("change", e => {
+      const dateien = [...e.target.files]; e.target.value = "";
+      if (dateien.length) hochladen(dateien);
+    });
+    $("#foto-name").addEventListener("change", e => merke("fotos-name", e.target.value.trim()));
+    $("#diashow-knopf").addEventListener("click", () => diashowStart(true));
+    ladeGalerie();
+  }
+
+  // Galerie, nach Tagen gruppiert
+  let galerie = [];
+  async function ladeGalerie(){
+    const ziel = $("#galerie");
+    if (!ziel) return;
+    const gruppe = fotoGruppe;
+    try {
+      const d = await api("/api/galerie", {}, zugang[gruppe]);
+      if (!$("#galerie") || gruppe !== fotoGruppe) return;
+      galerie = [];
+      if (!d.tage.length) { ziel.innerHTML = `<p class="leise">Noch keine Fotos. Mach den Anfang!</p>`; return; }
+      ziel.innerHTML = d.tage.map(t => {
+        const titel = tagTitel(t.tag, gruppe);
+        const bilder = t.fotos.map(f => {
+          const i = galerie.push({...f, tag: t.tag}) - 1;
+          const text = `Foto${f.name ? " von " + f.name : ""}${f.geschichte ? ", mit Geschichte" : ""} ansehen`;
+          return `<button type="button" data-i="${i}" aria-label="${esc(text)}"><img src="${esc(f.vorschau)}" alt="" loading="lazy">${f.geschichte ? `<span class="blase">${ICON.blase}</span>` : ""}</button>`;
+        }).join("");
+        return `<section class="galerie-tag"><h2>${tagText(t.tag)}<small>${titel ? esc(titel) + " · " : ""}${anzahl(t.fotos.length)}</small></h2><div class="raster">${bilder}</div></section>`;
+      }).join("");
+      ziel.querySelectorAll(".raster button").forEach(b => b.addEventListener("click", () => gross(+b.dataset.i)));
+    } catch(e) {
+      if (e.message === "passwort") return passwortUngueltig(gruppe);
+      if ($("#galerie")) $("#galerie").innerHTML = `<p class="leise">${esc(fehlerText(e))}</p>`;
+    }
+  }
+
+  // Großansicht mit Blättern (Tasten, Wischen), Name, Tag und Geschichte
+  let grossI = 0;
+  function gross(i){
+    let d = $("#gross");
+    if (!d) {
+      d = document.createElement("dialog");
+      d.id = "gross"; d.className = "gross";
+      d.innerHTML = `<figure><img alt=""><figcaption><div class="wer"></div><p class="geschichte"></p>
+        <div class="knoepfe">
+          <button class="knopf" type="button" data-schritt="-1" aria-label="Vorheriges Foto">‹</button>
+          <button class="knopf" type="button" data-schritt="1" aria-label="Nächstes Foto">›</button>
+          <a class="knopf" target="_blank" rel="noopener">Original</a>
+          <button class="knopf" type="button" data-zu>Schließen</button>
+        </div></figcaption></figure>`;
+      document.body.append(d);
+      d.querySelectorAll("[data-schritt]").forEach(b => b.addEventListener("click", () => grossZeige(grossI + +b.dataset.schritt)));
+      d.querySelector("[data-zu]").addEventListener("click", () => d.close());
+      d.addEventListener("keydown", e => {
+        if (e.key === "ArrowLeft") grossZeige(grossI - 1);
+        if (e.key === "ArrowRight") grossZeige(grossI + 1);
+      });
+      let startX = null;
+      d.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, {passive:true});
+      d.addEventListener("touchend", e => {
+        if (startX === null) return;
+        const dx = e.changedTouches[0].clientX - startX; startX = null;
+        if (Math.abs(dx) > 50) grossZeige(grossI + (dx < 0 ? 1 : -1));
+      });
+    }
+    grossZeige(i);
+    if (!d.open) d.showModal();
+  }
+  function grossZeige(i){
+    const n = galerie.length;
+    if (!n) return;
+    grossI = (i + n) % n;
+    const f = galerie[grossI], d = $("#gross");
+    d.querySelector("img").src = f.vorschau;
+    d.querySelector("a").href = f.orig;
+    d.querySelector(".wer").textContent = [f.name, tagText(f.tag)].filter(Boolean).join(" · ");
+    const g = d.querySelector(".geschichte");
+    g.textContent = f.geschichte || ""; g.hidden = !f.geschichte;
+  }
+
+  // ---------- Hochladen ----------
+  // Adressen holen, Vorschau im Browser verkleinern, direkt in den Bucket
+  function verkleinern(datei){
+    return new Promise((ok, nein) => {
+      const url = URL.createObjectURL(datei), img = new Image();
+      img.onload = () => {
+        // naturalWidth/Height und drawImage berücksichtigen die EXIF-Drehung
+        const s = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(b => b ? ok(b) : nein(new Error("vorschau")), "image/jpeg", .82);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); nein(new Error("vorschau")); };
+      img.src = url;
+    });
+  }
+  async function hochLaden(ziel, body){
+    for (let versuch = 0; ; versuch++) {
+      try {
+        const r = await fetch(ziel.url, {method:"PUT", headers: ziel.headers, body});
+        if (r.ok) return;
+        throw new Error("http " + r.status);
+      } catch(e) {
+        if (versuch >= 2) throw e;
+        await new Promise(w => setTimeout(w, 1500 * (versuch + 1)));
+      }
+    }
+  }
+  async function einFoto(datei, ziel){
+    const klein = await verkleinern(datei).catch(() => null);
+    await Promise.all([
+      hochLaden(ziel.orig, datei),
+      klein ? hochLaden(ziel.vorschau, klein).catch(() => {}) : null
+    ]);
+  }
+  let laeuft = false;
+  window.addEventListener("beforeunload", e => { if (laeuft) { e.preventDefault(); e.returnValue = ""; } });
+  async function hochladen(alle){
+    const gruppe = fotoGruppe, passwort = zugang[gruppe];
+    const dateien = alle.filter(f => ERLAUBT.includes(typVon(f)));
+    const name = $("#foto-name").value.trim();
+    const geschichte = $("#foto-geschichte").value.trim();
+    merke("fotos-name", name);
+    const box = $("#fortschritt"), balken = box.querySelector("span"), text = box.querySelector("p"), knopf = $("#foto-knopf");
+    let fertig = 0, fehler = alle.length - dateien.length, gesperrt = false;
+    const stand = () => {
+      balken.style.width = Math.round(100 * (fertig + fehler) / alle.length) + "%";
+      text.textContent = `${fertig + fehler} von ${alle.length}`;
+    };
+    box.hidden = false; knopf.disabled = true; laeuft = true; stand();
+    // In Päckchen zu zehn, damit die signierten Adressen (15 min) nicht ablaufen
+    for (let i = 0; i < dateien.length; i += 10) {
+      const teil = dateien.slice(i, i + 10);
+      let ziele;
+      try {
+        ziele = (await api("/api/upload-adressen", {method:"POST",
+          body: JSON.stringify({name, geschichte, dateien: teil.map(f => ({typ: typVon(f)}))})}, passwort)).dateien;
+      } catch(e) {
+        if (e.message === "passwort") gesperrt = true;
+        fehler += teil.length; stand();
+        continue;
+      }
+      let n = 0;
+      const arbeiter = async () => {
+        while (n < teil.length) {
+          const j = n++;
+          try { await einFoto(teil[j], ziele[j]); fertig++; } catch(e) { fehler++; }
+          stand();
+        }
+      };
+      await Promise.all([arbeiter(), arbeiter(), arbeiter()]);
+    }
+    laeuft = false; knopf.disabled = false;
+    if (gesperrt) return passwortUngueltig(gruppe);
+    text.textContent = fehler
+      ? `${anzahl(fertig)} hochgeladen, bei ${fehler} hat es nicht geklappt. Bitte die fehlenden noch einmal versuchen.`
+      : `${anzahl(fertig)} hochgeladen. Danke!`;
+    if (fertig && !fehler) $("#foto-geschichte").value = "";
+    ladeGalerie();
+  }
+
+  // ---------- Diashow ----------
+  // Für Fernseher oder Beamer: Fotos von heute, neue kommen jede Minute dazu und werden zuerst gezeigt
+  const DIA = { gruppe: null, el: null, liste: [], i: -1, vorrang: [], takt: null, nachladen: null, sperre: null };
+  async function diashowStart(vollbild){
+    if (DIA.el || !fotoGruppe) return;
+    DIA.gruppe = fotoGruppe;
+    const el = document.createElement("div");
+    el.className = "diashow"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Diashow");
+    el.innerHTML = `<img alt=""><img alt=""><div class="unterschrift"><b></b><span></span></div><p class="leer">Fotos werden geladen …</p>
+      <button class="zu" type="button" aria-label="Diashow beenden">×</button>`;
+    document.body.append(el);
+    DIA.el = el;
+    el.querySelector(".zu").addEventListener("click", e => { e.stopPropagation(); diashowStopp(); });
+    el.addEventListener("click", () => { if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(() => {}); });
+    document.addEventListener("keydown", diaTaste);
+    if (vollbild && el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    try { if (navigator.wakeLock) DIA.sperre = await navigator.wakeLock.request("screen"); } catch(e) {}
+    await diaLaden();
+    DIA.takt = setInterval(diaWeiter, 7000);
+    DIA.nachladen = setInterval(diaLaden, 60000);
+  }
+  async function diaLaden(){
+    if (!DIA.el) return;
+    const leer = DIA.el.querySelector(".leer"), pw = zugang[DIA.gruppe];
+    try {
+      let d = await api("/api/galerie?tag=" + heute, {}, pw);
+      if (!d.tage.length && !DIA.liste.length) d = await api("/api/galerie", {}, pw); // heute noch nichts: alle Tage
+      if (!DIA.el) return;
+      const neu = d.tage.flatMap(t => t.fotos.map(f => ({...f, tag: t.tag})));
+      if (DIA.liste.length) {
+        const bekannt = new Set(DIA.liste.map(f => f.id));
+        DIA.vorrang.push(...neu.filter(f => !bekannt.has(f.id)).map(f => f.id));
+      }
+      DIA.liste = neu;
+      leer.hidden = neu.length > 0;
+      leer.textContent = "Noch keine Fotos. Los geht’s!";
+      if (DIA.i < 0 && neu.length) diaWeiter();
+    } catch(e) {
+      if (!DIA.liste.length) leer.textContent = fehlerText(e);
+    }
+  }
+  function diaWeiter(){
+    if (!DIA.el || !DIA.liste.length) return;
+    let j = -1;
+    while (DIA.vorrang.length && j < 0) { const id = DIA.vorrang.shift(); j = DIA.liste.findIndex(f => f.id === id); }
+    DIA.i = j >= 0 ? j : (DIA.i + 1) % DIA.liste.length;
+    const f = DIA.liste[DIA.i];
+    const [a, b] = DIA.el.querySelectorAll("img");
+    const neu = a.classList.contains("an") ? b : a, alt = neu === a ? b : a;
+    neu.onload = () => {
+      neu.classList.add("an"); alt.classList.remove("an");
+      DIA.el.querySelector(".unterschrift b").textContent = [f.name, tagText(f.tag)].filter(Boolean).join(" · ");
+      DIA.el.querySelector(".unterschrift span").textContent = f.geschichte || "";
+    };
+    neu.src = f.vorschau;
+  }
+  function diaTaste(e){
+    if (e.key === "Escape") diashowStopp();
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); diaWeiter(); }
+  }
+  function diashowStopp(){
+    if (!DIA.el) return;
+    clearInterval(DIA.takt); clearInterval(DIA.nachladen);
+    if (DIA.sperre) DIA.sperre.release().catch(() => {});
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    document.removeEventListener("keydown", diaTaste);
+    DIA.el.remove();
+    Object.assign(DIA, { gruppe: null, el: null, liste: [], i: -1, vorrang: [], takt: null, nachladen: null, sperre: null });
+    if (location.hash === "#diashow") { try { history.replaceState(null, "", location.pathname + location.search); } catch(e) {} }
+  }
+
+  // Start: ohne Passwort anmelden, sonst Fotos. fotos.html#diashow startet gleich die Diashow.
+  if (fotoGruppe) {
+    zeigeFotos();
+    if (location.hash === "#diashow") diashowStart(false);
+  } else {
+    zeigeAnmeldung();
+  }
+  window.addEventListener("hashchange", () => { if (location.hash === "#diashow") diashowStart(false); });
+})();
+</script>
+</body>
+</html>

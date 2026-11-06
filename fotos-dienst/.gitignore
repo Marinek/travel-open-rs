@@ -1,0 +1,6 @@
+build/
+.gradle/
+# Einstellungen und Passwörter – nur die Vorlage gehört ins Repo
+.env
+.env.*
+!.env.example

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR-Kärtchen Fotos – Tunesien 2026</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Big+Shoulders+Display:wght@800;900&display=swap" rel="stylesheet">
+<style>
+:root{--kobalt:#1C4E9E;--sonne:#F3B61F;--tinte:#12213F;--grau:#4A5672}
+*{box-sizing:border-box}
+body{margin:0;font:400 1rem/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;color:var(--tinte);background:#F6F7F4}
+.steuerung{max-width:46rem;margin:0 auto;padding:1.5rem 1.25rem}
+.steuerung h1{font:800 2rem/1 "Big Shoulders Display",sans-serif;margin:0 0 .5rem}
+.steuerung label{display:block;font-weight:700;margin-top:1rem}
+.steuerung input{width:100%;font:inherit;padding:.6rem .75rem;border:2px solid #D8DDE5;border-radius:.6rem;margin-top:.35rem}
+.steuerung button{margin-top:1rem;font:700 1rem/1 inherit;padding:.75rem 1.1rem;border-radius:.6rem;border:2px solid var(--kobalt);background:var(--kobalt);color:#fff;cursor:pointer}
+.steuerung .fehler{color:#D3132F;font-weight:700}
+.steuerung fieldset{border:0;padding:0;margin:1rem 0 0}
+.steuerung legend{font-weight:700;padding:0}
+.steuerung fieldset label{display:inline-flex;align-items:center;gap:.4rem;font-weight:400;margin:.4rem 1.2rem 0 0}
+.steuerung fieldset input{width:auto;margin:0}
+.steuerung .leise{font-weight:400;color:#4A5672}
+.karte .schritte b{display:block;margin-top:1.5mm;font-size:5mm}
+.bogen{display:grid;grid-template-columns:repeat(2,105mm);grid-auto-rows:148mm;width:210mm;margin:0 auto 2rem;background:#fff}
+.karte{overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px dashed #ccc}
+.karte>*{flex:none}
+.karte .oben{align-self:stretch;background:var(--kobalt);color:#fff;padding:6mm 8mm 7mm;border-radius:0 0 50% 50% / 0 0 10mm 10mm}
+.karte .sonne{width:8mm;height:8mm;border-radius:50%;background:var(--sonne);margin:0 auto 2.5mm}
+.karte h2{margin:0;font:900 10mm/.92 "Big Shoulders Display",sans-serif}
+.karte .unter{margin:2.5mm 0 0;font-weight:700;font-size:3.8mm}
+.karte svg{width:46mm;height:46mm;margin-top:5mm}
+.karte .schritte{margin:3mm 8mm 0;font-size:4mm;line-height:1.35}
+.karte .gruppe{display:inline-block;margin-top:3mm;padding:1.2mm 3mm;border-radius:99mm;background:var(--sonne);color:var(--tinte);font:800 4.6mm/1 "Big Shoulders Display",sans-serif;letter-spacing:.02em}
+.bogen.w2 .karte .oben{background:linear-gradient(90deg,#000 50%,#D3132F 50%)}
+.bogen.w2 .karte .sonne,.bogen.w2 .karte .gruppe{background:#fff}
+.karte .fuss{margin:auto 0 5mm;font:800 5mm/1 "Big Shoulders Display",sans-serif;color:var(--grau)}
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff}
+  .steuerung{display:none}
+  .bogen{margin:0}
+  .karte{border-color:#e5e5e5}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="steuerung">
+  <h1>QR-Kärtchen für die Fotos</h1>
+  <p>Der QR-Code führt auf die Fotoseite, für beide Gruppen dieselbe. Welche Gruppe man sieht, entscheidet das Passwort. Pro Gruppe einmal drucken: A4 mit vier Kärtchen im A6-Format. Alles wird nur hier im Browser verarbeitet.</p>
+  <label for="link">Link zur Fotoseite</label>
+  <input id="link" type="url" placeholder="https://…github.io/tunesien-2026/fotos.html" autocomplete="off">
+  <fieldset>
+    <legend>Gruppe (Farben und Name auf dem Kärtchen)</legend>
+    <label><input type="radio" name="gruppe" value="travel-open" checked> Travel Open</label>
+    <label><input type="radio" name="gruppe" value="schwarz-gegen-rot"> Schwarz gegen Rot</label>
+  </fieldset>
+  <label for="passwort">Passwort aufdrucken <span class="leise">(freiwillig – leer lassen, wenn du es lieber sagst)</span></label>
+  <input id="passwort" type="text" autocomplete="off">
+  <p class="fehler" id="fehler" hidden></p>
+  <button type="button" onclick="print()">Drucken</button>
+</div>
+<div class="bogen" id="bogen"></div>
+
+<script>
+/*
+ * Kompakter QR-Code-Generator (Byte-Modus, Fehlerkorrektur M, Version 1–10),
+ * nach dem Verfahren von Project Nayuki (MIT). Läuft komplett im Browser.
+ */
+const QR = (() => {
+  const ECC = [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26];   // Fehlerkorrektur-Bytes je Block (M)
+  const BLOECKE = [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5];          // Anzahl Blöcke (M)
+  const bit = (x, i) => ((x >>> i) & 1) !== 0;
+  const rohModule = v => {
+    let r = (16 * v + 128) * v + 64;
+    if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; }
+    return r;
+  };
+  const datenBytes = v => Math.floor(rohModule(v) / 8) - ECC[v] * BLOECKE[v];
+  const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; };
+  function rsTeiler(grad) {
+    const r = new Array(grad).fill(0); r[grad - 1] = 1; let w = 1;
+    for (let i = 0; i < grad; i++) {
+      for (let j = 0; j < r.length; j++) { r[j] = mul(r[j], w); if (j + 1 < r.length) r[j] ^= r[j + 1]; }
+      w = mul(w, 0x02);
+    }
+    return r;
+  }
+  function rsRest(daten, teiler) {
+    const r = teiler.map(() => 0);
+    for (const b of daten) { const f = b ^ r.shift(); r.push(0); teiler.forEach((c, i) => r[i] ^= mul(c, f)); }
+    return r;
+  }
+
+  return function erzeuge(text) {
+    const bytes = [...new TextEncoder().encode(text)];
+    let v = 1;
+    for (; v <= 10; v++) if (4 + (v < 10 ? 8 : 16) + bytes.length * 8 <= datenBytes(v) * 8) break;
+    if (v > 10) throw new Error("Link zu lang");
+
+    // Bitstrom
+    const bits = [];
+    const schreib = (wert, n) => { for (let i = n - 1; i >= 0; i--) bits.push((wert >>> i) & 1); };
+    schreib(4, 4); schreib(bytes.length, v < 10 ? 8 : 16); bytes.forEach(b => schreib(b, 8));
+    const kap = datenBytes(v) * 8;
+    schreib(0, Math.min(4, kap - bits.length));
+    schreib(0, (8 - bits.length % 8) % 8);
+    for (let p = 0xEC; bits.length < kap; p ^= 0xEC ^ 0x11) schreib(p, 8);
+    const daten = [];
+    for (let i = 0; i < bits.length; i += 8) daten.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+
+    // Blöcke mit Fehlerkorrektur, verschränkt
+    const nB = BLOECKE[v], eccLen = ECC[v], roh = Math.floor(rohModule(v) / 8);
+    const kurz = nB - roh % nB, kurzLen = Math.floor(roh / nB), teiler = rsTeiler(eccLen);
+    const bl = [];
+    for (let i = 0, k = 0; i < nB; i++) {
+      const d = daten.slice(k, k + kurzLen - eccLen + (i < kurz ? 0 : 1)); k += d.length;
+      const e = rsRest(d, teiler); if (i < kurz) d.push(0); bl.push(d.concat(e));
+    }
+    const code = [];
+    for (let i = 0; i < bl[0].length; i++) bl.forEach((b, j) => { if (i !== kurzLen - eccLen || j >= kurz) code.push(b[i]); });
+
+    // Matrix
+    const n = v * 4 + 17;
+    const m = Array.from({length: n}, () => new Array(n).fill(false));
+    const fest = Array.from({length: n}, () => new Array(n).fill(false));
+    const setz = (x, y, d) => { m[y][x] = d; fest[y][x] = true; };
+    for (let i = 0; i < n; i++) { setz(6, i, i % 2 === 0); setz(i, 6, i % 2 === 0); }
+    const finder = (x, y) => { for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const d = Math.max(Math.abs(dx), Math.abs(dy)), xx = x + dx, yy = y + dy;
+      if (xx >= 0 && xx < n && yy >= 0 && yy < n) setz(xx, yy, d !== 2 && d !== 4); } };
+    finder(3, 3); finder(n - 4, 3); finder(3, n - 4);
+    if (v > 1) {
+      const anz = Math.floor(v / 7) + 2, schritt = Math.floor((v * 8 + anz * 3 + 5) / (anz * 4 - 4)) * 2;
+      const pos = [6]; for (let p = n - 7; pos.length < anz; p -= schritt) pos.splice(1, 0, p);
+      pos.forEach((a, i) => pos.forEach((b, j) => {
+        if ((i === 0 && j === 0) || (i === 0 && j === anz - 1) || (i === anz - 1 && j === 0)) return;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) setz(a + dx, b + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+      }));
+    }
+    const format = maske => {
+      const d = (0 << 3) | maske; let r = d;   // M = 0
+      for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+      const b = ((d << 10) | r) ^ 0x5412;
+      for (let i = 0; i <= 5; i++) setz(8, i, bit(b, i));
+      setz(8, 7, bit(b, 6)); setz(8, 8, bit(b, 7)); setz(7, 8, bit(b, 8));
+      for (let i = 9; i < 15; i++) setz(14 - i, 8, bit(b, i));
+      for (let i = 0; i < 8; i++) setz(n - 1 - i, 8, bit(b, i));
+      for (let i = 8; i < 15; i++) setz(8, n - 15 + i, bit(b, i));
+      setz(8, n - 8, true);
+    };
+    format(0);
+    if (v >= 7) {
+      let r = v; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+      const b = (v << 12) | r;
+      for (let i = 0; i < 18; i++) { const a = n - 11 + i % 3, c = Math.floor(i / 3); setz(a, c, bit(b, i)); setz(c, a, bit(b, i)); }
+    }
+    // Daten im Zickzack
+    let i = 0;
+    for (let rechts = n - 1; rechts >= 1; rechts -= 2) {
+      if (rechts === 6) rechts = 5;
+      for (let s = 0; s < n; s++) for (let j = 0; j < 2; j++) {
+        const x = rechts - j, hoch = ((rechts + 1) & 2) === 0, y = hoch ? n - 1 - s : s;
+        if (!fest[y][x] && i < code.length * 8) { m[y][x] = bit(code[i >>> 3], 7 - (i & 7)); i++; }
+      }
+    }
+    // Maske mit der geringsten Strafe wählen (Regeln 1, 2 und 4)
+    const kipp = k => (x, y) => [
+      (x + y) % 2 === 0, y % 2 === 0, x % 3 === 0, (x + y) % 3 === 0,
+      (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, x * y % 2 + x * y % 3 === 0,
+      (x * y % 2 + x * y % 3) % 2 === 0, ((x + y) % 2 + x * y % 3) % 2 === 0][k];
+    const maskiere = k => { const t = kipp(k); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!fest[y][x] && t(x, y)) m[y][x] = !m[y][x]; };
+    const strafe = () => {
+      let s = 0, dunkel = 0;
+      for (let a = 0; a < n; a++) for (const quer of [true, false]) {
+        let lauf = 1;
+        for (let b = 1; b <= n; b++) {
+          const gleich = b < n && (quer ? m[a][b] === m[a][b - 1] : m[b][a] === m[b - 1][a]);
+          if (gleich) lauf++; else { if (lauf >= 5) s += lauf - 2; lauf = 1; }
+        }
+      }
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+        if (m[y][x]) dunkel++;
+        if (x < n - 1 && y < n - 1 && m[y][x] === m[y][x + 1] && m[y][x] === m[y + 1][x] && m[y][x] === m[y + 1][x + 1]) s += 3;
+      }
+      return s + Math.floor(Math.abs(dunkel * 20 - n * n * 10) / (n * n)) * 10;
+    };
+    let beste = 0, min = Infinity;
+    for (let k = 0; k < 8; k++) { maskiere(k); format(k); const s = strafe(); if (s < min) { min = s; beste = k; } maskiere(k); }
+    maskiere(beste); format(beste);
+    return m;
+  };
+})();
+
+function svg(matrix) {
+  const n = matrix.length, rand = 2;
+  let pfad = "";
+  matrix.forEach((zeile, y) => zeile.forEach((d, x) => { if (d) pfad += `M${x + rand} ${y + rand}h1v1h-1z`; }));
+  return `<svg viewBox="0 0 ${n + 2 * rand} ${n + 2 * rand}" shape-rendering="crispEdges" role="img" aria-label="QR-Code zur Fotoseite">
+    <rect width="100%" height="100%" fill="#fff"/><path d="${pfad}" fill="#12213F"/></svg>`;
+}
+
+const GRUPPEN = { "travel-open": "Travel Open", "schwarz-gegen-rot": "Schwarz gegen Rot" };
+const esc = t => t.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function karten() {
+  const link = document.getElementById("link").value.trim();
+  const passwort = document.getElementById("passwort").value.trim();
+  const gruppe = document.querySelector('input[name="gruppe"]:checked').value;
+  const fehler = document.getElementById("fehler"), bogen = document.getElementById("bogen");
+  fehler.hidden = true;
+  bogen.innerHTML = "";
+  if (!link) return;
+  let url;
+  try { url = new URL(link); } catch (e) {}
+  if (!url || !/^https?:$/.test(url.protocol)) { fehler.textContent = "Bitte einen vollständigen Link mit https:// einfügen."; fehler.hidden = false; return; }
+  if (!/fotos\.html$/.test(url.pathname)) { fehler.textContent = "Hinweis: Der Link zeigt nicht auf fotos.html."; fehler.hidden = false; }
+  let qr;
+  try { qr = svg(QR(link)); } catch (e) { fehler.textContent = e.message; fehler.hidden = false; return; }
+  bogen.classList.toggle("w2", gruppe === "schwarz-gegen-rot");
+  const karte = `<div class="karte">
+    <div class="oben">
+      <div class="sonne"></div>
+      <h2>Deine Fotos<br>von der Reise</h2>
+      <p class="unter">Teilen statt nur auf dem Handy lassen</p>
+      <span class="gruppe">${GRUPPEN[gruppe]}</span>
+    </div>
+    ${qr}
+    <p class="schritte">QR-Code scannen, Passwort eingeben,<br>„Fotos hinzufügen“ tippen – fertig!
+      ${passwort ? `<b>Passwort: ${esc(passwort)}</b>` : "<br>Abends in der Diashow."}</p>
+    <p class="fuss">Golfreise Tunesien 2026</p>
+  </div>`;
+  bogen.innerHTML = karte.repeat(4);
+}
+document.querySelectorAll(".steuerung input").forEach(el => el.addEventListener("input", karten));
+</script>
+</body>
+</html>
