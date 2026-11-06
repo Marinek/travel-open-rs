@@ -5,7 +5,7 @@ Ablaufprogramm für **Travel Open** (07.–14.11.) und **Schwarz gegen Rot** (14
 ## Online stellen
 
 1. Neues Repository auf GitHub anlegen, z. B. `tunesien-2026`.
-2. Alle Dateien aus diesem Ordner hochladen (`index.html`, `fotos.html`, `daten.js`, die drei `.ics`-Dateien, `kalender.mjs`, den Ordner `fotos-dienst/`).
+2. Alle Dateien aus diesem Ordner hochladen (`index.html`, `fotos.html`, `daten.js`, die beiden `.ics`-Dateien, `kalender.mjs`, den Ordner `fotos-dienst/`).
 3. Im Repository: **Settings → Pages → Source: Deploy from a branch**, Branch `main`, Ordner `/ (root)`, speichern.
 4. Nach ein bis zwei Minuten ist die Seite unter `https://<dein-name>.github.io/tunesien-2026/` erreichbar.
 
@@ -25,7 +25,9 @@ Danach die Kalenderdateien neu erzeugen (Node.js ab Version 18):
 node kalender.mjs
 ```
 
-Dann alles committen und pushen. Wer den Kalender **abonniert** hat (Link „Kalender abonnieren“ auf der Seite), bekommt Änderungen automatisch. Wer die Datei nur einmal importiert hat, muss sie neu laden.
+Es entstehen zwei Kalender, einer pro Reisegruppe: `travel-open-2026.ics` und `schwarz-gegen-rot-2026.ics`. Auf der Seite gibt es den Download jeweils nur für die gerade gezeigte Woche, auf der Fotoseite für die angemeldete Gruppe. Einen gemeinsamen Kalender für beide Wochen und ein Kalender-Abo gibt es nicht.
+
+Dann alles committen und pushen. Wer die Termine schon importiert hat, muss die Datei nach Änderungen neu laden.
 
 ## Fotos sammeln
 

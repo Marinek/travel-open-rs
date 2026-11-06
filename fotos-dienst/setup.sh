@@ -85,7 +85,7 @@ cat > "$TMP/cors.json" <<EOF
 [{
   "origin": ["${ORIGIN}", "http://localhost:8000"],
   "method": ["PUT", "GET"],
-  "responseHeader": ["Content-Type", "x-goog-meta-name", "x-goog-meta-geschichte"],
+  "responseHeader": ["Content-Type", "x-goog-meta-name", "x-goog-meta-geschichte", "x-goog-meta-aufgenommen"],
   "maxAgeSeconds": 3600
 }]
 EOF

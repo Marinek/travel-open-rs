@@ -2,7 +2,6 @@
 // Aufruf im Projektordner:  node kalender.mjs
 //
 // Ergebnis:
-//   tunesien-2026.ics           alle Termine beider Wochen
 //   travel-open-2026.ics        nur Woche 1
 //   schwarz-gegen-rot-2026.ics  nur Woche 2
 
@@ -191,7 +190,6 @@ const t1 = termineFuer(w1);
 const t2 = termineFuer(w2);
 
 const dateien = [
-  ["tunesien-2026.ics", `${REISE.titel}`, [...t1, ...t2]],
   ["travel-open-2026.ics", `Tunesien 2026 – ${w1.name}`, t1],
   ["schwarz-gegen-rot-2026.ics", `Tunesien 2026 – ${w2.name}`, t2]
 ];

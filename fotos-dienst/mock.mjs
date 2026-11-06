@@ -34,15 +34,21 @@ function api(req, res, u, body) {
   if (!g) return json(res, 401);
   if (req.method === "GET" && u.pathname === "/api/anmelden") return json(res, 200, { gruppe: g });
   if (req.method === "POST" && u.pathname === "/api/upload-adressen") {
-    const a = JSON.parse(body), tag = heute();
+    const a = JSON.parse(body), h = heute();
+    // wie der echte Dienst: Tag der Aufnahme, wenn glaubwürdig (nicht Zukunft, höchstens 60 Tage alt)
+    const gueltig = d => { const t = (d.aufgenommen || "").slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(d.aufgenommen || "") && t <= h && (new Date(h) - new Date(t)) / 864e5 <= 60; };
     const meta = { "x-goog-meta-name": encodeURIComponent(a.name || "") };
     if (a.geschichte) meta["x-goog-meta-geschichte"] = encodeURIComponent(a.geschichte.slice(0, 500));
-    return json(res, 200, { gruppe: g, tag, dateien: a.dateien.map(d => {
-      const id = randomUUID();
+    return json(res, 200, { gruppe: g, dateien: a.dateien.map(d => {
+      const id = randomUUID(), ok = gueltig(d);
+      const tag = ok ? d.aufgenommen.slice(0, 10) : h, auf = ok ? d.aufgenommen.slice(0, 19) : "";
+      const m = auf ? { ...meta, "x-goog-meta-aufgenommen": auf } : meta;
       return {
         id,
-        orig: { url: `${B}/put/${g}/orig/${tag}/${id}.jpg`, headers: { "Content-Type": d.typ, ...meta } },
-        vorschau: { url: `${B}/put/${g}/vorschau/${tag}/${id}.jpg`, headers: { "Content-Type": "image/jpeg", ...meta } }
+        tag,
+        orig: { url: `${B}/put/${g}/orig/${tag}/${id}.jpg`, headers: { "Content-Type": d.typ, ...m } },
+        vorschau: { url: `${B}/put/${g}/vorschau/${tag}/${id}.jpg`, headers: { "Content-Type": "image/jpeg", ...m } }
       };
     }) });
   }
@@ -53,10 +59,11 @@ function api(req, res, u, body) {
       const [, , tag, datei] = n.split("/");
       if (nur && nur !== tag) continue;
       const id = datei.replace(/\.[^.]*$/, ""), v = `${g}/vorschau/${tag}/${id}.jpg`;
-      (tage[tag] ||= []).push({ id, name: decodeURIComponent(o.name), geschichte: decodeURIComponent(o.geschichte), zeit: o.zeit,
+      (tage[tag] ||= []).push({ id, name: decodeURIComponent(o.name), geschichte: decodeURIComponent(o.geschichte), zeit: o.zeit, aufgenommen: o.aufgenommen,
         vorschau: `${B}/obj/${objekte.has(v) ? v : n}`, orig: `${B}/obj/${n}` });
     }
-    return json(res, 200, { gruppe: g, tage: Object.keys(tage).sort().reverse().map(tag => ({ tag, fotos: tage[tag] })) });
+    const reihe = f => f.aufgenommen || f.zeit;
+    return json(res, 200, { gruppe: g, tage: Object.keys(tage).sort().reverse().map(tag => ({ tag, fotos: tage[tag].sort((x, y) => reihe(x) < reihe(y) ? -1 : 1) })) });
   }
   return json(res, 404);
 }
@@ -76,7 +83,7 @@ http.createServer((req, res) => {
       if (req.method === "PUT" && u.pathname.startsWith("/put/")) {
         const n = u.pathname.slice(5);
         objekte.set(n, { typ: req.headers["content-type"], name: req.headers["x-goog-meta-name"] || "",
-          geschichte: req.headers["x-goog-meta-geschichte"] || "", daten: body, zeit: new Date().toISOString() });
+          geschichte: req.headers["x-goog-meta-geschichte"] || "", aufgenommen: req.headers["x-goog-meta-aufgenommen"] || "", daten: body, zeit: new Date().toISOString() });
         console.log("Foto gespeichert:", n, `(${Math.round(body.length / 1024)} KB)`);
         res.writeHead(200, cors);
         return res.end();

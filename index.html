@@ -118,8 +118,6 @@ details.formen dd{margin:0;color:var(--muted)}
 .hilfe{margin-top:1.25rem;color:var(--muted);font-size:.95rem}
 .hilfe dt{font-weight:700;color:var(--ink);margin-top:.6rem}
 .hilfe dd{margin:0}
-.abo{margin-top:1.25rem;display:none}
-.abo code{display:block;word-break:break-all;padding:.6rem .75rem;background:var(--chip);border:1.5px solid var(--line);border-radius:.45rem;font:400 .85rem/1.4 ui-monospace,monospace;margin:.5rem 0}
 .fuss{padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}
 .fuss strong{color:var(--ink)}
 .nur-leser{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -142,27 +140,17 @@ details.formen dd{margin:0;color:var(--muted)}
 
 <div class="wrap">
   <section class="kalender" id="kalender" aria-labelledby="kal-titel">
-    <h2 id="kal-titel">Alle Termine in deinen Kalender</h2>
+    <h2 id="kal-titel">Termine in deinen Kalender</h2>
     <p>Golfrunden mit Bus- und Abschlagzeiten, die Abende, Ausflug, Anreise und Abreise. Eine Datei, einmal öffnen, fertig.</p>
     <div class="knopfzeile">
-      <a class="knopf voll" href="tunesien-2026.ics" id="ics-alle">
+      <a class="knopf voll" href="#" id="ics-woche">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-        Ganze Reise
+        <span id="ics-text">Termine laden</span>
       </a>
-      <a class="knopf" href="travel-open-2026.ics">Nur Travel Open</a>
-      <a class="knopf" href="schwarz-gegen-rot-2026.ics">Nur Schwarz gegen Rot</a>
-    </div>
-    <div class="abo" id="abo">
-      <p><strong>Lieber abonnieren?</strong> Dann übernimmt dein Kalender Änderungen am Programm automatisch.</p>
-      <div class="knopfzeile">
-        <a class="knopf" id="abo-link" href="#">Kalender abonnieren</a>
-        <button class="knopf" id="abo-kopieren" type="button">Adresse kopieren</button>
-      </div>
-      <code id="abo-url"></code>
     </div>
     <dl class="hilfe">
-      <dt>iPhone und iPad</dt><dd>Auf „Ganze Reise“ tippen, dann „Alle hinzufügen“.</dd>
-      <dt>Android und Google Kalender</dt><dd>Datei herunterladen und in Google Kalender am Computer über „Einstellungen → Importieren“ hinzufügen, oder abonnieren mit „Andere Kalender → Per URL“.</dd>
+      <dt>iPhone und iPad</dt><dd>Auf den Knopf oben tippen, dann „Alle hinzufügen“.</dd>
+      <dt>Android und Google Kalender</dt><dd>Datei herunterladen und in Google Kalender am Computer über „Einstellungen → Importieren“ hinzufügen.</dd>
       <dt>Outlook</dt><dd>Datei herunterladen und doppelklicken.</dd>
     </dl>
   </section>
@@ -252,7 +240,7 @@ details.formen dd{margin:0;color:var(--muted)}
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
-        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a></div>
+        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a></div>
       </div></section>`;
   }
 
@@ -298,11 +286,20 @@ details.formen dd{margin:0;color:var(--muted)}
     document.querySelectorAll(".wahl button").forEach(b => b.setAttribute("aria-selected", b.dataset.woche === w.id));
     $("#inhalt").setAttribute("aria-labelledby", "tab-" + w.id);
     $("#inhalt").innerHTML = buehne(w) + `<ol class="tage">${w.tage.map(t => tagHtml(w, t)).join("")}</ol>`;
+    kalender(w);
     try { history.replaceState(null, "", "#" + w.id); } catch(e) {}
     if (springen) {
       const el = document.getElementById(`tag-${w.id}-${heute}`);
       if (el) setTimeout(() => el.scrollIntoView({block:"start", behavior:"instant"}), 60);
     }
+  }
+
+  // Kalender nur für die gerade gezeigte Woche (jede Woche ist eine eigene Reisegruppe)
+  const icsDatei = w => `${w.id}-2026.ics`;
+  function kalender(w){
+    $("#kal-titel").textContent = `Termine ${w.name} in deinen Kalender`;
+    $("#ics-woche").href = icsDatei(w);
+    $("#ics-text").textContent = `${w.name} in den Kalender`;
   }
 
   // Start: Woche aus der Adresse, sonst die Woche, in der wir gerade sind
@@ -329,17 +326,6 @@ details.formen dd{margin:0;color:var(--muted)}
 
   $("#hinweis").textContent = R.hinweis;
 
-  // Abo-Adresse nur anzeigen, wenn die Seite im Netz liegt (z. B. GitHub Pages)
-  if (/^https?:$/.test(location.protocol) && !/claude/.test(location.hostname)) {
-    const basis = location.host + location.pathname.replace(/[^/]*$/, "") + "tunesien-2026.ics";
-    $("#abo").style.display = "block";
-    $("#abo-link").href = "webcal://" + basis;
-    $("#abo-url").textContent = "https://" + basis;
-    $("#abo-kopieren").addEventListener("click", async e => {
-      try { await navigator.clipboard.writeText("https://" + basis); e.target.textContent = "Adresse kopiert"; }
-      catch(_) { e.target.textContent = "Bitte Adresse unten markieren"; }
-    });
-  }
 })();
 </script>
 </body>

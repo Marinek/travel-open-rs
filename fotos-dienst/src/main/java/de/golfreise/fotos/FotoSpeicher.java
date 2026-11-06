@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,7 +35,8 @@ import com.google.cloud.storage.StorageOptions;
  *   &lt;gruppe&gt;/orig/JJJJ-MM-TT/&lt;uuid&gt;.&lt;endung&gt;   Original vom Handy
  *   &lt;gruppe&gt;/vorschau/JJJJ-MM-TT/&lt;uuid&gt;.jpg       im Browser verkleinert (ca. 1600 px)
  * </pre>
- * Name der Person und die optionale Geschichte stehen URL-kodiert in den Metadaten {@code name} und {@code geschichte}.
+ * Name der Person und die optionale Geschichte stehen URL-kodiert in den Metadaten {@code name} und {@code geschichte},
+ * die Aufnahmezeit aus den Bilddaten (Ortszeit) in {@code aufgenommen}. Der Tag im Pfad ist der Aufnahmetag.
  * Es gibt keine Datenbank: die Galerie entsteht aus dem Bucket-Listing.
  */
 @Service
@@ -41,14 +44,22 @@ public class FotoSpeicher {
 
     static final String META_NAME = "x-goog-meta-name";
     static final String META_GESCHICHTE = "x-goog-meta-geschichte";
+    static final String META_AUFGENOMMEN = "x-goog-meta-aufgenommen";
+    private static final DateTimeFormatter ORTSZEIT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.of("Africa/Tunis"));
     private static final Duration UPLOAD_GUELTIG = Duration.ofMinutes(15);
     private static final Duration ANSEHEN_GUELTIG = Duration.ofHours(12);
     /** Signierte Ansehen-Adressen werden wiederverwendet, solange sie noch so lange gelten. */
     private static final Duration ANSEHEN_REST = Duration.ofHours(6);
 
     public record Ziel(String url, Map<String, String> headers) {}
-    public record UploadZiel(String id, Ziel orig, Ziel vorschau) {}
-    public record Foto(String id, String name, String geschichte, String zeit, String vorschau, String orig) {}
+    public record UploadZiel(String id, String tag, Ziel orig, Ziel vorschau) {}
+    /**
+     * @param zeit        Zeitpunkt des Hochladens (ISO mit Zeitzone)
+     * @param aufgenommen Aufnahmezeit in Ortszeit, leer wenn unbekannt
+     */
+    public record Foto(String id, String name, String geschichte, String zeit, String aufgenommen,
+                       String vorschau, String orig) {}
     public record Tag(String tag, List<Foto> fotos) {}
 
     private record Signiert(String url, Instant gueltigBis) {}
@@ -67,13 +78,14 @@ public class FotoSpeicher {
     }
 
     public UploadZiel uploadZiel(String gruppe, String tag, String id, String typ, String endung,
-                                 String name, String geschichte) {
+                                 String name, String geschichte, String aufgenommen) {
         Map<String, String> meta = new LinkedHashMap<>();
         meta.put(META_NAME, kodiere(name));
         if (!geschichte.isEmpty()) meta.put(META_GESCHICHTE, kodiere(geschichte));
+        if (!aufgenommen.isEmpty()) meta.put(META_AUFGENOMMEN, aufgenommen);
         Ziel orig = putZiel(gruppe + "/orig/" + tag + "/" + id + "." + endung, typ, meta);
         Ziel vorschau = putZiel(gruppe + "/vorschau/" + tag + "/" + id + ".jpg", "image/jpeg", meta);
-        return new UploadZiel(id, orig, vorschau);
+        return new UploadZiel(id, tag, orig, vorschau);
     }
 
     private static String kodiere(String text) {
@@ -115,6 +127,7 @@ public class FotoSpeicher {
         Map<String, String> urls = ansehenUrls(objekte);
 
         Map<String, List<Foto>> nachTag = new TreeMap<>(Comparator.reverseOrder());
+        Map<String, String> reihenfolge = new HashMap<>();
         for (Blob o : originale) {
             String[] teile = o.getName().split("/");
             if (teile.length != 4) continue;
@@ -124,12 +137,16 @@ public class FotoSpeicher {
             String origUrl = urls.get(o.getName());
             String vorschauUrl = v != null ? urls.get(v.getName()) : origUrl;
             String zeit = o.getCreateTimeOffsetDateTime() != null ? o.getCreateTimeOffsetDateTime().toString() : "";
+            String aufgenommen = meta(o, "aufgenommen");
+            String sortierung = !aufgenommen.isEmpty() ? aufgenommen
+                    : o.getCreateTimeOffsetDateTime() != null ? ORTSZEIT.format(o.getCreateTimeOffsetDateTime()) : "";
             nachTag.computeIfAbsent(t, k -> new ArrayList<>())
-                    .add(new Foto(id, meta(o, "name"), meta(o, "geschichte"), zeit, vorschauUrl, origUrl));
+                    .add(new Foto(id, meta(o, "name"), meta(o, "geschichte"), zeit, aufgenommen, vorschauUrl, origUrl));
+            reihenfolge.put(id, sortierung);
         }
         List<Tag> tage = new ArrayList<>();
         nachTag.forEach((t, fotos) -> {
-            fotos.sort(Comparator.comparing(Foto::zeit));
+            fotos.sort(Comparator.comparing(f -> reihenfolge.getOrDefault(f.id(), "")));
             tage.add(new Tag(t, fotos));
         });
         return tage;

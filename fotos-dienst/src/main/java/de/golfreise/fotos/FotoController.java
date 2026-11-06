@@ -2,6 +2,9 @@ package de.golfreise.fotos;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,9 @@ public class FotoController {
     static final int MAX_DATEIEN = 30;
     static final int MAX_NAME = 40;
     static final int MAX_GESCHICHTE = 500;
+    /** Aufnahmedaten, die weiter zurückliegen, gelten als unglaubwürdig (falsch gestellte Kamera). */
+    static final int MAX_ALTER_TAGE = 60;
+    private static final DateTimeFormatter AUFNAHME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final Pattern TAG = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final Map<String, String> ENDUNG = Map.of(
             "image/jpeg", "jpg",
@@ -43,9 +49,13 @@ public class FotoController {
         this.uhr = uhr;
     }
 
-    public record Datei(String typ) {}
+    /**
+     * @param typ         MIME-Typ der Datei
+     * @param aufgenommen Aufnahmezeit aus den Bilddaten (EXIF) in Ortszeit, z. B. 2026-11-12T10:15:30; optional
+     */
+    public record Datei(String typ, String aufgenommen) {}
     public record UploadAnfrage(String name, String geschichte, List<Datei> dateien) {}
-    public record UploadAntwort(String gruppe, String tag, List<FotoSpeicher.UploadZiel> dateien) {}
+    public record UploadAntwort(String gruppe, List<FotoSpeicher.UploadZiel> dateien) {}
     public record Galerie(String gruppe, List<FotoSpeicher.Tag> tage) {}
     public record Anmeldung(String gruppe) {}
 
@@ -64,7 +74,7 @@ public class FotoController {
         }
         String name = bereinige(anfrage.name(), MAX_NAME, false);
         String geschichte = bereinige(anfrage.geschichte(), MAX_GESCHICHTE, true);
-        String tag = LocalDate.now(uhr).toString();
+        LocalDate heute = LocalDate.now(uhr);
         List<FotoSpeicher.UploadZiel> ziele = new ArrayList<>();
         for (Datei d : anfrage.dateien()) {
             String typ = d == null || d.typ() == null ? "" : d.typ().toLowerCase();
@@ -72,9 +82,13 @@ public class FotoController {
             if (endung == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nur Fotos erlaubt");
             }
-            ziele.add(speicher.uploadZiel(gruppe, tag, UUID.randomUUID().toString(), typ, endung, name, geschichte));
+            // Das Foto gehört zum Tag der Aufnahme; ohne glaubwürdige Aufnahmezeit zum Tag des Hochladens
+            LocalDateTime aufnahme = aufnahme(d.aufgenommen(), heute);
+            String tag = aufnahme != null ? aufnahme.toLocalDate().toString() : heute.toString();
+            String aufgenommen = aufnahme != null ? AUFNAHME.format(aufnahme) : "";
+            ziele.add(speicher.uploadZiel(gruppe, tag, UUID.randomUUID().toString(), typ, endung, name, geschichte, aufgenommen));
         }
-        return new UploadAntwort(gruppe, tag, ziele);
+        return new UploadAntwort(gruppe, ziele);
     }
 
     @GetMapping("/galerie")
@@ -84,6 +98,19 @@ public class FotoController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag als JJJJ-MM-TT");
         }
         return new Galerie(gruppe, speicher.galerie(gruppe, tag));
+    }
+
+    /** Aufnahmezeit, wenn sie lesbar ist und zwischen heute und {@value #MAX_ALTER_TAGE} Tagen zurück liegt. */
+    static LocalDateTime aufnahme(String wert, LocalDate heute) {
+        if (wert == null || wert.isBlank()) return null;
+        try {
+            LocalDateTime t = LocalDateTime.parse(wert.strip().length() > 19 ? wert.strip().substring(0, 19) : wert.strip());
+            LocalDate tag = t.toLocalDate();
+            if (tag.isAfter(heute) || tag.isBefore(heute.minusDays(MAX_ALTER_TAGE))) return null;
+            return t.withNano(0);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     /** Steuerzeichen raus (bei der Geschichte bleiben Zeilenumbrüche), Länge begrenzen. */

@@ -117,7 +117,7 @@ class FotoControllerTest {
     void galerieNurDerEigenenGruppe() throws Exception {
         when(speicher.galerie(eq("schwarz-gegen-rot"), isNull())).thenReturn(List.of(
                 new FotoSpeicher.Tag("2026-11-15", List.of(new FotoSpeicher.Foto(
-                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "https://v", "https://o")))));
+                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "2026-11-15T10:58:00", "https://v", "https://o")))));
 
         mvc.perform(get("/api/galerie").header("X-Fotos-Passwort", "jasmin26"))
                 .andExpect(status().isOk())
@@ -136,8 +136,8 @@ class FotoControllerTest {
     @Test
     void uploadMitGeschichteUndTunesischemDatum() throws Exception {
         when(speicher.uploadZiel(eq("travel-open"), eq("2026-11-13"), any(), eq("image/jpeg"), eq("jpg"),
-                eq("Erika"), eq("Zeile 1\nZeile 2")))
-                .thenReturn(new FotoSpeicher.UploadZiel("id-1",
+                eq("Erika"), eq("Zeile 1\nZeile 2"), eq("")))
+                .thenReturn(new FotoSpeicher.UploadZiel("id-1", "2026-11-13",
                         new FotoSpeicher.Ziel("https://put-orig", Map.of("Content-Type", "image/jpeg")),
                         new FotoSpeicher.Ziel("https://put-vorschau", Map.of("Content-Type", "image/jpeg"))));
 
@@ -147,8 +147,36 @@ class FotoControllerTest {
                         .content("{\"name\":\"  Erika \",\"geschichte\":\" Zeile 1\\r\\nZeile 2\\u0007 \","
                                 + "\"dateien\":[{\"typ\":\"image/jpeg\"}]}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tag").value("2026-11-13"))
+                .andExpect(jsonPath("$.dateien[0].tag").value("2026-11-13"))
                 .andExpect(jsonPath("$.dateien[0].orig.url").value("https://put-orig"));
+    }
+
+    @Test
+    void fotoGehoertZumAufnahmetag() throws Exception {
+        // „Heute“ ist der 13.11.; drei Fotos: vom Bingo-Tag, ohne Aufnahmezeit, mit Datum in der Zukunft
+        mvc.perform(post("/api/upload-adressen")
+                        .header("X-Fotos-Passwort", "oliver26")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"dateien\":[{\"typ\":\"image/jpeg\",\"aufgenommen\":\"2026-11-12T11:40:07\"},"
+                                + "{\"typ\":\"image/jpeg\"},"
+                                + "{\"typ\":\"image/jpeg\",\"aufgenommen\":\"2026-11-20T09:00:00\"}]}"))
+                .andExpect(status().isOk());
+        verify(speicher).uploadZiel(eq("travel-open"), eq("2026-11-12"), any(), any(), any(), any(), any(), eq("2026-11-12T11:40:07"));
+        verify(speicher, org.mockito.Mockito.times(2))
+                .uploadZiel(eq("travel-open"), eq("2026-11-13"), any(), any(), any(), any(), any(), eq(""));
+    }
+
+    @Test
+    void aufnahmezeitWirdGeprueft() {
+        java.time.LocalDate heute = java.time.LocalDate.of(2026, 11, 13);
+        assertEquals(java.time.LocalDateTime.of(2026, 11, 12, 11, 40, 7),
+                FotoController.aufnahme("2026-11-12T11:40:07", heute));
+        assertEquals(java.time.LocalDateTime.of(2026, 11, 13, 8, 5),
+                FotoController.aufnahme("2026-11-13T08:05", heute));
+        org.junit.jupiter.api.Assertions.assertNull(FotoController.aufnahme("2026-11-14T00:00:00", heute), "Zukunft");
+        org.junit.jupiter.api.Assertions.assertNull(FotoController.aufnahme("2026-08-01T12:00:00", heute), "zu alt");
+        org.junit.jupiter.api.Assertions.assertNull(FotoController.aufnahme("12.11.2026", heute), "Unsinn");
+        org.junit.jupiter.api.Assertions.assertNull(FotoController.aufnahme(null, heute));
     }
 
     @Test

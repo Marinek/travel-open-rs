@@ -98,7 +98,8 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
 <main class="wrap" id="inhalt"><p class="leise" style="padding-top:2rem">Lädt …</p></main>
 
 <footer class="wrap fuss">
-  <a href="./">Programm der Reise</a>
+  <a href="./" id="programm">Programm der Reise</a>
+  <a href="#" id="termine" hidden>Termine in den Kalender</a>
   <button class="link" type="button" id="abmelden" hidden>Abmelden</button>
 </footer>
 
@@ -163,6 +164,19 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     const zweite = fotoGruppe === R.wochen[1].id;   // Schwarz gegen Rot: dunkles Farbschema
     document.body.classList.toggle("w2", zweite);
     $('meta[name="theme-color"]').content = zweite ? "#000000" : "#1C4E9E";
+    programmLink();
+  }
+
+  // „Programm der Reise“ führt zur Woche der angemeldeten Gruppe (die Terminseite liest den Anker),
+  // „Termine in den Kalender“ lädt nur die Termine dieser Gruppe
+  function programmLink(){
+    const woche = R.wochen.find(w => w.id === fotoGruppe);
+    $("#programm").href = woche ? "./#" + woche.id : "./";
+    $("#termine").hidden = !woche;
+    if (woche) {
+      $("#termine").href = `./${woche.id}-2026.ics`;
+      $("#termine").textContent = `Termine ${woche.name} in den Kalender`;
+    }
   }
 
   // ---------- Anmelden ----------
@@ -170,6 +184,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     document.body.classList.remove("w2");
     $('meta[name="theme-color"]').content = "#1C4E9E";
     $("#abmelden").hidden = true;
+    programmLink();
     $("#inhalt").innerHTML = `<section class="kopfbereich">
       <h1>Fotos</h1>
       <p>Gib das Passwort deiner Reisegruppe ein. Das musst du nur einmal machen.</p>
@@ -315,10 +330,56 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     const f = galerie[grossI], d = $("#gross");
     d.querySelector("img").src = f.vorschau;
     d.querySelector("a").href = f.orig;
-    d.querySelector(".wer").textContent = [f.name, tagText(f.tag)].filter(Boolean).join(" · ");
+    d.querySelector(".wer").textContent = [f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
     const g = d.querySelector(".geschichte");
     g.textContent = f.geschichte || ""; g.hidden = !f.geschichte;
   }
+
+  // ---------- Aufnahmezeit ----------
+  // Fotos sollen zum Programmtag gehören, an dem sie gemacht wurden – auch wenn sie später hochgeladen werden.
+  // 1. EXIF-Aufnahmezeit (JPEG; das iPhone liefert HEIC-Fotos beim Hochladen als JPEG mit EXIF)
+  // 2. Dateidatum, wenn es nicht einfach „jetzt“ ist (iOS setzt bei umgewandelten Fotos die aktuelle Zeit)
+  // 3. sonst nichts – dann nimmt der Server den Tag des Hochladens
+  async function exifZeit(datei){
+    try {
+      const v = new DataView(await datei.slice(0, 256 * 1024).arrayBuffer());
+      if (v.getUint16(0) !== 0xFFD8) return null;               // kein JPEG
+      for (let o = 2; o + 4 <= v.byteLength; ) {
+        const marker = v.getUint16(o), laenge = v.getUint16(o + 2);
+        if ((marker & 0xFF00) !== 0xFF00 || marker === 0xFFDA) return null;
+        if (marker === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) return tiffZeit(v, o + 10);  // "Exif"
+        o += 2 + laenge;
+      }
+    } catch(e) {}
+    return null;
+  }
+  function tiffZeit(v, t){
+    const le = v.getUint16(t) === 0x4949;
+    const u16 = o => v.getUint16(o, le), u32 = o => v.getUint32(o, le);
+    const ifd = start => { const m = {}, n = u16(t + start); for (let i = 0; i < n; i++) { const e = t + start + 2 + i * 12; m[u16(e)] = e; } return m; };
+    const text = e => { const n = u32(e + 4), o = n > 4 ? t + u32(e + 8) : e + 8; let s = ""; for (let i = 0; i < n - 1; i++) s += String.fromCharCode(v.getUint8(o + i)); return s; };
+    const ifd0 = ifd(u32(t + 4));
+    let wert = null;
+    if (ifd0[0x8769]) {                                          // Exif-Unterverzeichnis
+      const ex = ifd(u32(ifd0[0x8769] + 8));
+      wert = ex[0x9003] ? text(ex[0x9003]) : ex[0x9004] ? text(ex[0x9004]) : null;  // DateTimeOriginal / Digitized
+    }
+    if (!wert && ifd0[0x0132]) wert = text(ifd0[0x0132]);       // DateTime
+    const m = wert && /^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/.exec(wert);
+    return m ? `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}` : null;
+  }
+  const ortszeit = ms => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {timeZone: R.zeitzone, year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"}).formatToParts(new Date(ms)).map(x => [x.type, x.value]));
+    return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+  };
+  async function aufnahmezeit(datei){
+    const exif = await exifZeit(datei);
+    if (exif) return exif;
+    if (datei.lastModified && Date.now() - datei.lastModified > 10 * 60 * 1000) return ortszeit(datei.lastModified);
+    return null;
+  }
+  const uhrzeit = f => f.aufgenommen ? `, ${f.aufgenommen.slice(11, 16)} Uhr` : "";
 
   // ---------- Hochladen ----------
   // Adressen holen, Vorschau im Browser verkleinern, direkt in den Bucket
@@ -377,8 +438,9 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       const teil = dateien.slice(i, i + 10);
       let ziele;
       try {
+        const zeiten = await Promise.all(teil.map(aufnahmezeit));
         ziele = (await api("/api/upload-adressen", {method:"POST",
-          body: JSON.stringify({name, geschichte, dateien: teil.map(f => ({typ: typVon(f)}))})}, passwort)).dateien;
+          body: JSON.stringify({name, geschichte, dateien: teil.map((f, j) => ({typ: typVon(f), aufgenommen: zeiten[j]}))})}, passwort)).dateien;
       } catch(e) {
         if (e.message === "passwort") gesperrt = true;
         fehler += teil.length; stand();
@@ -454,7 +516,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     const neu = a.classList.contains("an") ? b : a, alt = neu === a ? b : a;
     neu.onload = () => {
       neu.classList.add("an"); alt.classList.remove("an");
-      DIA.el.querySelector(".unterschrift b").textContent = [f.name, tagText(f.tag)].filter(Boolean).join(" · ");
+      DIA.el.querySelector(".unterschrift b").textContent = [f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
       DIA.el.querySelector(".unterschrift span").textContent = f.geschichte || "";
     };
     neu.src = f.vorschau;
