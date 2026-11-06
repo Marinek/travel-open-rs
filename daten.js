@@ -316,7 +316,7 @@ const REISE = {
     lochwettspiel: ["Lochwettspiel", "Gespielt wird Loch für Loch gegeneinander. Wer ein Loch gewinnt, holt es – am Ende zählen die gewonnenen Löcher, nicht die Gesamtschläge."],
     stablefordlwsp: ["Stableford-Lochwettspiel", "Lochwettspiel mit Vorgabe: Das Loch gewinnt, wer dort mehr Stableford-Punkte holt. Am Ende zählen die gewonnenen Löcher."],
     einzel: ["Einzel", "Jeder spielt seinen eigenen Ball."],
-    bingo: ["Bingo Golf", "Pro Loch gibt es drei Punkte: für den ersten Ball auf dem Grün, für den Ball, der der Fahne am nächsten liegt, wenn alle auf dem Grün sind, und für den ersten Ball im Loch."],
+    bingo: ["Bingo Golf", "Nein, nicht Bingo Bango Bongo! Was hinter Bingo Golf steckt, bleibt bis zum ersten Abschlag eine Überraschung."],
     wuenschdirwas: ["Wünsch dir was!", "Ein Mix aus Scramble, Einzel, Klassischem Vierer und Auswahl-Drive."],
     sonderpreise: ["Sonderpreise", "Longest Drive: der längste Abschlag, der auf dem Fairway liegen bleibt. Nearest to the Pin: der Abschlag, der am nächsten an der Fahne liegt."]
   }
