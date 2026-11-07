@@ -51,6 +51,21 @@ textarea.feld{max-width:34rem;resize:vertical;min-height:4.5rem}
 body.w2 .fehler{color:#ff5a6e}
 
 
+.anleitung{margin:0 0 2rem;padding:1.4rem 1.25rem 1.2rem;border:2px solid var(--line);border-radius:.9rem;max-width:38rem}
+.anleitung h2{margin:0 0 .3rem;font:800 1.8rem/1.05 var(--display)}
+.anleitung > p{margin:0 0 1rem;color:var(--muted)}
+.anleitung ol{list-style:none;margin:0;padding:0;counter-reset:schritt}
+.anleitung li{counter-increment:schritt;position:relative;padding:0 0 1.1rem 3.2rem;font-size:1.125rem;line-height:1.5}
+.anleitung li::before{content:counter(schritt);position:absolute;left:0;top:-.1rem;width:2.3rem;height:2.3rem;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:#fff;font:800 1.3rem/1 var(--display)}
+.anleitung li b{display:block;font-size:1.2rem}
+.anleitung li span{color:var(--muted)}
+.anleitung .tipp{margin:.4rem 0 0;padding:.9rem 1rem;border-radius:.6rem;background:rgba(243,182,31,.18);font-size:1.05rem}
+.anleitung .tipp p{margin:0}
+.anleitung .tipp p + p{margin-top:.5rem}
+details.anleitung{padding-top:.9rem;padding-bottom:.9rem}
+details.anleitung summary{cursor:pointer;font:800 1.4rem/1.2 var(--display)}
+details.anleitung[open] summary{margin-bottom:1rem}
+
 .fortschritt{margin-top:1rem;max-width:30rem}
 .fortschritt .balken{height:.6rem;border-radius:999px;background:var(--line);overflow:hidden}
 .fortschritt .balken span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
@@ -179,6 +194,32 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     }
   }
 
+  // ---------- Anleitung ----------
+  // Für alle, die selten Fotos ins Internet laden: einfache Schritte, große Schrift, keine Fachwörter.
+  // Auf der Passwortseite offen, auf der Fotoseite zum Aufklappen.
+  const ANLEITUNG_SCHRITTE = `<ol>
+      <li><b>Passwort eingeben</b>Tippe oben in das weiße Feld und gib das Passwort deiner Reisegruppe ein. Dann auf <strong>„Weiter“</strong> tippen. <span>Das Handy merkt sich das – nur beim ersten Mal nötig.</span></li>
+      <li><b>Namen eintragen</b>Schreib deinen Vornamen in das Feld <strong>„Dein Name“</strong>. So sehen die anderen, von wem die Fotos sind. <span>Freiwillig.</span></li>
+      <li><b>Auf „Fotos hinzufügen“ tippen</b>Das ist der große farbige Knopf mit dem Kamera-Zeichen.</li>
+      <li><b>„Fotomediathek“ oder „Galerie“ wählen</b>Das Handy fragt, woher die Fotos kommen sollen. Wähle <strong>„Fotomediathek“</strong> (iPhone) bzw. <strong>„Galerie“</strong> oder <strong>„Fotos“</strong> (Android).</li>
+      <li><b>Fotos antippen</b>Tippe jedes Foto an, das du teilen möchtest – es bekommt ein Häkchen. Mehrere auf einmal sind kein Problem.</li>
+      <li><b>Auf „Hinzufügen“ oder „Fertig“ tippen</b>Der Knopf ist meist oben rechts.</li>
+      <li><b>Kurz warten</b>Ein Balken zeigt, wie weit es ist. <strong>Seite offen lassen</strong>, bis dort <strong>„Danke!“</strong> steht. Danach erscheinen deine Fotos weiter unten, nach Tagen sortiert.</li>
+    </ol>
+    <div class="tipp">
+      <p><strong>Tipp:</strong> Am besten im Hotel-WLAN hochladen. Im Ausland kann das mobile Internet teuer sein.</p>
+      <p><strong>Hat etwas nicht geklappt?</strong> Kein Problem – wähl die fehlenden Fotos einfach noch einmal aus. Kaputt machen kannst du nichts.</p>
+    </div>`;
+  const anleitungOffen = () => `<section class="anleitung" aria-labelledby="anleitung-titel">
+      <h2 id="anleitung-titel">So geht’s – Schritt für Schritt</h2>
+      <p>Fotos teilen dauert nur eine Minute.</p>
+      ${ANLEITUNG_SCHRITTE}
+    </section>`;
+  const anleitungZu = () => `<details class="anleitung">
+      <summary>Hilfe: So lädst du Fotos hoch</summary>
+      ${ANLEITUNG_SCHRITTE.replace("<li><b>Passwort eingeben</b>", '<li hidden><b>Passwort eingeben</b>')}
+    </details>`;
+
   // ---------- Anmelden ----------
   function zeigeAnmeldung(hinweis){
     document.body.classList.remove("w2");
@@ -196,7 +237,8 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
         </div>
         <p class="fehler" id="anmelde-fehler" role="alert" ${hinweis ? "" : "hidden"}>${esc(hinweis || "")}</p>
       </form>
-    </section>`;
+    </section>
+    ${anleitungOffen()}`;
     const feld = $("#passwort"), fehler = $("#anmelde-fehler"), knopf = $('#anmelden [type="submit"]');
     feld.focus();
     $("#anmelden").addEventListener("submit", async e => {
@@ -252,6 +294,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       <input type="file" id="foto-datei" accept="image/*" multiple hidden>
       <div class="fortschritt" id="fortschritt" role="status" hidden><div class="balken"><span></span></div><p></p></div>
     </section>
+    ${anleitungZu()}
     <div id="galerie"><p class="leise">Fotos werden geladen …</p></div>`;
 
     $("#foto-knopf").addEventListener("click", () => $("#foto-datei").click());
