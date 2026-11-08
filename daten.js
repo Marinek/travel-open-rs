@@ -13,6 +13,11 @@
  *   back  true  -> Ende des Golftags im Kalender (Abholung)
  *   eve   true  -> Beginn des Abendtermins im Kalender
  *   bis   "HH:MM" -> Ende des Abendtermins (sonst 3 Stunden)
+ *
+ * Abschlag (abschlag) – nach dem Spieltag als Tagebuch ergänzen:
+ *   teams    [["Vorname", …], …] -> wer in welchem Team/Flight gespielt hat
+ *   ergebnis { 3: "1. Platz Brutto", 5: "1. Platz Netto" } -> Teamnummer: Platzierung
+ *            (beginnt der Text mit "1.", gibt es den Pokal und die gelbe Hervorhebung)
  */
 
 const REISE = {
@@ -65,7 +70,19 @@ const REISE = {
             { t: "19:30", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["11:58", "12:06", "12:14", "12:22", "12:30"] }
+          abschlag: {
+            label: "Team", zeiten: ["11:58", "12:06", "12:14", "12:22", "12:30"],
+            // Tagebuch: wer in welchem Team gespielt hat (gleiche Reihenfolge wie zeiten)
+            teams: [
+              ["Patrick", "Karin", "Hardy", "Kerstin"],
+              ["Boscho", "Stefan", "Markus", "Volker"],
+              ["Martin", "Carlos", "Peter", "Dirk"],
+              ["Magret", "Monika", "Susanne"],
+              ["Anja", "Lisa", "Frauke", "Melli"]
+            ],
+            // Ergebnis: Teamnummer -> Platzierung
+            ergebnis: { 3: "1. Platz Brutto", 5: "1. Platz Netto" }
+          }
         },
         {
           datum: "2026-11-09",

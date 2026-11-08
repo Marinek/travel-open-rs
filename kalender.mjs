@@ -67,7 +67,12 @@ function tagesText(tag) {
   if (tag.abschlag) {
     z.push("");
     z.push("Abschlagzeiten:");
-    tag.abschlag.zeiten.forEach((t, i) => z.push(`${tag.abschlag.label} ${i + 1}: ${t}`));
+    const { teams = [], ergebnis = {} } = tag.abschlag;
+    tag.abschlag.zeiten.forEach((t, i) => {
+      const namen = teams[i] ? ` – ${teams[i].join(", ")}` : "";
+      const platz = ergebnis[i + 1];
+      z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);
+    });
   }
   if (tag.sonderpreise) {
     z.push("");
