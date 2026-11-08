@@ -69,7 +69,10 @@ function tagesText(tag) {
     z.push("Abschlagzeiten:");
     const { teams = [], ergebnis = {} } = tag.abschlag;
     tag.abschlag.zeiten.forEach((t, i) => {
-      const namen = teams[i] ? ` – ${teams[i].join(", ")}` : "";
+      const paarTag = teams.some((f) => f.some((t) => t.includes("+")));
+      const namen = teams[i]
+        ? ` – ${teams[i].map((t) => t + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
+        : "";
       const platz = ergebnis[i + 1];
       z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);
     });

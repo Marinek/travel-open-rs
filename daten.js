@@ -18,6 +18,9 @@
  *   teams    [["Vorname", …], …] -> wer in welchem Team/Flight gespielt hat
  *   ergebnis { 3: "1. Platz Brutto", 5: "1. Platz Netto" } -> Teamnummer: Platzierung
  *            (beginnt der Text mit "1.", gibt es den Pokal und die gelbe Hervorhebung)
+ *            An Paar-Tagen kann statt der Teamnummer das Paar stehen:
+ *            { "Karin + Melli": "1. Platz Brutto" }
+ *   2er-Teams schreibt man "Vorname + Vorname"; ein Name ohne Partner = spielt allein
  */
 
 const REISE = {
@@ -96,12 +99,22 @@ const REISE = {
             { t: "09:00", ab: true, x: "Frühstück" },
             { t: "10:15", go: true, x: "Privater Bustransfer zum GC Foret" },
             { t: "10:30", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "11:58", tee: true, x: "Abschlag: 9 Loch Auswahl-Drive + 9 Loch Klassischer Vierer" },
+            { t: "11:42", tee: true, x: "Abschlag (rechter Abschlag): 9 Loch Auswahl-Drive + 9 Loch Klassischer Vierer" },
             { t: "17:45", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
             { t: "19:30", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["11:58", "12:06", "12:14", "12:22", "12:30"] }
+          abschlag: {
+            label: "Flight", zeiten: ["11:42", "11:50", "11:58", "12:06", "12:14"],
+            // 2er-Teams, je zwei pro Flight (Patrick spielt einzeln mit)
+            teams: [
+              ["Patrick", "Dirk + Markus"],
+              ["Karin + Melli", "Volker + Peter"],
+              ["Stefan + Kerstin", "Magret + Boscho"],
+              ["Martin + Frauke", "Carlos + Susanne"],
+              ["Monika + Hardy", "Anja + Lisa"]
+            ]
+          }
         },
         {
           datum: "2026-11-10",

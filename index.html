@@ -103,6 +103,12 @@ body.w2 .platz{color:#fff}
 .team-nr b{display:block;font:700 1.15rem/1.1 var(--display);font-variant-numeric:tabular-nums;color:var(--ink)}
 .team-namen{line-height:1.35}
 .rang{display:inline-flex;align-items:center;gap:.3rem;margin-left:.5rem;padding:.15rem .45rem;border-radius:.3rem;font-size:.82rem;font-weight:700;white-space:nowrap;background:var(--line);color:var(--ink)}
+.team-namen.paare{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem}
+.paar{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.1rem .4rem;padding:.2rem .55rem;border:1.5px solid var(--line);border-radius:999px;white-space:nowrap}
+.paar small{font-size:.78rem;color:var(--muted)}
+.paar .rang{margin-left:0}
+.paar.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
+.paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
 .teams li.sieger .team-nr b{color:var(--mark-ink)}
 .teams li.sieger .rang{background:var(--sonne);color:var(--tinte)}
@@ -262,12 +268,21 @@ details.formen dd{margin:0;color:var(--muted)}
     if (it.tee && tag.abschlag && tag.abschlag.teams) {
       // Tagebuch: Teams mit Namen und Platzierung
       const a = tag.abschlag, ergebnis = a.ergebnis || {};
+      const paarTag = a.teams.some(f => f.some(t => t.includes("+")));
       html += `<li class="teams"><ol aria-label="Teams und Ergebnis">` + a.zeiten.map((z,i) => {
         const p = ergebnis[i + 1] || "", erster = p.startsWith("1.");
-        const namen = (a.teams[i] || []).map(esc).join(", ");
+        const rangSchild = r => `<span class="rang">${r.startsWith("1.") ? ICON.pokal : ""}${esc(r)}</span>`;
+        // An Paar-Tagen („Karin + Melli“) bekommt jedes 2er-Team ein eigenes Kästchen;
+        // wer ohne Partner ist, spielt allein. Ergebnisse können auch beim Paar stehen.
+        const namen = paarTag
+          ? (a.teams[i] || []).map(t => {
+              const r = ergebnis[t] || "";
+              return `<span class="paar${r.startsWith("1.") ? " sieger" : ""}">${esc(t)}${t.includes("+") ? "" : "<small>spielt allein</small>"}${r ? rangSchild(r) : ""}</span>`;
+            }).join("")
+          : (a.teams[i] || []).map(esc).join(", ");
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
           <span class="team-nr">${a.label} ${i+1}<b>${z}</b></span>
-          <span class="team-namen">${namen}${p ? `<span class="rang">${erster ? ICON.pokal : ""}${esc(p)}</span>` : ""}</span></li>`;
+          <span class="team-namen${paarTag ? " paare" : ""}">${namen}${p ? rangSchild(p) : ""}</span></li>`;
       }).join("") + `</ol></li>`;
     } else if (it.tee && tag.abschlag) {
       html += `<li class="flights" aria-label="Abschlagzeiten">` + tag.abschlag.zeiten.map((z,i) =>
