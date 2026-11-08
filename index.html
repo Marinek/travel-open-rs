@@ -65,6 +65,34 @@ a.status:hover{text-decoration:underline}
 .knopf{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;border-radius:.6rem;font-weight:700;text-decoration:none;border:2px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer;font-size:1rem;font-family:inherit}
 .knopf.voll{background:var(--accent);border-color:var(--accent);color:#fff}
 
+/* Gesamtwertung */
+.liga{padding:1.4rem 0 1.6rem;border-top:2px solid var(--ink);scroll-margin-top:5rem;text-align:center}
+.liga summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.35rem;max-width:34rem;margin:0 auto;padding:.6rem 1rem .8rem;border:2px solid var(--line);border-radius:.9rem}
+.liga summary::-webkit-details-marker{display:none}
+.liga summary:hover{border-color:var(--ink)}
+.liga-titel{font:800 clamp(1.9rem,6vw,2.6rem)/1 var(--display)}
+.liga-spitze{font-weight:700}
+.liga-auf::after{content:"Tabelle aufklappen ▾";font-size:.9rem;color:var(--accent);font-weight:700}
+.liga[open] .liga-auf::after{content:"Tabelle zuklappen ▴"}
+body.w2 .liga-auf::after{color:#ff5a6e}
+.liga p{margin:1rem auto;max-width:34rem;color:var(--muted)}
+.liga-rahmen{max-width:34rem;margin:0 auto;text-align:left}
+.liga table{width:100%;border-collapse:collapse;font-size:1.05rem}
+.liga th{text-align:left;font:700 .8rem/1.2 var(--text);color:var(--muted);padding:.3rem .5rem;border-bottom:2px solid var(--ink)}
+.liga td{padding:.5rem .5rem;border-bottom:1px solid var(--line)}
+.liga .rang-nr{width:3.2rem;font:700 1.15rem/1 var(--display);font-variant-numeric:tabular-nums}
+.liga .pkt{text-align:right;width:4.2rem;font:800 1.35rem/1 var(--display);font-variant-numeric:tabular-nums}
+.liga th.pkt,.liga th.veraend{font:700 .8rem/1.2 var(--text)}
+.liga .veraend{width:6.5rem;white-space:nowrap}
+.liga tr.vorn td{background:var(--mark);color:var(--mark-ink)}
+.liga tr.geteilt td{border-top:0}
+.liga .plus{display:inline-block;margin-right:.4rem;padding:.1rem .4rem;border-radius:.3rem;background:var(--sonne);color:var(--tinte);font-weight:700;font-size:.85rem}
+.liga .hoch{color:#1E7A3C;font-weight:700}
+.liga .runter{color:var(--rot);font-weight:700}
+.liga .gleich{color:var(--muted)}
+body.w2 .liga .hoch{color:#5BD07F}
+body.w2 .liga .runter{color:#ff5a6e}
+
 /* Tage */
 .tage{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
 .tag{display:grid;grid-template-columns:3.4rem 1fr;gap:0 .9rem;padding:1.6rem 0 1.7rem;border-bottom:1px solid var(--line);scroll-margin-top:5rem;position:relative}
@@ -258,8 +286,70 @@ details.formen dd{margin:0;color:var(--muted)}
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
-        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a></div>
+        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a>${w.tage.some(punkteAm) ? `<a class="knopf" href="#liga" onclick="document.getElementById('liga').open=true">Gesamtwertung</a>` : ""}</div>
       </div></section>`;
+  }
+
+  // ---------- Gesamtwertung (Liga) ----------
+  // Rechnet sich aus den eingetragenen Ergebnissen (abschlag.ergebnis):
+  // Jede Platzierung, die mit „1.“ beginnt (1. Platz Brutto, 1. Platz Netto …),
+  // bringt jedem Spieler des Teams bzw. Paares 1 Punkt.
+  const spielerVon = t => t.split("+").map(n => n.trim()).filter(Boolean);
+  function punkteAm(tag){
+    const a = tag.abschlag, p = {};
+    if (!a || !a.teams || !a.ergebnis) return null;
+    for (const [wer, rang] of Object.entries(a.ergebnis)) {
+      if (!String(rang).startsWith("1.")) continue;
+      const namen = /^\d+$/.test(wer) ? (a.teams[wer - 1] || []).flatMap(spielerVon) : spielerVon(wer);
+      namen.forEach(n => p[n] = (p[n] || 0) + 1);
+    }
+    return p;
+  }
+  // Rangliste mit geteilten Plätzen: 1, 1, 3 …
+  function rangliste(stand){
+    const liste = Object.entries(stand).map(([name, punkte]) => ({name, punkte}))
+      .sort((a, b) => b.punkte - a.punkte || a.name.localeCompare(b.name, "de"));
+    liste.forEach((s, i) => s.rang = i && s.punkte === liste[i-1].punkte ? liste[i-1].rang : i + 1);
+    return liste;
+  }
+  function liga(w){
+    const gewertet = w.tage.map(t => ({tag: t, p: punkteAm(t)})).filter(x => x.p);
+    if (!gewertet.length) return "";
+    const alle = new Set();
+    w.tage.forEach(t => (t.abschlag && t.abschlag.teams || []).flat().flatMap(spielerVon).forEach(n => alle.add(n)));
+    const stand = {}; alle.forEach(n => stand[n] = 0);
+    let vorher = null;
+    gewertet.forEach((x, i) => {
+      if (i === gewertet.length - 1) vorher = rangliste({...stand});
+      for (const [n, v] of Object.entries(x.p)) stand[n] = (stand[n] || 0) + v;
+    });
+    const letzter = gewertet[gewertet.length - 1], neu = letzter.p;
+    const alterRang = gewertet.length > 1 ? Object.fromEntries(vorher.map(s => [s.name, s.rang])) : null;
+    const tabelle = rangliste(stand);
+    const vorn = tabelle.filter(s => s.rang === 1 && s.punkte).map(s => s.name);
+    const spitze = !vorn.length ? "Noch keine Punkte vergeben"
+      : `Vorn: ${vorn.length > 3 ? vorn.slice(0, 2).join(", ") + ` und ${vorn.length - 2} weitere` : vorn.join(", ").replace(/, ([^,]*)$/, " und $1")} · ${tabelle[0].punkte} ${tabelle[0].punkte === 1 ? "Punkt" : "Punkte"}`;
+    const zeilen = tabelle.map((s, i, l) => {
+      const plus = neu[s.name] ? `<span class="plus">+${neu[s.name]}</span>` : "";
+      let pfeil = "";
+      if (alterRang) {
+        const d = alterRang[s.name] - s.rang;
+        pfeil = d > 0 ? `<span class="hoch" title="${d} Plätze besser">▲${d}</span>`
+          : d < 0 ? `<span class="runter" title="${-d} Plätze schlechter">▼${-d}</span>`
+          : `<span class="gleich" title="unverändert">–</span>`;
+      }
+      const geteilt = (i && l[i-1].rang === s.rang) ? " geteilt" : "";
+      return `<tr class="${s.rang === 1 && s.punkte ? "vorn" : ""}${geteilt}">
+        <td class="rang-nr">${geteilt ? "" : s.rang + "."}</td><td>${esc(s.name)}</td>
+        <td class="pkt">${s.punkte}</td><td class="veraend">${plus}${pfeil}</td></tr>`;
+    }).join("");
+    return `<details class="liga" id="liga">
+      <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
+      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Wer mit seinem Team einen 1. Platz (Brutto oder Netto) holt, bekommt 1 Punkt.</p>
+      <div class="liga-rahmen"><table>
+        <thead><tr><th scope="col">Platz</th><th scope="col">Name</th><th scope="col" class="pkt">Punkte</th><th scope="col" class="veraend">Veränderung</th></tr></thead>
+        <tbody>${zeilen}</tbody></table></div>
+    </details>`;
   }
 
   function zeile(it, tag){
@@ -322,7 +412,7 @@ details.formen dd{margin:0;color:var(--muted)}
     document.querySelector('meta[name="theme-color"]').content = w.id === "schwarz-gegen-rot" ? "#000000" : "#1C4E9E";
     document.querySelectorAll(".wahl button").forEach(b => b.setAttribute("aria-selected", b.dataset.woche === w.id));
     $("#inhalt").setAttribute("aria-labelledby", "tab-" + w.id);
-    $("#inhalt").innerHTML = buehne(w) + `<ol class="tage">${w.tage.map(t => tagHtml(w, t)).join("")}</ol>`;
+    $("#inhalt").innerHTML = buehne(w) + liga(w) + `<ol class="tage">${w.tage.map(t => tagHtml(w, t)).join("")}</ol>`;
     kalender(w);
     try { history.replaceState(null, "", "#" + w.id); } catch(e) {}
     if (springen) {
