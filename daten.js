@@ -20,6 +20,8 @@
  *            (beginnt der Text mit "1.", gibt es den Pokal und die gelbe Hervorhebung)
  *            An Paar-Tagen kann statt der Teamnummer das Paar stehen:
  *            { "Karin + Melli": "1. Platz Brutto" }
+ *   punkte   { 3: 1, "Anja + Lisa": 2 } -> Punkte für die Gesamtwertung, jeder Spieler
+ *            des Teams/Paares bekommt sie. Die Tabelle oben rechnet sich daraus selbst.
  *   2er-Teams schreibt man "Vorname + Vorname"; ein Name ohne Partner = spielt allein
  */
 
@@ -84,7 +86,9 @@ const REISE = {
               ["Anja", "Lisa", "Frauke", "Melli"]
             ],
             // Ergebnis: Teamnummer -> Platzierung
-            ergebnis: { 3: "1. Platz Brutto", 5: "1. Platz Netto" }
+            ergebnis: { 3: "1. Platz Brutto", 5: "1. Platz Netto" },
+            // Punkte für die Gesamtwertung (jeder Spieler des Teams bekommt sie)
+            punkte: { 3: 1, 5: 1 }
           }
         },
         {
@@ -113,7 +117,9 @@ const REISE = {
               ["Stefan + Kerstin", "Magret + Boscho"],
               ["Martin + Frauke", "Carlos + Susanne"],
               ["Monika + Hardy", "Anja + Lisa"]
-            ]
+            ],
+            ergebnis: { "Anja + Lisa": "1. Platz", "Karin + Melli": "2. Platz" },
+            punkte: { "Anja + Lisa": 2, "Karin + Melli": 1 }
           }
         },
         {

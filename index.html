@@ -90,6 +90,8 @@ body.w2 .liga-auf::after{color:#ff5a6e}
 .liga .hoch{color:#1E7A3C;font-weight:700}
 .liga .runter{color:var(--rot);font-weight:700}
 .liga .gleich{color:var(--muted)}
+.liga .vorher{display:block;font-size:.75rem;color:var(--muted);margin-top:.1rem}
+.liga tr.vorn .vorher{color:inherit;opacity:.7}
 body.w2 .liga .hoch{color:#5BD07F}
 body.w2 .liga .runter{color:#ff5a6e}
 
@@ -136,6 +138,8 @@ body.w2 .platz{color:#fff}
 .paar small{font-size:.78rem;color:var(--muted)}
 .paar .rang{margin-left:0}
 .paar.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
+.paar.zweiter{border-color:#9AA3B2;background:rgba(154,163,178,.18)}
+.paar.zweiter .rang{background:#C9CFD8;color:var(--tinte)}
 .paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
 .teams li.sieger .team-nr b{color:var(--mark-ink)}
@@ -292,16 +296,15 @@ details.formen dd{margin:0;color:var(--muted)}
 
   // ---------- Gesamtwertung (Liga) ----------
   // Rechnet sich aus den eingetragenen Ergebnissen (abschlag.ergebnis):
-  // Jede Platzierung, die mit „1.“ beginnt (1. Platz Brutto, 1. Platz Netto …),
-  // bringt jedem Spieler des Teams bzw. Paares 1 Punkt.
+  // Punkte stehen pro Tag in abschlag.punkte (Teamnummer oder Paar -> Punkte);
+  // jeder Spieler des Teams bzw. Paares bekommt sie.
   const spielerVon = t => t.split("+").map(n => n.trim()).filter(Boolean);
   function punkteAm(tag){
     const a = tag.abschlag, p = {};
-    if (!a || !a.teams || !a.ergebnis) return null;
-    for (const [wer, rang] of Object.entries(a.ergebnis)) {
-      if (!String(rang).startsWith("1.")) continue;
+    if (!a || !a.teams || !a.punkte) return null;
+    for (const [wer, punkte] of Object.entries(a.punkte)) {
       const namen = /^\d+$/.test(wer) ? (a.teams[wer - 1] || []).flatMap(spielerVon) : spielerVon(wer);
-      namen.forEach(n => p[n] = (p[n] || 0) + 1);
+      namen.forEach(n => p[n] = (p[n] || 0) + punkte);
     }
     return p;
   }
@@ -334,9 +337,9 @@ details.formen dd{margin:0;color:var(--muted)}
       let pfeil = "";
       if (alterRang) {
         const d = alterRang[s.name] - s.rang;
-        pfeil = d > 0 ? `<span class="hoch" title="${d} Plätze besser">▲${d}</span>`
+        pfeil = (d > 0 ? `<span class="hoch" title="${d} Plätze besser">▲${d}</span>`
           : d < 0 ? `<span class="runter" title="${-d} Plätze schlechter">▼${-d}</span>`
-          : `<span class="gleich" title="unverändert">–</span>`;
+          : `<span class="gleich" title="unverändert">–</span>`) + `<small class="vorher">vorher ${alterRang[s.name]}.</small>`;
       }
       const geteilt = (i && l[i-1].rang === s.rang) ? " geteilt" : "";
       return `<tr class="${s.rang === 1 && s.punkte ? "vorn" : ""}${geteilt}">
@@ -345,9 +348,9 @@ details.formen dd{margin:0;color:var(--muted)}
     }).join("");
     return `<details class="liga" id="liga">
       <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
-      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Wer mit seinem Team einen 1. Platz (Brutto oder Netto) holt, bekommt 1 Punkt.</p>
+      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Punkte gibt es für die Tagessieger, jeder Spieler des Siegerteams bekommt sie.</p>
       <div class="liga-rahmen"><table>
-        <thead><tr><th scope="col">Platz</th><th scope="col">Name</th><th scope="col" class="pkt">Punkte</th><th scope="col" class="veraend">Veränderung</th></tr></thead>
+        <thead><tr><th scope="col">Platz</th><th scope="col">Name</th><th scope="col" class="pkt">Punkte</th><th scope="col" class="veraend">${alterRang ? "Seit " + kurz(gewertet[gewertet.length - 2].tag.datum) : "Veränderung"}</th></tr></thead>
         <tbody>${zeilen}</tbody></table></div>
     </details>`;
   }
@@ -367,7 +370,7 @@ details.formen dd{margin:0;color:var(--muted)}
         const namen = paarTag
           ? (a.teams[i] || []).map(t => {
               const r = ergebnis[t] || "";
-              return `<span class="paar${r.startsWith("1.") ? " sieger" : ""}">${esc(t)}${t.includes("+") ? "" : "<small>spielt allein</small>"}${r ? rangSchild(r) : ""}</span>`;
+              return `<span class="paar${r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : ""}">${esc(t)}${t.includes("+") ? "" : "<small>spielt allein</small>"}${r ? rangSchild(r) : ""}</span>`;
             }).join("")
           : (a.teams[i] || []).map(esc).join(", ");
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
