@@ -60,6 +60,8 @@ body{margin:0;font:400 1rem/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;col
   </fieldset>
   <label for="passwort">Passwort aufdrucken <span class="leise">(freiwillig – leer lassen, wenn du es lieber sagst)</span></label>
   <input id="passwort" type="text" autocomplete="off">
+  <label><input type="checkbox" id="direkt" checked> Passwort in den QR-Code einbauen – Scannen meldet direkt an</label>
+  <p class="leise" id="direktlink" hidden></p>
   <p class="fehler" id="fehler" hidden></p>
   <button type="button" onclick="print()">Drucken</button>
 </div>
@@ -218,8 +220,14 @@ function karten() {
   try { url = new URL(link); } catch (e) {}
   if (!url || !/^https?:$/.test(url.protocol)) { fehler.textContent = "Bitte einen vollständigen Link mit https:// einfügen."; fehler.hidden = false; return; }
   if (!/fotos\.html$/.test(url.pathname)) { fehler.textContent = "Hinweis: Der Link zeigt nicht auf fotos.html."; fehler.hidden = false; }
+  // Direkt-Anmeldung: fotos.html#passwort=… (der Teil hinter # geht nie an einen Server)
+  const direkt = passwort && document.getElementById("direkt").checked;
+  url.hash = direkt ? "passwort=" + encodeURIComponent(passwort) : "";
+  const ziel = url.toString();
+  const dl = document.getElementById("direktlink");
+  dl.hidden = !direkt; dl.textContent = direkt ? "Direkt-Link (auch zum Verschicken per WhatsApp): " + ziel : "";
   let qr;
-  try { qr = svg(QR(link)); } catch (e) { fehler.textContent = e.message; fehler.hidden = false; return; }
+  try { qr = svg(QR(ziel)); } catch (e) { fehler.textContent = e.message; fehler.hidden = false; return; }
   bogen.classList.toggle("w2", gruppe === "schwarz-gegen-rot");
   const karte = `<div class="karte">
     <div class="oben">
@@ -229,7 +237,7 @@ function karten() {
       <span class="gruppe">${GRUPPEN[gruppe]}</span>
     </div>
     ${qr}
-    <p class="schritte">QR-Code scannen, Passwort eingeben,<br>„Fotos hinzufügen“ tippen – fertig!
+    <p class="schritte">${direkt ? "QR-Code scannen,<br>„Fotos hinzufügen“ tippen – fertig!" : "QR-Code scannen, Passwort eingeben,<br>„Fotos hinzufügen“ tippen – fertig!"}
       ${passwort ? `<b>Passwort: ${esc(passwort)}</b>` : "<br>Abends in der Diashow."}</p>
     <p class="fuss">Golfreise Tunesien 2026</p>
   </div>`;

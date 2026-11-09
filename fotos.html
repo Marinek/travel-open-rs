@@ -247,20 +247,40 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       if (!passwort) { feld.focus(); return; }
       knopf.disabled = true; knopf.textContent = "Prüfe …"; fehler.hidden = true;
       try {
-        const { gruppe } = await api("/api/anmelden", {}, passwort);
-        zugang = { [gruppe]: passwort }; speichern();
-        fotoGruppe = gruppe;
-        zeigeFotos();
-        if (location.hash === "#diashow") diashowStart(false);
+        await anmelden(passwort);
       } catch(err) {
-        fehler.textContent = err.message === "passwort" ? "Das Passwort stimmt nicht."
-          : err.message === "gesperrt" ? "Zu viele falsche Versuche. Bitte in 15 Minuten noch einmal."
-          : "Keine Verbindung. Bitte gleich noch einmal versuchen.";
+        fehler.textContent = anmeldeFehler(err);
         fehler.hidden = false;
         knopf.disabled = false; knopf.textContent = "Weiter";
         feld.select();
       }
     });
+  }
+
+  async function anmelden(passwort){
+    const { gruppe } = await api("/api/anmelden", {}, passwort);
+    zugang = { [gruppe]: passwort }; speichern();
+    fotoGruppe = gruppe;
+    zeigeFotos();
+    if (location.hash === "#diashow") diashowStart(false);
+  }
+  const anmeldeFehler = err => err.message === "passwort" ? "Das Passwort stimmt nicht."
+    : err.message === "gesperrt" ? "Zu viele falsche Versuche. Bitte in 15 Minuten noch einmal."
+    : "Keine Verbindung. Bitte gleich noch einmal versuchen.";
+
+  // Einladungslink: fotos.html#passwort=… meldet direkt an. Der Teil hinter # geht
+  // nie an einen Server; wir nehmen ihn sofort wieder aus der Adresszeile.
+  const einladung = () => location.origin + location.pathname + "#passwort=" + encodeURIComponent(zugang[fotoGruppe] || "");
+  async function linkTeilen(knopf){
+    const url = einladung(), text = `Fotos unserer Golfreise (${gruppenName(fotoGruppe)}) – einfach antippen:`;
+    try {
+      if (navigator.share) { await navigator.share({ title: "Fotos Tunesien 2026", text, url }); return; }
+    } catch(e) { if (e.name === "AbortError") return; }
+    try {
+      await navigator.clipboard.writeText(url);
+      const alt = knopf.textContent; knopf.textContent = "Link kopiert ✓";
+      setTimeout(() => knopf.textContent = alt, 2500);
+    } catch(e) { prompt("Diesen Link kopieren und weitergeben:", url); }
   }
 
   // Passwort gilt nicht mehr (z. B. geändert): vergessen und neu fragen
@@ -290,6 +310,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       <div class="knopfzeile">
         <button class="knopf voll" type="button" id="foto-knopf">${ICON.kamera}Fotos hinzufügen</button>
         <button class="knopf" type="button" id="diashow-knopf">Diashow heute</button>
+        <button class="knopf" type="button" id="link-knopf">Link für die Gruppe teilen</button>
       </div>
       <input type="file" id="foto-datei" accept="image/*" multiple hidden>
       <div class="fortschritt" id="fortschritt" role="status" hidden><div class="balken"><span></span></div><p></p></div>
@@ -304,6 +325,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     });
     $("#foto-name").addEventListener("change", e => merke("fotos-name", e.target.value.trim()));
     $("#diashow-knopf").addEventListener("click", () => diashowStart(true));
+    $("#link-knopf").addEventListener("click", e => linkTeilen(e.currentTarget));
     ladeGalerie();
   }
 
@@ -580,7 +602,14 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
   }
 
   // Start: ohne Passwort anmelden, sonst Fotos. fotos.html#diashow startet gleich die Diashow.
-  if (fotoGruppe) {
+  // fotos.html#passwort=… (Einladungslink) meldet direkt an.
+  const ausLink = (location.hash.match(/^#passwort=(.+)$/) || [])[1];
+  if (ausLink) {
+    try { history.replaceState(null, "", location.pathname + location.search); } catch(e) {}
+    let pw = ausLink; try { pw = decodeURIComponent(ausLink); } catch(e) {}
+    $("#inhalt").innerHTML = `<p class="leise" style="padding-top:2rem">Du wirst angemeldet …</p>`;
+    anmelden(pw.trim()).catch(err => zeigeAnmeldung(anmeldeFehler(err) + " Bitte das Passwort eintippen."));
+  } else if (fotoGruppe) {
     zeigeFotos();
     if (location.hash === "#diashow") diashowStart(false);
   } else {
