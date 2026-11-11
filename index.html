@@ -141,6 +141,7 @@ body.w2 .platz{color:#fff}
 .paar.zweiter{border-color:#9AA3B2;background:rgba(154,163,178,.18)}
 .paar.zweiter .rang{background:#C9CFD8;color:var(--tinte)}
 .paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
+.teams-notiz{margin:.5rem 0 0;padding:.5rem .7rem;border-left:4px solid var(--sonne);background:var(--chip);font-size:.98rem}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
 .teams li.sieger .team-nr b{color:var(--mark-ink)}
 .teams li.sieger .rang{background:var(--sonne);color:var(--tinte)}
@@ -376,7 +377,7 @@ details.formen dd{margin:0;color:var(--muted)}
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
           <span class="team-nr">${a.label} ${i+1}<b>${z}</b></span>
           <span class="team-namen${paarTag ? " paare" : ""}">${namen}${p ? rangSchild(p) : ""}</span></li>`;
-      }).join("") + `</ol></li>`;
+      }).join("") + `</ol>${a.notiz ? `<p class="teams-notiz">${esc(a.notiz)}</p>` : ""}</li>`;
     } else if (it.tee && tag.abschlag) {
       html += `<li class="flights" aria-label="Abschlagzeiten">` + tag.abschlag.zeiten.map((z,i) =>
         `<span>${tag.abschlag.label} ${i+1}<b>${z}</b></span>`).join("") + `</li>`;

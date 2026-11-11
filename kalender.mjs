@@ -76,6 +76,7 @@ function tagesText(tag) {
       const platz = ergebnis[i + 1];
       z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);
     });
+    if (tag.abschlag.notiz) z.push(tag.abschlag.notiz);
   }
   if (tag.sonderpreise) {
     z.push("");

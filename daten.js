@@ -22,6 +22,7 @@
  *            { "Karin + Melli": "1. Platz Brutto" }
  *   punkte   { 3: 1, "Anja + Lisa": 2 } -> Punkte für die Gesamtwertung, jeder Spieler
  *            des Teams/Paares bekommt sie. Die Tabelle oben rechnet sich daraus selbst.
+ *   notiz    "…" -> kurzer Vermerk unter den Flights (z. B. wer verletzt ist oder Caddy macht)
  *   2er-Teams schreibt man "Vorname + Vorname"; ein Name ohne Partner = spielt allein
  */
 
@@ -160,12 +161,22 @@ const REISE = {
             { t: "08:30", ab: true, x: "Frühstück" },
             { t: "09:45", go: true, x: "Privater Bustransfer zum GC Oliver" },
             { t: "10:00", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "11:34", tee: true, x: "Abschlag Bingo Golf Einzel" },
+            { t: "11:34", tee: true, x: "Abschlag (linker Abschlag): Bingo Golf Einzel" },
             { t: "17:30", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
             { t: "19:00", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"] }
+          abschlag: {
+            label: "Flight", zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"],
+            teams: [
+              ["Boscho", "Peter", "Patrick"],
+              ["Martin", "Lisa", "Karin", "Melli"],
+              ["Dirk", "Stefan", "Frauke", "Anja"],
+              ["Carlos", "Volker", "Markus"],
+              ["Magret", "Monika", "Susanne", "Hardy"]
+            ],
+            notiz: "Kerstin ist verletzt und läuft als Caddy bei Stefan (Flight 3) mit. Gute Besserung, Kerstin!"
+          }
         },
         {
           datum: "2026-11-13",
