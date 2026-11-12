@@ -175,7 +175,12 @@ const REISE = {
               ["Carlos", "Volker", "Markus"],
               ["Magret", "Monika", "Susanne", "Hardy"]
             ],
-            notiz: "Kerstin ist verletzt und läuft als Caddy bei Stefan (Flight 3) mit. Gute Besserung, Kerstin!"
+            notiz: "Kerstin ist verletzt und läuft als Caddy bei Stefan (Flight 3) mit. Gute Besserung, Kerstin!",
+            ergebnis: {
+              "Melli": "1. Platz (geteilt)", "Dirk": "1. Platz (geteilt)",
+              "Frauke": "3. Platz", "Stefan": "4. Platz – toller Preis 🎁"
+            },
+            punkte: { "Melli": 2, "Dirk": 2, "Frauke": 1 }
           }
         },
         {

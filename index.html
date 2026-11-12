@@ -140,6 +140,8 @@ body.w2 .platz{color:#fff}
 .paar.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
 .paar.zweiter{border-color:#9AA3B2;background:rgba(154,163,178,.18)}
 .paar.zweiter .rang{background:#C9CFD8;color:var(--tinte)}
+.paar.dritter{border-color:#B9875A;background:rgba(185,135,90,.16)}
+.paar.dritter .rang{background:#E3C4A6;color:var(--tinte)}
 .paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
 .teams-notiz{margin:.5rem 0 0;padding:.5rem .7rem;border-left:4px solid var(--sonne);background:var(--chip);font-size:.98rem}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
@@ -349,7 +351,7 @@ details.formen dd{margin:0;color:var(--muted)}
     }).join("");
     return `<details class="liga" id="liga">
       <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
-      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Punkte gibt es für die Tagessieger, jeder Spieler des Siegerteams bekommt sie.</p>
+      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Punkte gibt es für die besten Plätze des Tages – bei Team-Spielen für jeden Spieler im Team.</p>
       <div class="liga-rahmen"><table>
         <thead><tr><th scope="col">Platz</th><th scope="col">Name</th><th scope="col" class="pkt">Punkte</th><th scope="col" class="veraend">${alterRang ? "Seit " + kurz(gewertet[gewertet.length - 2].tag.datum) : "Veränderung"}</th></tr></thead>
         <tbody>${zeilen}</tbody></table></div>
@@ -363,20 +365,23 @@ details.formen dd{margin:0;color:var(--muted)}
       // Tagebuch: Teams mit Namen und Platzierung
       const a = tag.abschlag, ergebnis = a.ergebnis || {};
       const paarTag = a.teams.some(f => f.some(t => t.includes("+")));
+      // Kästchen pro Paar – oder pro Spieler, wenn an Einzeltagen Spieler platziert sind
+      const kaestchen = paarTag || a.teams.some(f => f.some(t => ergebnis[t]));
+      const medaille = r => r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : r.startsWith("3.") ? " dritter" : r ? " platziert" : "";
       html += `<li class="teams"><ol aria-label="Teams und Ergebnis">` + a.zeiten.map((z,i) => {
         const p = ergebnis[i + 1] || "", erster = p.startsWith("1.");
         const rangSchild = r => `<span class="rang">${r.startsWith("1.") ? ICON.pokal : ""}${esc(r)}</span>`;
         // An Paar-Tagen („Karin + Melli“) bekommt jedes 2er-Team ein eigenes Kästchen;
         // wer ohne Partner ist, spielt allein. Ergebnisse können auch beim Paar stehen.
-        const namen = paarTag
+        const namen = kaestchen
           ? (a.teams[i] || []).map(t => {
               const r = ergebnis[t] || "";
-              return `<span class="paar${r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : ""}">${esc(t)}${t.includes("+") ? "" : "<small>spielt allein</small>"}${r ? rangSchild(r) : ""}</span>`;
+              return `<span class="paar${medaille(r)}">${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
             }).join("")
           : (a.teams[i] || []).map(esc).join(", ");
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
           <span class="team-nr">${a.label} ${i+1}<b>${z}</b></span>
-          <span class="team-namen${paarTag ? " paare" : ""}">${namen}${p ? rangSchild(p) : ""}</span></li>`;
+          <span class="team-namen${kaestchen ? " paare" : ""}">${namen}${p ? rangSchild(p) : ""}</span></li>`;
       }).join("") + `</ol>${a.notiz ? `<p class="teams-notiz">${esc(a.notiz)}</p>` : ""}</li>`;
     } else if (it.tee && tag.abschlag) {
       html += `<li class="flights" aria-label="Abschlagzeiten">` + tag.abschlag.zeiten.map((z,i) =>
