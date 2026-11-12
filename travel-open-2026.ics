@@ -9,7 +9,7 @@ REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
 UID:2026-11-07-anreise-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART;VALUE=DATE:20261107
 DTEND;VALUE=DATE:20261108
 TRANSP:TRANSPARENT
@@ -19,7 +19,7 @@ DESCRIPTION:Anreise\, Einchecken im Hotel\, Willkommen\nAusklang an der Bar
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-08-golf-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261108T090000Z
 DTEND:20261108T164500Z
 SUMMARY:⛳ Travel Open: Scramble Stableford – GC Oliver
@@ -38,7 +38,7 @@ DESCRIPTION:Bus 10:00\, erster Abschlag 11:58\, Abholung 17:45\n\nab 09:00
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-08-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261108T183000Z
 DTEND:20261108T213000Z
 SUMMARY:Travel Open: Siegerehrung & Abendessen
@@ -48,7 +48,7 @@ DESCRIPTION:19:30  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-09-golf-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261109T091500Z
 DTEND:20261109T164500Z
 SUMMARY:⛳ Travel Open: Auswahl-Drive & Klassischer Vierer – GC Foret
@@ -69,7 +69,7 @@ DESCRIPTION:Bus 10:15\, erster Abschlag 11:42\, Abholung 17:45\n\n„Die sc
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-09-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261109T183000Z
 DTEND:20261109T213000Z
 SUMMARY:Travel Open: Siegerehrung & Abendessen
@@ -79,7 +79,7 @@ DESCRIPTION:19:30  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-10-frei-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART;VALUE=DATE:20261110
 DTEND;VALUE=DATE:20261111
 TRANSP:TRANSPARENT
@@ -92,7 +92,7 @@ DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar\n\n
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-10-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261110T173000Z
 DTEND:20261110T203000Z
 SUMMARY:Travel Open: Abendessen
@@ -101,7 +101,7 @@ DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-11-ausflug-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART;VALUE=DATE:20261111
 DTEND;VALUE=DATE:20261112
 TRANSP:TRANSPARENT
@@ -113,7 +113,7 @@ DESCRIPTION:Kölle Alaaf!\n18:30  Treffen an der Bar\, Abendessen\nAusklang
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-11-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261111T173000Z
 DTEND:20261111T203000Z
 SUMMARY:Travel Open: Abendessen
@@ -122,7 +122,7 @@ DESCRIPTION:18:30  Treffen an der Bar\, Abendessen\nAusklang an der Bar
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-12-golf-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261112T084500Z
 DTEND:20261112T163000Z
 SUMMARY:⛳ Travel Open: Bingo Golf – GC Oliver
@@ -143,7 +143,7 @@ DESCRIPTION:Bus 09:45\, erster Abschlag 11:34\, Abholung 17:30\n\nEinzel\na
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-12-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261112T180000Z
 DTEND:20261112T210000Z
 SUMMARY:Travel Open: Siegerehrung & Abendessen
@@ -153,25 +153,30 @@ DESCRIPTION:19:00  Treffen an der Bar – Siegerehrung – Abendessen\nAusk
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-13-golf-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261113T084500Z
 DTEND:20261113T163000Z
-SUMMARY:⛳ Travel Open: Wünsch dir was! – GC Foret
+SUMMARY:⛳ Travel Open: Travel Open Finale – GC Foret
 LOCATION:GC Foret
-DESCRIPTION:Bus 09:45\, erster Abschlag 11:34\, Abholung 17:30\n\nScramble\
- , Einzel\, Klassischer Vierer\, Auswahl-Drive\nab 08:00  Frühstück\n09:4
- 5  Privater Bustransfer zum GC Foret\n10:00  Gemeinsames Dehnen\, Einschla
- gen auf der Range\, Putten\n11:34  Abschlag „Wünsch dir was!“\n17:30 
-  Abholung mit dem privaten Bus ins Hotel\n18:45  Treffen an der Bar – Si
- egerehrung: Wer wird Travel-Open-Sieger? Vergabe des Wanderpokals\n19:15  
- Gala-Abend\nGroße Party an der Bar – wir feiern den neuen Travel-Open-S
- ieger. Offenes Ende.\n\nAbschlagzeiten:\nTeam 1: 11:34\nTeam 2: 11:42\nTea
- m 3: 11:50\nTeam 4: 11:58\nTeam 5: 12:06\n\nÄnderungen können – müsse
- n aber nicht – vorkommen!
+DESCRIPTION:Bus 09:45\, erster Abschlag 11:34\, Abholung 17:30\n\nScramble 
+ in allen Flights – gewertet nach dem Hamsa-Protokoll\nab 08:00  Frühst
+ ück\n09:45  Privater Bustransfer zum GC Foret\n10:00  Gemeinsames Dehnen\
+ , Einschlagen auf der Range\, Putten\n11:34  Abschlag Travel Open Finale 
+ – Scramble\n17:30  Abholung mit dem privaten Bus ins Hotel\n18:45  Treff
+ en an der Bar – Siegerehrung: Wer wird Travel-Open-Sieger? Vergabe des W
+ anderpokals\n19:15  Gala-Abend\nGroße Party an der Bar – wir feiern den
+  neuen Travel-Open-Sieger. Offenes Ende.\n\nAbschlagzeiten:\nFlight 1: 11:
+ 34 – Melli / Karin / Anja / Dirk\nFlight 2: 11:42 – Lisa / Patrick / M
+ artin\nFlight 3: 11:50 – Frauke / Susanne / Peter\nFlight 4: 11:58 – S
+ tefan / Monika / Hardy / Magret\nFlight 5: 12:06 – Boscho / Volker / Car
+ los / Markus\nKerstin ist verletzt und übernimmt zwei Ehrenämter: Glück
+ sfee und Oberste Strich-Kommissarin. Wie das genau funktioniert\, steht im
+  Hamsa-Protokoll.\n\nÄnderungen können – müssen aber nicht – vorkom
+ men!
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-13-abend-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261113T174500Z
 DTEND:20261113T225900Z
 SUMMARY:Travel Open: Siegerehrung & Gala-Abend
@@ -182,7 +187,7 @@ DESCRIPTION:18:45  Treffen an der Bar – Siegerehrung: Wer wird Travel-Ope
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-14-abreise-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART;VALUE=DATE:20261114
 DTEND;VALUE=DATE:20261115
 TRANSP:TRANSPARENT
@@ -194,7 +199,7 @@ DESCRIPTION:Frühstück\, Auschecken\nGegebenenfalls die letzten warmen Son
 END:VEVENT
 BEGIN:VEVENT
 UID:2026-11-14-flug-travel-open@golfreise-tunesien-2026
-DTSTAMP:20261112T200936Z
+DTSTAMP:20261112T205843Z
 DTSTART:20261114T170000Z
 DTEND:20261114T180000Z
 SUMMARY:✈ Abholung zum Flug nach Köln (ca. 18:00)

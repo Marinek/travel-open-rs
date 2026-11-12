@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Hamsa-Protokoll – Travel Open Finale 2026</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1C4E9E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --kalk:#F6F7F4; --tinte:#12213F; --grau:#4A5672; --linie:#D8DDE5;
+  --kobalt:#1C4E9E; --sonne:#F3B61F; --sonne-hell:#FDF1CC; --rot:#D3132F; --olive:#55652A;
+  --display:"Big Shoulders Display", "Arial Narrow", sans-serif;
+  --text:"Atkinson Hyperlegible", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--kalk);color:var(--tinte);font:400 1.0625rem/1.6 var(--text);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sonne);outline-offset:3px;border-radius:4px}
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+[hidden]{display:none!important}
+
+.kopf{border-bottom:1px solid var(--linie)}
+.kopf .wrap{display:flex;align-items:center;gap:1rem;padding-top:.75rem;padding-bottom:.75rem}
+.marke{font:800 1.15rem/1 var(--display);white-space:nowrap;text-decoration:none}
+.marke span{display:block;font:400 .8rem/1.2 var(--text);color:var(--grau)}
+.kopf .zurueck{margin-left:auto;font-weight:700}
+
+.titel{position:relative;padding:2.2rem 0 1.5rem}
+.titel .vorspann{margin:0;font:700 .85rem/1.3 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--grau)}
+.titel h1{margin:.3rem 0 0;font:900 clamp(2.8rem,12vw,4.6rem)/.9 var(--display)}
+.titel p{margin:.8rem 0 0;max-width:34rem}
+.stempel{position:absolute;right:0;top:1.6rem;transform:rotate(-12deg);border:3px solid var(--rot);color:var(--rot);border-radius:.4rem;padding:.25rem .6rem;font:900 1.1rem/1 var(--display);letter-spacing:.12em;opacity:.85}
+@media (max-width:30rem){.stempel{top:.8rem;font-size:.9rem}}
+
+.eilig{margin:0 0 2rem;padding:1.2rem 1.25rem;border-radius:.9rem;background:var(--sonne-hell);border:2px solid var(--sonne)}
+.eilig h2{margin:0 0 .5rem;font:800 1.6rem/1.1 var(--display)}
+.eilig ol{margin:0;padding-left:1.3rem}
+.eilig li{margin:.3rem 0}
+.eilig p{margin:.6rem 0 0;font-style:italic}
+
+.para{padding:1.3rem 0;border-top:2px solid var(--tinte)}
+.para h2{margin:0 0 .5rem;font:800 1.6rem/1.1 var(--display)}
+.para h2 small{display:block;font:700 .8rem/1.3 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--grau)}
+.para p{margin:.5rem 0;max-width:38rem}
+.para ul,.para ol{margin:.5rem 0;padding-left:1.3rem;max-width:38rem}
+.fuss-note{font-size:.92rem;color:var(--grau);font-style:italic}
+
+.formel{margin:.9rem 0;padding:1rem;border-radius:.7rem;background:#fff;border:2px solid var(--linie);font:700 clamp(1.15rem,4.5vw,1.5rem)/1.35 var(--display);letter-spacing:.02em;text-align:center}
+.formel small{display:block;margin-top:.4rem;font:400 .9rem/1.4 var(--text);letter-spacing:0;color:var(--grau)}
+
+table{border-collapse:collapse;width:100%;max-width:34rem}
+th{text-align:left;font:700 .8rem/1.2 var(--text);color:var(--grau);padding:.35rem .5rem;border-bottom:2px solid var(--tinte)}
+td{padding:.45rem .5rem;border-bottom:1px solid var(--linie);vertical-align:top}
+td.z,th.z{text-align:right;font-variant-numeric:tabular-nums}
+td.gross{font:800 1.25rem/1.1 var(--display)}
+
+.beispiel{margin:.8rem 0;padding:.9rem 1rem;border-left:4px solid var(--kobalt);background:#fff;max-width:38rem}
+.beispiel p{margin:.3rem 0}
+
+/* Rechner */
+.rechner{padding:1.5rem 0 2rem;border-top:4px double var(--tinte)}
+.rechner > h2{margin:0;font:900 clamp(2.2rem,8vw,3rem)/1 var(--display)}
+.rechner > p{max-width:38rem}
+.flight{margin:1rem 0;padding:1rem;border:2px solid var(--linie);border-radius:.8rem;background:#fff}
+.flight-kopf{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;margin-bottom:.6rem}
+.flight-kopf h3{margin:0;font:800 1.4rem/1 var(--display)}
+.flight-kopf label{font-weight:700}
+select,input[type=number]{font:inherit;padding:.4rem .5rem;border:2px solid var(--linie);border-radius:.5rem;background:#fff;color:var(--tinte)}
+input[type=number]{width:4.2rem;text-align:center}
+.spieler{display:grid;grid-template-columns:1fr auto auto;gap:.4rem .6rem;align-items:center;padding:.35rem 0;border-top:1px solid var(--linie)}
+.spieler b{font-weight:700}
+.spieler small{display:block;color:var(--grau);font-size:.8rem}
+@media (max-width:34rem){.spieler{grid-template-columns:1fr auto}.spieler select{grid-column:1/-1;width:100%}
+  .titel{padding-top:3rem}.stempel{top:.6rem}}
+.tabelle-rollen{overflow-x:auto}
+.kontrolle{margin:.5rem 0 0;font-size:.9rem;color:var(--grau)}
+.kontrolle.warn{color:var(--rot);font-weight:700}
+.zeile{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1rem 0}
+.knopf{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;border-radius:.6rem;font:700 1rem/1.2 var(--text);text-decoration:none;border:2px solid var(--tinte);color:var(--tinte);background:transparent;cursor:pointer}
+.knopf.voll{background:var(--kobalt);border-color:var(--kobalt);color:#fff}
+.ergebnis{margin-top:1.5rem}
+.ergebnis h3{margin:0 0 .5rem;font:800 1.8rem/1 var(--display)}
+.ergebnis tr.sieger td{background:var(--sonne-hell)}
+.ergebnis .rechnung{display:block;font-size:.8rem;color:var(--grau);font-variant-numeric:tabular-nums}
+pre.schnipsel{white-space:pre-wrap;background:#fff;border:2px dashed var(--linie);border-radius:.6rem;padding:.8rem;font-size:.85rem;max-width:38rem}
+.hinweis{color:var(--grau);font-size:.95rem}
+
+/* Strichzettel */
+details.zettel-box{margin:1rem 0;border:2px solid var(--linie);border-radius:.8rem;background:#fff;padding:.8rem 1rem}
+details.zettel-box summary{cursor:pointer;font:800 1.3rem/1.2 var(--display)}
+.zettel-flight{margin:1rem 0 1.5rem}
+.zettel-flight h3{margin:0 0 .3rem;font:800 1.3rem/1.1 var(--display)}
+.zettel-flight p{margin:0 0 .5rem;font-size:.9rem}
+.zettel-flight table{max-width:none;font-size:.9rem}
+.zettel-flight td{height:1.75rem;padding:.15rem .4rem;border:1px solid #9AA3B2}
+.zettel-flight th{border:1px solid #9AA3B2;border-bottom:2px solid var(--tinte)}
+.zettel-flight td:first-child{width:3rem;text-align:center;font-weight:700}
+
+.fuss{padding:2rem 1.25rem 3rem;color:var(--grau);font-size:.95rem}
+
+@media print{
+  body{background:#fff;font-size:11pt}
+  body > *:not(main), main > *:not(.rechner), .rechner > *:not(.zettel-box){display:none!important}
+  details.zettel-box{border:0;padding:0}
+  details.zettel-box > summary,.zettel-druck{display:none}
+  .zettel-flight{break-after:page;margin:0}
+  .zettel-flight td{height:1.15cm}
+}
+</style>
+</head>
+<body>
+<header class="kopf">
+  <div class="wrap">
+    <span class="marke">Tunesien 2026<span>Travel Open Finale</span></span>
+    <a class="zurueck" href="./#travel-open">← Zum Programm</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="titel">
+    <p class="vorspann">TOFV 2026 · Travel-Open-Finalverordnung</p>
+    <h1>Das Hamsa-<br>Protokoll</h1>
+    <span class="stempel" aria-hidden="true">AMTLICH</span>
+    <p>Regelwerk zur gerechten, transparenten und vollkommen überkomplizierten Ermittlung des Travel-Open-Siegers 2026 und damit des Wanderpokals.</p>
+  </section>
+
+  <section class="eilig" aria-labelledby="eilig-titel">
+    <h2 id="eilig-titel">Für Eilige: Was muss ich tun?</h2>
+    <ol>
+      <li><strong>Ganz normal Scramble spielen</strong> – jeder Flight ist ein Team.</li>
+      <li><strong>Pro Loch zwei Namen aufschreiben:</strong> Wessen Drive wurde genommen? Wer hat eingelocht?</li>
+      <li><strong>Wer mag, ruft einmal „Kamel!“</strong> vor einem Loch (siehe § 5).</li>
+      <li><strong>Zettel abends an Kerstin geben.</strong> Den Rest rechnet diese Seite.</li>
+    </ol>
+    <p>Alles Weitere ist Juristerei. Aber schöne Juristerei.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>Präambel</small>Worum es geht</h2>
+    <p>Nach drei Spieltagen führt Melli. Anja und Dirk liegen einen Punkt dahinter, spielen aber im <em>selben Flight</em> wie Melli. Bei einer normalen Teamwertung bekämen alle drei gleich viele Punkte, und niemand könnte Melli mehr einholen. Das wäre schade, und zwar für alle 18 anderen auch.</p>
+    <p>Das Hamsa-Protokoll löst das Problem. Benannt ist es nach der Hand der Fatima, dem tunesischen Glücksbringer. Es schützt die Verfolger, ohne die Führenden zu bestrafen. Und es verlangt dafür nur ein klein wenig Mathematik.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 1</small>Spielform</h2>
+    <p>Gespielt wird <strong>Scramble</strong>, in allen fünf Flights: Alle schlagen ab, der beste Ball wird gewählt, alle spielen von dort weiter. Jeder Flight ist ein Team. Die Turnierleitung ermittelt wie gewohnt die Reihenfolge der Flights (Platz 1 bis 5).</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 2</small>Flight-Basispunkte (B)</h2>
+    <p>Jeder Spieler bekommt die Basispunkte seines Flights:</p>
+    <table><thead><tr><th>Flight-Platz</th><th class="z">Basispunkte B</th></tr></thead>
+      <tbody><tr><td>1. Platz</td><td class="z gross">5</td></tr><tr><td>2. Platz</td><td class="z gross">4</td></tr><tr><td>3. Platz</td><td class="z gross">3</td></tr><tr><td>4. Platz</td><td class="z gross">2</td></tr><tr><td>5. Platz</td><td class="z gross">1</td></tr></tbody></table>
+    <p class="fuss-note">Teilen sich zwei Flights einen Platz, bekommen beide die Basispunkte des besseren Platzes. Großzügigkeit ist Teil des Protokolls.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 3</small>Der Hamsa-Faktor (H)</h2>
+    <p>Die Basispunkte werden mit dem persönlichen Hamsa-Faktor multipliziert. Er ist umso größer, je weiter jemand vor dem Finale zurückliegt:</p>
+    <div class="formel">H = 1 + Rückstand ÷ 8<small>Rückstand = Punkte des Führenden minus eigene Punkte vor dem Finale</small></div>
+    <p class="fuss-note">Warum durch 8? Eine Hand hat fünf Finger, die Hamsa-Hand hat fünf Finger, aber 8 ist eine viel schönere Zahl im Nenner. Außerdem wurde es so beschlossen.</p>
+    <div id="hamsa-tabelle"></div>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 4</small>Heldenmomente (S)</h2>
+    <p>Auch im Scramble gibt es Heldinnen und Helden. Deshalb führt jeder Flight eine <strong>Strichliste</strong>. Pro Loch gibt es genau zwei Striche:</p>
+    <ul>
+      <li><strong>Drive-Strich:</strong> für die Person, deren Abschlag genommen wurde.</li>
+      <li><strong>Einloch-Strich:</strong> für die Person, die den Ball tatsächlich versenkt hat. Fällt der Putt bei mehreren, zählt die erste.</li>
+    </ul>
+    <p>Damit Dreier-Flights nicht im Vorteil sind (dort gibt es pro Kopf mehr Striche), gilt der <strong>Dreier-Ausgleichs-Koeffizient</strong>:</p>
+    <div class="formel">S = Striche × n ÷ 16<small>n = Anzahl Spieler im Flight (3 oder 4)</small></div>
+    <p>Im Vierer-Flight ist ein Strich also 0,25 Punkte wert, im Dreier-Flight 0,1875. Im Schnitt kommt so jeder auf ungefähr 2,25 Heldenpunkte, egal wie groß der Flight ist.</p>
+    <p class="fuss-note">Warum 16? Weil 4 Spieler × 4 Turnierrunden = 16. Dass die Rechnung auch so aufgeht, ist reiner Zufall, aber ein schöner.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 5</small>Der Kamel-Joker (J)</h2>
+    <p>Jeder Spieler darf <strong>einmal am Tag</strong> vor dem Abschlag eines Lochs laut „<strong>Kamel!</strong>“ rufen. Das Ergebnis des Flights auf diesem Loch entscheidet:</p>
+    <table><thead><tr><th>Flight-Ergebnis auf dem Kamel-Loch</th><th class="z">J</th></tr></thead>
+      <tbody><tr><td>Birdie oder besser</td><td class="z gross">+2</td></tr><tr><td>Par</td><td class="z gross">0</td></tr><tr><td>Bogey oder schlechter („das Kamel spuckt“)</td><td class="z gross">−1</td></tr></tbody></table>
+    <p class="fuss-note">Wer nicht ruft, bekommt 0. Wer zweimal ruft, bekommt einen strengen Blick. Mehrere Kamele auf demselben Loch sind erlaubt, man spricht dann von einer Karawane.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 6</small>Die Glücksfee (G) und die Strich-Kommissarin</h2>
+    <p>Kerstin ist verletzt und übernimmt deshalb zwei Ehrenämter:</p>
+    <ul>
+      <li><strong>Oberste Strich-Kommissarin:</strong> Sie nimmt abends die Strichzettel entgegen und prüft sie. Pro Flight müssen es genau 36 Striche sein (18 Löcher × 2). Ihre Entscheidung ist endgültig und nicht anfechtbar, außer mit einer Runde.</li>
+      <li><strong>Glücksfee:</strong> Bei der Siegerehrung zieht sie blind einen von fünf Flight-Zetteln aus einer Chechia, der roten tunesischen Filzmütze. Ersatzweise geht auch ein Sektkühler. Jeder Spieler des gezogenen Flights erhält den <strong>Fortuna-Zuschlag G = +0,5</strong>.</li>
+    </ul>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 7</small>Die Formel</h2>
+    <div class="formel">Finalpunkte = B × H + S + J + G<small>auf zwei Nachkommastellen gerundet</small></div>
+    <div class="formel">Endstand = Punkte vor dem Finale + Finalpunkte</div>
+    <p>Wer nach dem Finale die meisten Punkte hat, gewinnt das Travel Open 2026 und den Wanderpokal.</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 8</small>Warum das gerecht ist</h2>
+    <div id="beispiele"></div>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 9</small>Stechen</h2>
+    <p>Bei Gleichstand im Endstand entscheidet nacheinander:</p>
+    <ol>
+      <li>wer mehr Striche gesammelt hat (der Held schlägt den Rechner),</li>
+      <li>der höhere Hamsa-Faktor (im Zweifel für den Außenseiter),</li>
+      <li>ein <strong>Putt-Duell an der Bar</strong>: Wer den Ball vom Barhocker aus näher an ein Glas Thibarine puttet, den tunesischen Dattellikör. Das Glas wird hinterher getrunken, aber nicht vom Verlierer.</li>
+    </ol>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 10</small>Einsprüche</h2>
+    <p>Einsprüche sind schriftlich auf einer Serviette einzureichen, in dreifacher Ausfertigung, bis spätestens 18:44 Uhr, also eine Minute vor der Siegerehrung. Zuständig ist die Strich-Kommissarin (§ 6).</p>
+  </section>
+
+  <section class="para">
+    <h2><small>§ 11</small>Salvatorische Klausel</h2>
+    <p>Sollte eine Bestimmung dieses Protokolls unwirksam, unverständlich oder nach dem dritten Getränk nicht mehr nachvollziehbar sein, bleibt der Rest gültig. Ersatzweise gilt: Der Gesamtsieger gibt eine Runde aus.</p>
+  </section>
+
+  <section class="rechner" id="rechner" aria-labelledby="rechner-titel">
+    <h2 id="rechner-titel">Der Rechner</h2>
+    <p>Für die Siegerehrung: Flight-Plätze, Striche und Kamel-Ergebnisse eintragen, die Glücksfee ziehen lassen, fertig. Die Eingaben bleiben auf diesem Gerät gespeichert.</p>
+    <details class="zettel-box">
+      <summary>Strichzettel zum Ausdrucken</summary>
+      <p class="hinweis zettel-druck">Eine Seite pro Flight. <button class="knopf" type="button" onclick="print()">Drucken</button></p>
+      <div id="zettel"></div>
+    </details>
+    <div id="flights"></div>
+    <div class="flight">
+      <div class="flight-kopf"><h3>Glücksfee</h3>
+        <label>Kerstin hat gezogen: <select id="fee"></select></label></div>
+    </div>
+    <div class="zeile">
+      <button class="knopf" type="button" id="leeren">Alles zurücksetzen</button>
+    </div>
+    <div class="ergebnis" id="ergebnis"></div>
+  </section>
+</main>
+
+<footer class="wrap fuss">Golfreise Tunesien 2026 · Das Hamsa-Protokoll gilt nur für das Travel Open Finale am 13.11.2026.</footer>
+
+<script src="daten.js"></script>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const zahl = n => n.toLocaleString("de-DE", {maximumFractionDigits: 4});
+  const r2 = n => Math.round(n * 100) / 100;
+  const W = REISE.wochen[0], FT = W.tage.find(t => t.finale), A = FT.abschlag;
+  const spielerVon = t => t.split("+").map(n => n.trim()).filter(Boolean);
+
+  // Stand vor dem Finale (alle Tage außer dem Finale, wie auf der Programmseite)
+  const vor = {};
+  W.tage.forEach(t => (t.abschlag && t.abschlag.teams || []).flat().flatMap(spielerVon).forEach(n => vor[n] = vor[n] || 0));
+  W.tage.filter(t => t !== FT && t.abschlag && t.abschlag.punkte).forEach(t => {
+    for (const [wer, p] of Object.entries(t.abschlag.punkte)) {
+      const namen = /^\d+$/.test(wer) ? (t.abschlag.teams[wer - 1] || []).flatMap(spielerVon) : spielerVon(wer);
+      namen.forEach(n => vor[n] = r2((vor[n] || 0) + p));
+    }
+  });
+  const spitze = Math.max(...Object.values(vor));
+  const H = n => 1 + (spitze - (vor[n] || 0)) / 8;
+  const flights = A.teams;
+  const flightVon = Object.fromEntries(flights.flatMap((f, i) => f.map(n => [n, i])));
+
+  // § 3: Tabelle der Hamsa-Faktoren
+  const alle = Object.keys(vor).sort((a, b) => vor[b] - vor[a] || a.localeCompare(b, "de"));
+  $("#hamsa-tabelle").innerHTML = `<div class="tabelle-rollen"><table><thead><tr><th>Name</th><th class="z">Punkte bisher</th><th class="z">Rückstand</th><th class="z">Hamsa-Faktor H</th></tr></thead><tbody>` +
+    alle.map(n => `<tr><td>${esc(n)}${flightVon[n] === undefined ? " <small>(Ehrenamt, § 6)</small>" : ""}</td><td class="z">${zahl(vor[n])}</td><td class="z">${zahl(spitze - vor[n])}</td><td class="z gross">${flightVon[n] === undefined ? "–" : zahl(H(n))}</td></tr>`).join("") +
+    `</tbody></table></div>`;
+
+  // § 8: Rechenbeispiele aus dem echten Stand
+  const fuehrend = alle.filter(n => vor[n] === spitze && flightVon[n] !== undefined)[0];
+  const imFlight = alle.filter(n => n !== fuehrend && flightVon[n] === flightVon[fuehrend] && vor[n] < spitze);
+  const verfolger = imFlight[0], verfolgerNamen = imFlight.filter(n => vor[n] === vor[verfolger]);
+  const wer = verfolgerNamen.map(esc).join(" und ");
+  const letzter = alle.filter(n => flightVon[n] !== undefined && flightVon[n] !== flightVon[fuehrend]).pop();
+  const bsp = (n, b) => r2(vor[n] + b * H(n));
+  let beispiele = "";
+  if (fuehrend && verfolger) {
+    const a = bsp(fuehrend, 5), b = bsp(verfolger, 5), diff = r2(a - b), n = flights[flightVon[fuehrend]].length;
+    const striche = Math.floor(diff / (n / 16)) + 1;
+    beispiele += `<div class="beispiel"><p><strong>Das ${esc(fuehrend)}-Problem.</strong> ${verfolgerNamen.length > 1 ? esc(fuehrend) + ", " : esc(fuehrend) + " und "}${wer} spielen im selben Flight. Angenommen, der Flight gewinnt (B = 5):</p>
+      <p>${esc(fuehrend)}: ${zahl(vor[fuehrend])} + 5 × ${zahl(H(fuehrend))} = <strong>${zahl(a)}</strong><br>
+      ${wer}: ${zahl(vor[verfolger])} + 5 × ${zahl(H(verfolger))} = <strong>${zahl(b)}</strong></p>
+      <p>Der Abstand schrumpft von ${zahl(vor[fuehrend] - vor[verfolger])} auf ${zahl(diff)} Punkte. ${verfolgerNamen.length > 1 ? "Wer von beiden" : wer} am Ende <strong>${striche} Striche mehr</strong> als ${esc(fuehrend)} hat, ist vorbei. Ein guter Drive und ein versenkter Putt, schon ist alles wieder offen.</p></div>`;
+  }
+  if (fuehrend && letzter) {
+    const a = bsp(fuehrend, 4), b = bsp(letzter, 5), diff = r2(a - b), n = flights[flightVon[letzter]].length;
+    beispiele += `<div class="beispiel"><p><strong>Der Außenseiter.</strong> ${esc(letzter)} hat ${zahl(vor[letzter])} Punkte. Gewinnt der Flight von ${esc(letzter)}, und der Flight von ${esc(fuehrend)} wird Zweiter:</p>
+      <p>${esc(fuehrend)}: ${zahl(vor[fuehrend])} + 4 × ${zahl(H(fuehrend))} = <strong>${zahl(a)}</strong><br>
+      ${esc(letzter)}: ${zahl(vor[letzter])} + 5 × ${zahl(H(letzter))} = <strong>${zahl(b)}</strong></p>
+      <p>${diff > 0 ? `Mit ${Math.floor(diff / (n / 16)) + 1} Strichen mehr, oder mit einem gelungenen Kamel, holt ${esc(letzter)} den Wanderpokal.` : `${esc(letzter)} liegt damit schon vorn.`} Jeder hat also eine echte Chance, aber niemand bekommt etwas geschenkt.</p></div>`;
+  }
+  $("#beispiele").innerHTML = beispiele;
+
+  // Strichzettel
+  $("#zettel").innerHTML = flights.map((f, i) => `<section class="zettel-flight">
+    <h3>Flight ${i + 1} · ${A.zeiten[i]} · Strichzettel Hamsa-Protokoll</h3>
+    <p>${f.map(esc).join(" · ")} — pro Loch: wessen Drive genommen wurde, wer eingelocht hat. Kamel-Rufe mit Namen notieren.</p>
+    <div class="tabelle-rollen"><table><thead><tr><th>Loch</th><th>Drive von</th><th>Eingelocht von</th><th>Kamel gerufen von</th><th>Flight-Ergebnis (Birdie/Par/Bogey)</th></tr></thead>
+    <tbody>${Array.from({length: 18}, (_, l) => `<tr><td>${l + 1}</td><td></td><td></td><td></td><td></td></tr>`).join("")}</tbody></table></div>
+    <p style="margin-top:.6rem">Summe Striche: ${f.map(n => `${esc(n)} ____`).join(" &nbsp; ")} &nbsp; (zusammen 36)</p>
+  </section>`).join("");
+
+  // ---------- Rechner ----------
+  const LEER = () => ({ platz: flights.map(() => ""), striche: {}, kamel: {}, fee: "" });
+  let s = LEER();
+  try { s = Object.assign(LEER(), JSON.parse(localStorage.getItem("hamsa-rechner") || "{}")); } catch(e) {}
+  const merken = () => { try { localStorage.setItem("hamsa-rechner", JSON.stringify(s)); } catch(e) {} };
+  const KAMEL = { "": ["kein Kamel", 0], birdie: ["Birdie oder besser (+2)", 2], par: ["Par (0)", 0], bogey: ["Bogey oder schlechter (−1)", -1] };
+
+  function aufbauen(){
+    $("#flights").innerHTML = flights.map((f, i) => `<div class="flight">
+      <div class="flight-kopf"><h3>Flight ${i + 1} · ${A.zeiten[i]}</h3>
+        <label>Platz im Scramble: <select data-platz="${i}"><option value="">–</option>${[1,2,3,4,5].map(p => `<option value="${p}" ${+s.platz[i] === p ? "selected" : ""}>${p}. Platz</option>`).join("")}</select></label></div>
+      ${f.map(n => `<div class="spieler"><span><b>${esc(n)}</b><small>H = ${zahl(H(n))}</small></span>
+        <label>Striche <input type="number" min="0" max="36" inputmode="numeric" data-striche="${esc(n)}" value="${s.striche[n] ?? ""}"></label>
+        <select data-kamel="${esc(n)}" aria-label="Kamel-Joker ${esc(n)}">${Object.entries(KAMEL).map(([k, [t]]) => `<option value="${k}" ${(s.kamel[n] || "") === k ? "selected" : ""}>${t}</option>`).join("")}</select></div>`).join("")}
+      <p class="kontrolle" data-kontrolle="${i}"></p></div>`).join("");
+    $("#fee").innerHTML = `<option value="">noch nicht gezogen</option>` + flights.map((_, i) => `<option value="${i}" ${s.fee === String(i) ? "selected" : ""}>Flight ${i + 1} (${A.zeiten[i]})</option>`).join("");
+  }
+
+  function rechnen(){
+    flights.forEach((f, i) => {
+      const summe = f.reduce((x, n) => x + (+s.striche[n] || 0), 0), el = $(`[data-kontrolle="${i}"]`);
+      el.textContent = `Striche zusammen: ${summe} von 36` + (summe > 36 ? " – das sind zu viele! Die Kommissarin runzelt die Stirn." : summe === 36 ? " ✓ Die Kommissarin nickt." : "");
+      el.classList.toggle("warn", summe > 36);
+    });
+    const fehlend = s.platz.filter(p => !p).length;
+    const zeilen = flights.flatMap((f, i) => f.map(n => {
+      const B = s.platz[i] ? 6 - s.platz[i] : 0, h = H(n), st = +s.striche[n] || 0;
+      const S = st * f.length / 16, J = KAMEL[s.kamel[n] || ""][1], G = s.fee === String(i) ? 0.5 : 0;
+      const final = r2(B * h + S + J + G);
+      return { n, B, h, st, S, J, G, final, end: r2(vor[n] + final) };
+    })).sort((a, b) => b.end - a.end || b.st - a.st || b.h - a.h || a.n.localeCompare(b.n, "de"));
+    zeilen.forEach((z, i) => z.rang = i && z.end === zeilen[i-1].end && z.st === zeilen[i-1].st && z.h === zeilen[i-1].h ? zeilen[i-1].rang : i + 1);
+    const vorz = x => x < 0 ? `− ${zahl(-x)}` : `+ ${zahl(x)}`;
+    $("#ergebnis").innerHTML = `<h3>Endstand</h3>
+      ${fehlend ? `<p class="hinweis">Noch ${fehlend} Flight-Platz${fehlend > 1 ? "e" : ""} offen – bis dahin zählt dort B = 0.</p>` : ""}
+      <table><thead><tr><th>Platz</th><th>Name</th><th class="z">Finale</th><th class="z">Endstand</th></tr></thead><tbody>` +
+      zeilen.map(z => `<tr class="${z.rang === 1 ? "sieger" : ""}"><td>${z.rang}.</td>
+        <td><strong>${esc(z.n)}</strong><span class="rechnung">${zahl(vor[z.n])} + ${z.B} × ${zahl(z.h)} ${vorz(r2(z.S))}${z.J ? " " + vorz(z.J) + " Kamel" : ""}${z.G ? " + 0,5 Fee" : ""}</span></td>
+        <td class="z">${zahl(z.final)}</td><td class="z gross">${zahl(z.end)}</td></tr>`).join("") +
+      `</tbody></table>
+      ${!fehlend && zeilen[0] ? `<p><strong>Travel-Open-Sieger 2026: ${esc(zeilen.filter(z => z.rang === 1).map(z => z.n).join(" und "))}!</strong> 🏆</p>` : ""}
+      <details style="margin-top:1rem"><summary class="hinweis">Für daten.js (Gesamtwertung auf der Startseite)</summary>
+      <pre class="schnipsel">punkte: { ${zeilen.filter(z => z.final).map(z => `"${z.n}": ${z.final}`).join(", ")} }</pre></details>`;
+  }
+
+  aufbauen(); rechnen();
+  document.addEventListener("input", e => {
+    const t = e.target;
+    if (t.dataset.platz !== undefined) s.platz[+t.dataset.platz] = t.value;
+    else if (t.dataset.striche !== undefined) s.striche[t.dataset.striche] = t.value;
+    else if (t.dataset.kamel !== undefined) s.kamel[t.dataset.kamel] = t.value;
+    else if (t.id === "fee") s.fee = t.value;
+    else return;
+    merken(); rechnen();
+  });
+  $("#leeren").addEventListener("click", () => {
+    if (!confirm("Alle Eingaben im Rechner löschen?")) return;
+    s = LEER(); merken(); aufbauen(); rechnen();
+  });
+})();
+</script>
+</body>
+</html>

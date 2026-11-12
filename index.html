@@ -143,6 +143,7 @@ body.w2 .platz{color:#fff}
 .paar.dritter{border-color:#B9875A;background:rgba(185,135,90,.16)}
 .paar.dritter .rang{background:#E3C4A6;color:var(--tinte)}
 .paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
+.tag-link{margin:.9rem 0 0}
 .teams-notiz{margin:.5rem 0 0;padding:.5rem .7rem;border-left:4px solid var(--sonne);background:var(--chip);font-size:.98rem}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
 .teams li.sieger .team-nr b{color:var(--mark-ink)}
@@ -318,6 +319,7 @@ details.formen dd{margin:0;color:var(--muted)}
     liste.forEach((s, i) => s.rang = i && s.punkte === liste[i-1].punkte ? liste[i-1].rang : i + 1);
     return liste;
   }
+  const zahl = n => n.toLocaleString("de-DE", {maximumFractionDigits: 2});
   function liga(w){
     const gewertet = w.tage.map(t => ({tag: t, p: punkteAm(t)})).filter(x => x.p);
     if (!gewertet.length) return "";
@@ -327,16 +329,16 @@ details.formen dd{margin:0;color:var(--muted)}
     let vorher = null;
     gewertet.forEach((x, i) => {
       if (i === gewertet.length - 1) vorher = rangliste({...stand});
-      for (const [n, v] of Object.entries(x.p)) stand[n] = (stand[n] || 0) + v;
+      for (const [n, v] of Object.entries(x.p)) stand[n] = Math.round(((stand[n] || 0) + v) * 100) / 100;
     });
     const letzter = gewertet[gewertet.length - 1], neu = letzter.p;
     const alterRang = gewertet.length > 1 ? Object.fromEntries(vorher.map(s => [s.name, s.rang])) : null;
     const tabelle = rangliste(stand);
     const vorn = tabelle.filter(s => s.rang === 1 && s.punkte).map(s => s.name);
     const spitze = !vorn.length ? "Noch keine Punkte vergeben"
-      : `Vorn: ${vorn.length > 3 ? vorn.slice(0, 2).join(", ") + ` und ${vorn.length - 2} weitere` : vorn.join(", ").replace(/, ([^,]*)$/, " und $1")} · ${tabelle[0].punkte} ${tabelle[0].punkte === 1 ? "Punkt" : "Punkte"}`;
+      : `Vorn: ${vorn.length > 3 ? vorn.slice(0, 2).join(", ") + ` und ${vorn.length - 2} weitere` : vorn.join(", ").replace(/, ([^,]*)$/, " und $1")} · ${zahl(tabelle[0].punkte)} ${tabelle[0].punkte === 1 ? "Punkt" : "Punkte"}`;
     const zeilen = tabelle.map((s, i, l) => {
-      const plus = neu[s.name] ? `<span class="plus">+${neu[s.name]}</span>` : "";
+      const plus = neu[s.name] ? `<span class="plus">+${zahl(neu[s.name])}</span>` : "";
       let pfeil = "";
       if (alterRang) {
         const d = alterRang[s.name] - s.rang;
@@ -347,7 +349,7 @@ details.formen dd{margin:0;color:var(--muted)}
       const geteilt = (i && l[i-1].rang === s.rang) ? " geteilt" : "";
       return `<tr class="${s.rang === 1 && s.punkte ? "vorn" : ""}${geteilt}">
         <td class="rang-nr">${geteilt ? "" : s.rang + "."}</td><td>${esc(s.name)}</td>
-        <td class="pkt">${s.punkte}</td><td class="veraend">${plus}${pfeil}</td></tr>`;
+        <td class="pkt">${zahl(s.punkte)}</td><td class="veraend">${plus}${pfeil}</td></tr>`;
     }).join("");
     return `<details class="liga" id="liga">
       <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
@@ -402,6 +404,7 @@ details.formen dd{margin:0;color:var(--muted)}
     if (t.zusatz && t.zusatz !== t.titel) meta.push(`<span>${esc(t.zusatz)}</span>`);
     if (meta.length) h += `<div class="meta">${meta.join("")}</div>`;
     if (t.motto) h += `<p class="motto">${esc(t.motto)}</p>`;
+    if (t.link) h += `<p class="tag-link"><a class="knopf voll" href="${esc(t.link.href)}">${esc(t.link.x)} →</a></p>`;
     if (t.geburtstag) h += `<p class="geb">${ICON.torte}Happy Birthday, ${esc(t.geburtstag)}!</p>`;
     if (t.liste) h += `<ul class="liste">${t.liste.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
     if (t.wichtig) h += `<div class="kasten"><p><strong>Wichtig:</strong> ${esc(t.wichtig)}</p></div>`;

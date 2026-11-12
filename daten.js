@@ -186,22 +186,34 @@ const REISE = {
         {
           datum: "2026-11-13",
           art: "golf",
-          titel: "Wünsch dir was!",
+          titel: "Travel Open Finale",
           platz: "GC Foret",
-          formen: ["wuenschdirwas", "scramble", "einzel", "vierer", "auswahldrive"],
-          zusatz: "Scramble, Einzel, Klassischer Vierer, Auswahl-Drive",
+          formen: ["scramble", "hamsa"],
+          zusatz: "Scramble in allen Flights – gewertet nach dem Hamsa-Protokoll",
           finale: true,
+          link: { href: "finale.html", x: "Das Hamsa-Protokoll: So wird das Finale gewertet" },
           items: [
             { t: "08:00", ab: true, x: "Frühstück" },
             { t: "09:45", go: true, x: "Privater Bustransfer zum GC Foret" },
             { t: "10:00", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "11:34", tee: true, x: "Abschlag „Wünsch dir was!“" },
+            { t: "11:34", tee: true, x: "Abschlag Travel Open Finale – Scramble" },
             { t: "17:30", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
             { t: "18:45", eve: true, bis: "23:59", key: true, x: "Treffen an der Bar – Siegerehrung: Wer wird Travel-Open-Sieger? Vergabe des Wanderpokals" },
             { t: "19:15", x: "Gala-Abend" },
             { x: "Große Party an der Bar – wir feiern den neuen Travel-Open-Sieger. Offenes Ende." }
           ],
-          abschlag: { label: "Team", zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"] }
+          abschlag: {
+            label: "Flight", zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"],
+            // Jeder Flight spielt als ein Scramble-Team; Punkte nach dem Hamsa-Protokoll (finale.html)
+            teams: [
+              ["Melli", "Karin", "Anja", "Dirk"],
+              ["Lisa", "Patrick", "Martin"],
+              ["Frauke", "Susanne", "Peter"],
+              ["Stefan", "Monika", "Hardy", "Magret"],
+              ["Boscho", "Volker", "Carlos", "Markus"]
+            ],
+            notiz: "Kerstin ist verletzt und übernimmt zwei Ehrenämter: Glücksfee und Oberste Strich-Kommissarin. Wie das genau funktioniert, steht im Hamsa-Protokoll."
+          }
         },
         {
           datum: "2026-11-14",
@@ -373,6 +385,7 @@ const REISE = {
     stablefordlwsp: ["Stableford-Lochwettspiel", "Lochwettspiel mit Vorgabe: Das Loch gewinnt, wer dort mehr Stableford-Punkte holt. Am Ende zählen die gewonnenen Löcher."],
     einzel: ["Einzel", "Jeder spielt seinen eigenen Ball."],
     bingo: ["Bingo Golf", "Nein, nicht Bingo Bango Bongo! Was hinter Bingo Golf steckt, bleibt bis zum ersten Abschlag eine Überraschung."],
+    hamsa: ["Hamsa-Protokoll", "Die Finalwertung: Flight-Platz mal Hamsa-Faktor (wer zurückliegt, bekommt mehr), plus Heldenmomente aus der Strichliste, plus Kamel-Joker. Alles Weitere auf der eigenen Seite zum Finale."],
     wuenschdirwas: ["Wünsch dir was!", "Ein Mix aus Scramble, Einzel, Klassischem Vierer und Auswahl-Drive."],
     sonderpreise: ["Sonderpreise", "Longest Drive: der längste Abschlag, der auf dem Fairway liegen bleibt. Nearest to the Pin: der Abschlag, der am nächsten an der Fahne liegt."]
   }
