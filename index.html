@@ -375,10 +375,14 @@ details.formen dd{margin:0;color:var(--muted)}
     </details>`;
   }
 
-  // Schwarz gegen Rot: Team eines Spielers bzw. Paares (aus wochen[].kader)
-  const teamVon = {};
-  R.wochen.forEach(w => Object.entries(w.kader || {}).forEach(([farbe, namen]) => namen.forEach(n => teamVon[n] = farbe)));
-  const farbeVon = t => { const f = [...new Set(spielerVon(t).map(n => teamVon[n]))]; return f.length === 1 && f[0] ? f[0] : ""; };
+  // Schwarz gegen Rot: Team eines Spielers bzw. Paares – nur aus dem Kader
+  // der Woche, zu der der Tag gehört (die Travel Open hat keine Farben)
+  function farbeVon(t, tag){
+    const k = (R.wochen.find(w => w.tage.includes(tag)) || {}).kader;
+    if (!k) return "";
+    const f = [...new Set(spielerVon(t).map(n => Object.keys(k).find(x => k[x].includes(n))))];
+    return f.length === 1 && f[0] ? f[0] : "";
+  }
   const PUNKT = f => f ? `<span class="punkt" aria-hidden="true"></span>` : "";
 
   function zeile(it, tag){
@@ -399,7 +403,7 @@ details.formen dd{margin:0;color:var(--muted)}
         const namen = kaestchen
           ? (a.teams[i] || []).map(t => {
               const r = ergebnis[t] || "";
-              const f = farbeVon(t);
+              const f = farbeVon(t, tag);
               return `<span class="paar${medaille(r)}${f ? " team-" + f : ""}"${f ? ` title="Team ${f === "rot" ? "Rot" : "Schwarz"}"` : ""}>${PUNKT(f)}${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
             }).join("")
           : (a.teams[i] || []).map(esc).join(", ");

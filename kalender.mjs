@@ -11,13 +11,13 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const REISE = require("./daten.js");
 
-// Schwarz gegen Rot: zu welchem Team gehört ein Paar?
-const teamVon = {};
-REISE.wochen.forEach((w) => Object.entries(w.kader || {}).forEach(([farbe, namen]) =>
-  namen.forEach((n) => (teamVon[n] = farbe === "rot" ? "Rot" : "Schwarz"))));
-const farbeVon = (t) => {
-  const f = [...new Set(t.split("+").map((n) => teamVon[n.trim()]))];
-  return f.length === 1 && f[0] ? f[0] : "";
+// Schwarz gegen Rot: zu welchem Team gehört ein Paar? Nur aus dem Kader
+// der Woche, zu der der Tag gehört (die Travel Open hat keine Farben).
+const farbeVon = (t, tag) => {
+  const k = (REISE.wochen.find((w) => w.tage.includes(tag)) || {}).kader;
+  if (!k) return "";
+  const f = [...new Set(t.split("+").map((n) => Object.keys(k).find((x) => k[x].includes(n.trim()))))];
+  return f.length === 1 && f[0] ? (f[0] === "rot" ? "Rot" : "Schwarz") : "";
 };
 
 const OFFSET_STUNDEN = 1; // Tunesien: ganzjährig UTC+1, keine Sommerzeit
@@ -80,7 +80,7 @@ function tagesText(tag) {
     tag.abschlag.zeiten.forEach((t, i) => {
       const paarTag = teams.some((f) => f.some((t) => t.includes("+")));
       const namen = teams[i]
-        ? ` – ${teams[i].map((t) => t + (farbeVon(t) ? ` [${farbeVon(t)}]` : "") + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
+        ? ` – ${teams[i].map((t) => t + (farbeVon(t, tag) ? ` [${farbeVon(t, tag)}]` : "") + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
         : "";
       const platz = ergebnis[i + 1];
       z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);

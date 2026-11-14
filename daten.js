@@ -334,6 +334,7 @@ const REISE = {
             "Einige lassen sich bei einer Massage verwöhnen"
           ],
           items: [
+            { t: "16:00", key: true, x: "Bogenschieß-Turnier 🏹" },
             { t: "18:30", eve: true, x: "Treffen an der Bar, Abendessen" },
             { x: "Ausklang an der Bar" }
           ]
