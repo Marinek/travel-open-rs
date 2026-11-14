@@ -237,6 +237,11 @@ const REISE = {
       von: "2026-11-14",
       bis: "2026-11-21",
       untertitel: "Zwei Teams, fünf Spieltage, ein Golf-Präsident.",
+      // Wer spielt für welches Team? Paare in den Flights werden danach eingefärbt.
+      kader: {
+        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Fredericke", "Heike"],
+        rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas"]
+      },
       tage: [
         {
           datum: "2026-11-14",
@@ -269,7 +274,17 @@ const REISE = {
             { t: "19:00", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["11:02", "11:10", "11:18", "11:26", "11:36"] }
+          abschlag: {
+            label: "Flight",
+            zeiten: ["11:02", "11:10", "11:18", "11:26", "11:36"],
+            teams: [
+              ["Petra + Gerd", "Michael B. + Stefan"],
+              ["Dani + Anja", "Michael W. + Dirk"],
+              ["Marion + Volker", "Uli + Jascha"],
+              ["Mike + Mary", "Martin + Gudrun"],
+              ["Sabine + Thomas", "Fredericke + Heike"]
+            ]
+          }
         },
         {
           datum: "2026-11-16",

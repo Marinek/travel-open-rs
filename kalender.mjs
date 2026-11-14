@@ -11,6 +11,15 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const REISE = require("./daten.js");
 
+// Schwarz gegen Rot: zu welchem Team gehört ein Paar?
+const teamVon = {};
+REISE.wochen.forEach((w) => Object.entries(w.kader || {}).forEach(([farbe, namen]) =>
+  namen.forEach((n) => (teamVon[n] = farbe === "rot" ? "Rot" : "Schwarz"))));
+const farbeVon = (t) => {
+  const f = [...new Set(t.split("+").map((n) => teamVon[n.trim()]))];
+  return f.length === 1 && f[0] ? f[0] : "";
+};
+
 const OFFSET_STUNDEN = 1; // Tunesien: ganzjährig UTC+1, keine Sommerzeit
 const DOMAIN = "golfreise-tunesien-2026";
 const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
@@ -71,7 +80,7 @@ function tagesText(tag) {
     tag.abschlag.zeiten.forEach((t, i) => {
       const paarTag = teams.some((f) => f.some((t) => t.includes("+")));
       const namen = teams[i]
-        ? ` – ${teams[i].map((t) => t + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
+        ? ` – ${teams[i].map((t) => t + (farbeVon(t) ? ` [${farbeVon(t)}]` : "") + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
         : "";
       const platz = ergebnis[i + 1];
       z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);

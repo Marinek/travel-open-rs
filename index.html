@@ -142,6 +142,17 @@ body.w2 .platz{color:#fff}
 .paar.zweiter .rang{background:#C9CFD8;color:var(--tinte)}
 .paar.dritter{border-color:#B9875A;background:rgba(185,135,90,.16)}
 .paar.dritter .rang{background:#E3C4A6;color:var(--tinte)}
+.paar.team-rot{border-color:var(--rot)}
+.paar.team-schwarz{border-color:var(--ink)}
+.punkt{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;flex:none}
+.team-rot .punkt{background:var(--rot)}
+.team-schwarz .punkt{background:var(--schwarz);box-shadow:0 0 0 1.5px var(--ink)}
+.kader{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;max-width:34rem}
+.kader div{border:1.5px solid var(--line);border-radius:.8rem;padding:.6rem .8rem}
+.kader .k-rot{border-color:var(--rot)}
+.kader .k-schwarz{border-color:var(--ink)}
+.kader h3{display:flex;align-items:center;gap:.45rem;margin:0 0 .3rem;font:800 1.25rem/1.1 var(--display);letter-spacing:.02em}
+.kader ul{margin:0;padding:0;list-style:none;font-size:.98rem;line-height:1.45}
 .paar.sieger .rang{background:var(--sonne);color:var(--tinte)}
 .teams-notiz{margin:.5rem 0 0;padding:.5rem .7rem;border-left:4px solid var(--sonne);background:var(--chip);font-size:.98rem}
 .teams li.sieger{border-color:var(--sonne);background:var(--mark);color:var(--mark-ink)}
@@ -289,7 +300,10 @@ details.formen dd{margin:0;color:var(--muted)}
       const stand = st
         ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot}.</p>`
         : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird der Golf-Präsident gekürt.</p>`;
-      info = `<h2>Schwarz gegen Rot</h2>${stand}`;
+      const k = w.kader;
+      const kader = k ? `<div class="kader">${[["schwarz","Schwarz"],["rot","Rot"]].map(([f, n]) =>
+        `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
+      info = `<h2>Schwarz gegen Rot</h2>${stand}${kader}`;
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
@@ -361,6 +375,12 @@ details.formen dd{margin:0;color:var(--muted)}
     </details>`;
   }
 
+  // Schwarz gegen Rot: Team eines Spielers bzw. Paares (aus wochen[].kader)
+  const teamVon = {};
+  R.wochen.forEach(w => Object.entries(w.kader || {}).forEach(([farbe, namen]) => namen.forEach(n => teamVon[n] = farbe)));
+  const farbeVon = t => { const f = [...new Set(spielerVon(t).map(n => teamVon[n]))]; return f.length === 1 && f[0] ? f[0] : ""; };
+  const PUNKT = f => f ? `<span class="punkt" aria-hidden="true"></span>` : "";
+
   function zeile(it, tag){
     const zeit = it.t ? `${it.ab ? "<small>ab</small>" : ""}${it.t}` : "";
     let html = `<li class="${it.key ? "key" : ""}${it.tee ? " tee" : ""}"><span class="zeit">${zeit}</span><span class="was">${esc(it.x)}</span></li>`;
@@ -379,7 +399,8 @@ details.formen dd{margin:0;color:var(--muted)}
         const namen = kaestchen
           ? (a.teams[i] || []).map(t => {
               const r = ergebnis[t] || "";
-              return `<span class="paar${medaille(r)}">${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
+              const f = farbeVon(t);
+              return `<span class="paar${medaille(r)}${f ? " team-" + f : ""}"${f ? ` title="Team ${f === "rot" ? "Rot" : "Schwarz"}"` : ""}>${PUNKT(f)}${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
             }).join("")
           : (a.teams[i] || []).map(esc).join(", ");
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
