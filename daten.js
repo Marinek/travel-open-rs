@@ -37,7 +37,7 @@ const REISE = {
   stand: null,
 
   // Travel Open: Sieger nach der Siegerehrung eintragen, z. B. "Erika Muster"
-  sieger: null,
+  sieger: "Melli (nach einem Stechen)",
 
   // Fotos (eigene Seite fotos.html): Adresse des Cloud-Run-Dienstes,
   // gibt fotos-dienst/setup.sh aus. Leer = Fotoseite zeigt „noch nicht eingerichtet“.
@@ -186,22 +186,36 @@ const REISE = {
         {
           datum: "2026-11-13",
           art: "golf",
-          titel: "Wünsch dir was!",
+          titel: "Travel Open Finale",
           platz: "GC Foret",
-          formen: ["wuenschdirwas", "scramble", "einzel", "vierer", "auswahldrive"],
-          zusatz: "Scramble, Einzel, Klassischer Vierer, Auswahl-Drive",
+          formen: ["scramble"],
+          zusatz: "Scramble in allen Flights",
           finale: true,
           items: [
             { t: "08:00", ab: true, x: "Frühstück" },
             { t: "09:45", go: true, x: "Privater Bustransfer zum GC Foret" },
             { t: "10:00", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "11:34", tee: true, x: "Abschlag „Wünsch dir was!“" },
+            { t: "11:34", tee: true, x: "Abschlag Travel Open Finale – Scramble" },
             { t: "17:30", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
-            { t: "18:45", eve: true, bis: "23:59", key: true, x: "Treffen an der Bar – Siegerehrung: Wer wird Travel-Open-Sieger? Vergabe des Wanderpokals" },
+            { t: "18:45", eve: true, bis: "23:59", key: true, x: "Treffen an der Bar – Siegerehrung: Melli gewinnt nach einem Stechen die Travel Open 2026 🏆 und den Wanderpokal" },
             { t: "19:15", x: "Gala-Abend" },
-            { x: "Große Party an der Bar – wir feiern den neuen Travel-Open-Sieger. Offenes Ende." }
+            { x: "Große Party an der Bar – wir feiern unsere Travel-Open-Siegerin Melli. Offenes Ende." }
           ],
-          abschlag: { label: "Team", zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"] }
+          abschlag: {
+            label: "Flight",
+            zeiten: ["11:34", "11:42", "11:50", "11:58", "12:06"],
+            teams: [
+              ["Melli", "Karin", "Anja", "Dirk"],
+              ["Lisa", "Patrick", "Martin"],
+              ["Frauke", "Susanne", "Peter"],
+              ["Stefan", "Monika", "Hardy", "Magret"],
+              ["Boscho", "Volker", "Carlos", "Markus"]
+            ],
+            ergebnis: { 3: "1. Platz", 2: "2. Platz" },
+            punkte: { 3: 2, 2: 1 },
+            stechen: "Melli", // Gleichstand an der Spitze – Melli hat das Stechen gewonnen
+            notiz: "🏆 Travel-Open-Siegerin 2026: Melli – Frauke, Lisa und Melli lagen mit je 4 Punkten gleichauf, Melli hat das Stechen gewonnen! Kerstin war verletzt und konnte nicht mitspielen."
+          }
         },
         {
           datum: "2026-11-14",

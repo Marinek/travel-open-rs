@@ -312,10 +312,11 @@ details.formen dd{margin:0;color:var(--muted)}
     return p;
   }
   // Rangliste mit geteilten Plätzen: 1, 1, 3 …
-  function rangliste(stand){
+  // stecher: wer ein Stechen gewonnen hat, steht bei Punktgleichheit allein vorn
+  function rangliste(stand, stecher){
     const liste = Object.entries(stand).map(([name, punkte]) => ({name, punkte}))
-      .sort((a, b) => b.punkte - a.punkte || a.name.localeCompare(b.name, "de"));
-    liste.forEach((s, i) => s.rang = i && s.punkte === liste[i-1].punkte ? liste[i-1].rang : i + 1);
+      .sort((a, b) => b.punkte - a.punkte || (b.name === stecher) - (a.name === stecher) || a.name.localeCompare(b.name, "de"));
+    liste.forEach((s, i) => s.rang = i && s.punkte === liste[i-1].punkte && liste[i-1].name !== stecher ? liste[i-1].rang : i + 1);
     return liste;
   }
   function liga(w){
@@ -331,9 +332,11 @@ details.formen dd{margin:0;color:var(--muted)}
     });
     const letzter = gewertet[gewertet.length - 1], neu = letzter.p;
     const alterRang = gewertet.length > 1 ? Object.fromEntries(vorher.map(s => [s.name, s.rang])) : null;
-    const tabelle = rangliste(stand);
+    const tabelle = rangliste(stand, letzter.tag.abschlag.stechen);
     const vorn = tabelle.filter(s => s.rang === 1 && s.punkte).map(s => s.name);
-    const spitze = !vorn.length ? "Noch keine Punkte vergeben"
+    // Nach dem Finale steht oben, wer den Wanderpokal geholt hat
+    const spitze = letzter.tag.finale && w.id === "travel-open" && R.sieger ? `🏆 Wanderpokal 2026: ${R.sieger}`
+      : !vorn.length ? "Noch keine Punkte vergeben"
       : `Vorn: ${vorn.length > 3 ? vorn.slice(0, 2).join(", ") + ` und ${vorn.length - 2} weitere` : vorn.join(", ").replace(/, ([^,]*)$/, " und $1")} · ${tabelle[0].punkte} ${tabelle[0].punkte === 1 ? "Punkt" : "Punkte"}`;
     const zeilen = tabelle.map((s, i, l) => {
       const plus = neu[s.name] ? `<span class="plus">+${neu[s.name]}</span>` : "";
