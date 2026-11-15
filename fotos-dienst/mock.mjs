@@ -47,7 +47,7 @@ function api(req, res, u, body) {
       return {
         id,
         tag,
-        orig: { url: `${B}/put/${g}/orig/${tag}/${id}.jpg`, headers: { "Content-Type": d.typ, ...m } },
+        orig: { url: `${B}/put/${g}/orig/${tag}/${id}.${(d.typ || "").startsWith("video/") ? "mp4" : "jpg"}`, headers: { "Content-Type": d.typ, ...m } },
         vorschau: { url: `${B}/put/${g}/vorschau/${tag}/${id}.jpg`, headers: { "Content-Type": "image/jpeg", ...m } }
       };
     }) });
@@ -60,7 +60,7 @@ function api(req, res, u, body) {
       if (nur && nur !== tag) continue;
       const id = datei.replace(/\.[^.]*$/, ""), v = `${g}/vorschau/${tag}/${id}.jpg`;
       (tage[tag] ||= []).push({ id, name: decodeURIComponent(o.name), geschichte: decodeURIComponent(o.geschichte), zeit: o.zeit, aufgenommen: o.aufgenommen,
-        vorschau: `${B}/obj/${objekte.has(v) ? v : n}`, orig: `${B}/obj/${n}` });
+        vorschau: `${B}/obj/${objekte.has(v) ? v : n}`, orig: `${B}/obj/${n}`, video: (o.typ || "").startsWith("video/") });
     }
     const reihe = f => f.aufgenommen || f.zeit;
     return json(res, 200, { gruppe: g, tage: Object.keys(tage).sort().reverse().map(tag => ({ tag, fotos: tage[tag].sort((x, y) => reihe(x) < reihe(y) ? -1 : 1) })) });

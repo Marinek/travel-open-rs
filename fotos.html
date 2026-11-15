@@ -78,12 +78,16 @@ details.anleitung[open] summary{margin-bottom:1rem}
 .raster button{all:unset;position:relative;cursor:pointer;aspect-ratio:1;overflow:hidden;border-radius:.35rem;background:var(--line)}
 .raster button:focus-visible{outline:3px solid var(--sonne);outline-offset:2px}
 .raster img{width:100%;height:100%;object-fit:cover;display:block}
+.raster .film{position:absolute;left:.3rem;bottom:.3rem;display:flex;align-items:center;gap:.2rem;padding:.12rem .4rem .12rem .3rem;border-radius:999px;background:rgba(0,0,0,.65);color:#fff;font:700 .72rem/1.2 var(--text)}
+.raster .film svg{width:.8rem;height:.8rem}
+.raster .ohne-bild{width:100%;height:100%;display:grid;place-items:center;background:#1b1b1b;color:#fff}
+.raster .ohne-bild svg{width:2.2rem;height:2.2rem;opacity:.85}
 .raster .blase{position:absolute;right:.3rem;bottom:.3rem;width:1.6rem;height:1.6rem;display:grid;place-items:center;border-radius:50%;background:var(--sonne);color:var(--tinte)}
 
 dialog.gross{border:0;padding:0;width:100vw;height:100dvh;max-width:none;max-height:none;background:#000;color:#fff}
 dialog.gross::backdrop{background:#000}
 dialog.gross figure{margin:0;height:100%;display:flex;flex-direction:column}
-dialog.gross img{flex:1;min-height:0;width:100%;object-fit:contain}
+dialog.gross img,dialog.gross video{flex:1;min-height:0;width:100%;object-fit:contain;background:#000}
 dialog.gross figcaption{padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom))}
 dialog.gross .wer{font-weight:700}
 dialog.gross .geschichte{margin:.3rem 0 0;white-space:pre-wrap;max-height:30vh;overflow:auto}
@@ -130,6 +134,11 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
   const kurz = d => d.slice(8,10) + "." + d.slice(5,7) + ".";
   const tagText = d => `${wtLang(d)}, ${kurz(d)}`;
   const anzahl = n => `${n} ${n === 1 ? "Foto" : "Fotos"}`;
+  // Galerie-Tag: „5 Fotos, 2 Videos“
+  const anzahlMedien = liste => {
+    const v = liste.filter(f => f.video).length, b = liste.length - v;
+    return [b ? anzahl(b) : "", v ? `${v} ${v === 1 ? "Video" : "Videos"}` : ""].filter(Boolean).join(", ");
+  };
   const merke = (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} };
   const lies = k => { try { return localStorage.getItem(k) || ""; } catch(e) { return ""; } };
   const ICON = {
@@ -152,8 +161,14 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
   const speichern = () => merke("fotos-passwoerter", JSON.stringify(zugang));
   let fotoGruppe = Object.keys(zugang)[0];
 
-  const ERLAUBT = ["image/jpeg", "image/png", "image/heic", "image/heif", "image/webp", "image/gif"];
-  const typVon = f => f.type || (/\.hei[cf]$/i.test(f.name) ? "image/heic" : "image/jpeg");
+  const ERLAUBT = ["image/jpeg", "image/png", "image/heic", "image/heif", "image/webp", "image/gif",
+    "video/mp4", "video/quicktime", "video/x-m4v", "video/webm", "video/3gpp"];
+  // Manche Handys geben keinen Typ mit – dann zählt die Dateiendung
+  const ENDUNGEN = {heic: "image/heic", heif: "image/heif", png: "image/png", webp: "image/webp", gif: "image/gif",
+    mov: "video/quicktime", mp4: "video/mp4", m4v: "video/x-m4v", webm: "video/webm", "3gp": "video/3gpp"};
+  const typVon = f => f.type || ENDUNGEN[(f.name.match(/\.([^.]+)$/) || [])[1]?.toLowerCase()] || "image/jpeg";
+  const istVideo = f => typVon(f).startsWith("video/");
+  const PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>`;
   // Titel des Tages aus dem Programm der Gruppe (der 14.11. gehört zu beiden Wochen)
   const tagTitel = (d, g) => {
     for (const w of [R.wochen.find(w => w.id === g), ...R.wochen].filter(Boolean)) {
@@ -200,14 +215,14 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
   const ANLEITUNG_SCHRITTE = `<ol>
       <li><b>Passwort eingeben</b>Tippe oben in das weiße Feld und gib das Passwort deiner Reisegruppe ein. Dann auf <strong>„Weiter“</strong> tippen. <span>Das Handy merkt sich das – nur beim ersten Mal nötig.</span></li>
       <li><b>Namen eintragen</b>Schreib deinen Vornamen in das Feld <strong>„Dein Name“</strong>. So sehen die anderen, von wem die Fotos sind. <span>Freiwillig.</span></li>
-      <li><b>Auf „Fotos hinzufügen“ tippen</b>Das ist der große farbige Knopf mit dem Kamera-Zeichen.</li>
+      <li><b>Auf „Fotos &amp; Videos hinzufügen“ tippen</b>Das ist der große farbige Knopf mit dem Kamera-Zeichen.</li>
       <li><b>„Fotomediathek“ oder „Galerie“ wählen</b>Das Handy fragt, woher die Fotos kommen sollen. Wähle <strong>„Fotomediathek“</strong> (iPhone) bzw. <strong>„Galerie“</strong> oder <strong>„Fotos“</strong> (Android).</li>
-      <li><b>Fotos antippen</b>Tippe jedes Foto an, das du teilen möchtest – es bekommt ein Häkchen. Mehrere auf einmal sind kein Problem.</li>
+      <li><b>Fotos und Videos antippen</b>Tippe jedes Foto oder Video an, das du teilen möchtest – es bekommt ein Häkchen. Mehrere auf einmal sind kein Problem.</li>
       <li><b>Auf „Hinzufügen“ oder „Fertig“ tippen</b>Der Knopf ist meist oben rechts.</li>
-      <li><b>Kurz warten</b>Ein Balken zeigt, wie weit es ist. <strong>Seite offen lassen</strong>, bis dort <strong>„Danke!“</strong> steht. Danach erscheinen deine Fotos weiter unten, nach Tagen sortiert.</li>
+      <li><b>Kurz warten</b>Ein Balken zeigt, wie weit es ist. <strong>Seite offen lassen</strong>, bis dort <strong>„Danke!“</strong> steht. <span>Videos sind groß und brauchen länger – ein paar Minuten sind normal.</span> Danach erscheinen deine Fotos weiter unten, nach Tagen sortiert.</li>
     </ol>
     <div class="tipp">
-      <p><strong>Tipp:</strong> Am besten im Hotel-WLAN hochladen. Im Ausland kann das mobile Internet teuer sein.</p>
+      <p><strong>Tipp:</strong> Am besten im Hotel-WLAN hochladen. Im Ausland kann das mobile Internet teuer sein – bei Videos ganz besonders.</p>
       <p><strong>Hat etwas nicht geklappt?</strong> Kein Problem – wähl die fehlenden Fotos einfach noch einmal aus. Kaputt machen kannst du nichts.</p>
     </div>`;
   const anleitungOffen = () => `<section class="anleitung" aria-labelledby="anleitung-titel">
@@ -216,7 +231,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       ${ANLEITUNG_SCHRITTE}
     </section>`;
   const anleitungZu = () => `<details class="anleitung">
-      <summary>Hilfe: So lädst du Fotos hoch</summary>
+      <summary>Hilfe: So lädst du Fotos und Videos hoch</summary>
       ${ANLEITUNG_SCHRITTE.replace("<li><b>Passwort eingeben</b>", '<li hidden><b>Passwort eingeben</b>')}
     </details>`;
 
@@ -302,17 +317,17 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     $("#abmelden").hidden = false;
     $("#inhalt").innerHTML = `<section class="kopfbereich">
       <h1>Fotos</h1>
-      <p>Teile deine Bilder mit der Gruppe <strong>${esc(gruppenName(fotoGruppe))}</strong>. Nur ihr seht sie, sortiert nach Tagen und abends in der Diashow.</p>
+      <p>Teile deine Fotos und Videos mit der Gruppe <strong>${esc(gruppenName(fotoGruppe))}</strong>. Nur ihr seht sie, sortiert nach Tagen und abends in der Diashow.</p>
       <label class="feldname" for="foto-name">Dein Name <span>(freiwillig)</span></label>
       <input class="feld" id="foto-name" autocomplete="given-name" maxlength="40" value="${esc(lies("fotos-name"))}">
-      <label class="feldname" for="foto-geschichte">Kleine Geschichte <span>(freiwillig, gilt für die Fotos, die du jetzt hinzufügst)</span></label>
+      <label class="feldname" for="foto-geschichte">Kleine Geschichte <span>(freiwillig, gilt für alles, was du jetzt hinzufügst)</span></label>
       <textarea class="feld" id="foto-geschichte" maxlength="500" rows="3" placeholder="Was ist da gerade passiert?"></textarea>
       <div class="knopfzeile">
-        <button class="knopf voll" type="button" id="foto-knopf">${ICON.kamera}Fotos hinzufügen</button>
+        <button class="knopf voll" type="button" id="foto-knopf">${ICON.kamera}Fotos &amp; Videos hinzufügen</button>
         <button class="knopf" type="button" id="diashow-knopf">Diashow heute</button>
         <button class="knopf" type="button" id="link-knopf">Link für die Gruppe teilen</button>
       </div>
-      <input type="file" id="foto-datei" accept="image/*" multiple hidden>
+      <input type="file" id="foto-datei" accept="image/*,video/*" multiple hidden>
       <div class="fortschritt" id="fortschritt" role="status" hidden><div class="balken"><span></span></div><p></p></div>
     </section>
     ${anleitungZu()}
@@ -344,10 +359,12 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
         const titel = tagTitel(t.tag, gruppe);
         const bilder = t.fotos.map(f => {
           const i = galerie.push({...f, tag: t.tag}) - 1;
-          const text = `Foto${f.name ? " von " + f.name : ""}${f.geschichte ? ", mit Geschichte" : ""} ansehen`;
-          return `<button type="button" data-i="${i}" aria-label="${esc(text)}"><img src="${esc(f.vorschau)}" alt="" loading="lazy">${f.geschichte ? `<span class="blase">${ICON.blase}</span>` : ""}</button>`;
+          const text = `${f.video ? "Video" : "Foto"}${f.name ? " von " + f.name : ""}${f.geschichte ? ", mit Geschichte" : ""} ${f.video ? "abspielen" : "ansehen"}`;
+          // Video ohne Standbild (vorschau zeigt dann aufs Video selbst): Platzhalter
+          const bild = f.video && f.vorschau === f.orig ? `<span class="ohne-bild">${PLAY}</span>` : `<img src="${esc(f.vorschau)}" alt="" loading="lazy">`;
+          return `<button type="button" data-i="${i}" aria-label="${esc(text)}">${bild}${f.video ? `<span class="film">${PLAY}Video</span>` : ""}${f.geschichte ? `<span class="blase">${ICON.blase}</span>` : ""}</button>`;
         }).join("");
-        return `<section class="galerie-tag"><h2>${tagText(t.tag)}<small>${titel ? esc(titel) + " · " : ""}${anzahl(t.fotos.length)}</small></h2><div class="raster">${bilder}</div></section>`;
+        return `<section class="galerie-tag"><h2>${tagText(t.tag)}<small>${titel ? esc(titel) + " · " : ""}${anzahlMedien(t.fotos)}</small></h2><div class="raster">${bilder}</div></section>`;
       }).join("");
       ziel.querySelectorAll(".raster button").forEach(b => b.addEventListener("click", () => gross(+b.dataset.i)));
     } catch(e) {
@@ -363,7 +380,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     if (!d) {
       d = document.createElement("dialog");
       d.id = "gross"; d.className = "gross";
-      d.innerHTML = `<figure><img alt=""><figcaption><div class="wer"></div><p class="geschichte"></p>
+      d.innerHTML = `<figure><img alt=""><video controls playsinline preload="metadata" hidden></video><figcaption><div class="wer"></div><p class="geschichte"></p>
         <div class="knoepfe">
           <button class="knopf" type="button" data-schritt="-1" aria-label="Vorheriges Foto">‹</button>
           <button class="knopf" type="button" data-schritt="1" aria-label="Nächstes Foto">›</button>
@@ -373,6 +390,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       document.body.append(d);
       d.querySelectorAll("[data-schritt]").forEach(b => b.addEventListener("click", () => grossZeige(grossI + +b.dataset.schritt)));
       d.querySelector("[data-zu]").addEventListener("click", () => d.close());
+      d.addEventListener("close", () => d.querySelector("video").pause());
       d.addEventListener("keydown", e => {
         if (e.key === "ArrowLeft") grossZeige(grossI - 1);
         if (e.key === "ArrowRight") grossZeige(grossI + 1);
@@ -393,7 +411,17 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     if (!n) return;
     grossI = (i + n) % n;
     const f = galerie[grossI], d = $("#gross");
-    d.querySelector("img").src = f.vorschau;
+    const img = d.querySelector("img"), video = d.querySelector("video");
+    video.pause();
+    img.hidden = !!f.video; video.hidden = !f.video;
+    if (f.video) {
+      if (f.vorschau !== f.orig) video.poster = f.vorschau; else video.removeAttribute("poster");
+      video.src = f.orig;
+      img.removeAttribute("src");
+    } else {
+      video.removeAttribute("src"); video.load();
+      img.src = f.vorschau;
+    }
     d.querySelector("a").href = f.orig;
     d.querySelector(".wer").textContent = [f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
     const g = d.querySelector(".geschichte");
@@ -464,22 +492,53 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       img.src = url;
     });
   }
-  async function hochLaden(ziel, body){
+  // Videos: ein Standbild aus der ersten Sekunde als Vorschau (klappt der Browser nicht, gibt es eben keins)
+  function standbild(datei){
+    return new Promise((ok, nein) => {
+      const url = URL.createObjectURL(datei), v = document.createElement("video");
+      const ende = (b, e) => { clearTimeout(uhr); v.removeAttribute("src"); v.load(); URL.revokeObjectURL(url); b ? ok(b) : nein(e || new Error("vorschau")); };
+      const uhr = setTimeout(() => ende(null), 15000);
+      v.muted = true; v.playsInline = true; v.preload = "auto";
+      v.onloadeddata = () => { v.currentTime = Math.min(1, (v.duration || 2) / 2); };
+      v.onseeked = () => {
+        if (!v.videoWidth) return ende(null);
+        const s = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
+        const c = document.createElement("canvas");
+        c.width = Math.round(v.videoWidth * s); c.height = Math.round(v.videoHeight * s);
+        c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob(b => ende(b), "image/jpeg", .82);
+      };
+      v.onerror = () => ende(null);
+      v.src = url;
+    });
+  }
+  // PUT direkt in den Bucket; meldet den Fortschritt in Bytes (wichtig bei großen Videos)
+  function senden(ziel, body, fortschritt){
+    return new Promise((ok, nein) => {
+      const x = new XMLHttpRequest();
+      x.open("PUT", ziel.url);
+      for (const [k, v] of Object.entries(ziel.headers)) x.setRequestHeader(k, v);
+      if (fortschritt) x.upload.onprogress = e => fortschritt(e.loaded);
+      x.onload = () => x.status >= 200 && x.status < 300 ? ok() : nein(new Error("http " + x.status));
+      x.onerror = x.ontimeout = () => nein(new Error("netz"));
+      x.send(body);
+    });
+  }
+  async function hochLaden(ziel, body, fortschritt){
     for (let versuch = 0; ; versuch++) {
       try {
-        const r = await fetch(ziel.url, {method:"PUT", headers: ziel.headers, body});
-        if (r.ok) return;
-        throw new Error("http " + r.status);
+        if (fortschritt) fortschritt(0);
+        return await senden(ziel, body, fortschritt);
       } catch(e) {
         if (versuch >= 2) throw e;
         await new Promise(w => setTimeout(w, 1500 * (versuch + 1)));
       }
     }
   }
-  async function einFoto(datei, ziel){
-    const klein = await verkleinern(datei).catch(() => null);
+  async function einFoto(datei, ziel, fortschritt){
+    const klein = await (istVideo(datei) ? standbild(datei) : verkleinern(datei)).catch(() => null);
     await Promise.all([
-      hochLaden(ziel.orig, datei),
+      hochLaden(ziel.orig, datei, fortschritt),
       klein ? hochLaden(ziel.vorschau, klein).catch(() => {}) : null
     ]);
   }
@@ -493,9 +552,13 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     merke("fotos-name", name);
     const box = $("#fortschritt"), balken = box.querySelector("span"), text = box.querySelector("p"), knopf = $("#foto-knopf");
     let fertig = 0, fehler = alle.length - dateien.length, gesperrt = false;
+    // Balken nach Datenmenge, damit ein großes Video nicht wie „hängt“ aussieht
+    const gesamt = dateien.reduce((a, f) => a + f.size, 0) || 1, geladen = new Map();
     const stand = () => {
-      balken.style.width = Math.round(100 * (fertig + fehler) / alle.length) + "%";
-      text.textContent = `${fertig + fehler} von ${alle.length}`;
+      const bytes = [...geladen.values()].reduce((a, b) => a + b, 0);
+      const anteil = dateien.length ? bytes / gesamt : 1;
+      balken.style.width = Math.round(100 * Math.min(1, anteil)) + "%";
+      text.textContent = `${fertig + fehler} von ${alle.length} fertig` + (fertig + fehler < alle.length ? ` · ${Math.floor(100 * Math.min(1, anteil))} %` : "");
     };
     box.hidden = false; knopf.disabled = true; laeuft = true; stand();
     // In Päckchen zu zehn, damit die signierten Adressen (15 min) nicht ablaufen
@@ -508,14 +571,16 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
           body: JSON.stringify({name, geschichte, dateien: teil.map((f, j) => ({typ: typVon(f), aufgenommen: zeiten[j]}))})}, passwort)).dateien;
       } catch(e) {
         if (e.message === "passwort") gesperrt = true;
-        fehler += teil.length; stand();
+        fehler += teil.length; teil.forEach(f => geladen.set(f, f.size)); stand();
         continue;
       }
       let n = 0;
       const arbeiter = async () => {
         while (n < teil.length) {
           const j = n++;
-          try { await einFoto(teil[j], ziele[j]); fertig++; } catch(e) { fehler++; }
+          const f = teil[j];
+          try { await einFoto(f, ziele[j], b => { geladen.set(f, b); stand(); }); fertig++; geladen.set(f, f.size); }
+          catch(e) { fehler++; geladen.set(f, f.size); }
           stand();
         }
       };
@@ -524,8 +589,8 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     laeuft = false; knopf.disabled = false;
     if (gesperrt) return passwortUngueltig(gruppe);
     text.textContent = fehler
-      ? `${anzahl(fertig)} hochgeladen, bei ${fehler} hat es nicht geklappt. Bitte die fehlenden noch einmal versuchen.`
-      : `${anzahl(fertig)} hochgeladen. Danke!`;
+      ? `${fertig} hochgeladen, bei ${fehler} hat es nicht geklappt. Bitte die fehlenden noch einmal versuchen.`
+      : `${fertig === 1 ? "1 Datei" : fertig + " Dateien"} hochgeladen. Danke!`;
     if (fertig && !fehler) $("#foto-geschichte").value = "";
     ladeGalerie();
   }
@@ -558,7 +623,8 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       let d = await api("/api/galerie?tag=" + heute, {}, pw);
       if (!d.tage.length && !DIA.liste.length) d = await api("/api/galerie", {}, pw); // heute noch nichts: alle Tage
       if (!DIA.el) return;
-      const neu = d.tage.flatMap(t => t.fotos.map(f => ({...f, tag: t.tag})));
+      // Videos laufen nicht in der Diashow; ihr Standbild schon (mit Hinweis)
+      const neu = d.tage.flatMap(t => t.fotos.map(f => ({...f, tag: t.tag}))).filter(f => !f.video || f.vorschau !== f.orig);
       if (DIA.liste.length) {
         const bekannt = new Set(DIA.liste.map(f => f.id));
         DIA.vorrang.push(...neu.filter(f => !bekannt.has(f.id)).map(f => f.id));
@@ -581,7 +647,7 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
     const neu = a.classList.contains("an") ? b : a, alt = neu === a ? b : a;
     neu.onload = () => {
       neu.classList.add("an"); alt.classList.remove("an");
-      DIA.el.querySelector(".unterschrift b").textContent = [f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
+      DIA.el.querySelector(".unterschrift b").textContent = [f.video ? "🎬 Video" : "", f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
       DIA.el.querySelector(".unterschrift span").textContent = f.geschichte || "";
     };
     neu.src = f.vorschau;

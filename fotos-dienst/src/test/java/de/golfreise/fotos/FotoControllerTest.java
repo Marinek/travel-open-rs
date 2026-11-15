@@ -117,7 +117,7 @@ class FotoControllerTest {
     void galerieNurDerEigenenGruppe() throws Exception {
         when(speicher.galerie(eq("schwarz-gegen-rot"), isNull())).thenReturn(List.of(
                 new FotoSpeicher.Tag("2026-11-15", List.of(new FotoSpeicher.Foto(
-                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "2026-11-15T10:58:00", "https://v", "https://o")))));
+                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "2026-11-15T10:58:00", "https://v", "https://o", false)))));
 
         mvc.perform(get("/api/galerie").header("X-Fotos-Passwort", "jasmin26"))
                 .andExpect(status().isOk())
@@ -186,6 +186,17 @@ class FotoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"dateien\":[{\"typ\":\"application/pdf\"}]}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void videosVomIphoneUndAndroid() throws Exception {
+        mvc.perform(post("/api/upload-adressen")
+                        .header("X-Fotos-Passwort", "oliver26")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"dateien\":[{\"typ\":\"video/quicktime\"},{\"typ\":\"video/mp4\"}]}"))
+                .andExpect(status().isOk());
+        verify(speicher).uploadZiel(eq("travel-open"), any(), any(), eq("video/quicktime"), eq("mov"), any(), any(), any());
+        verify(speicher).uploadZiel(eq("travel-open"), any(), any(), eq("video/mp4"), eq("mp4"), any(), any(), any());
     }
 
     @Test

@@ -33,13 +33,19 @@ public class FotoController {
     static final int MAX_ALTER_TAGE = 60;
     private static final DateTimeFormatter AUFNAHME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final Pattern TAG = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
-    private static final Map<String, String> ENDUNG = Map.of(
-            "image/jpeg", "jpg",
-            "image/png", "png",
-            "image/heic", "heic",
-            "image/heif", "heif",
-            "image/webp", "webp",
-            "image/gif", "gif");
+    private static final Map<String, String> ENDUNG = Map.ofEntries(
+            Map.entry("image/jpeg", "jpg"),
+            Map.entry("image/png", "png"),
+            Map.entry("image/heic", "heic"),
+            Map.entry("image/heif", "heif"),
+            Map.entry("image/webp", "webp"),
+            Map.entry("image/gif", "gif"),
+            // Videos: iPhone liefert .mov (QuickTime), Android meist .mp4
+            Map.entry("video/mp4", "mp4"),
+            Map.entry("video/quicktime", "mov"),
+            Map.entry("video/x-m4v", "m4v"),
+            Map.entry("video/webm", "webm"),
+            Map.entry("video/3gpp", "3gp"));
 
     private final FotoSpeicher speicher;
     private final Clock uhr;
@@ -80,7 +86,7 @@ public class FotoController {
             String typ = d == null || d.typ() == null ? "" : d.typ().toLowerCase();
             String endung = ENDUNG.get(typ);
             if (endung == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nur Fotos erlaubt");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nur Fotos und Videos erlaubt");
             }
             // Das Foto gehört zum Tag der Aufnahme; ohne glaubwürdige Aufnahmezeit zum Tag des Hochladens
             LocalDateTime aufnahme = aufnahme(d.aufgenommen(), heute);

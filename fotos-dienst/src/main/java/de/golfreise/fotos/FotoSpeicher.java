@@ -32,8 +32,8 @@ import com.google.cloud.storage.StorageOptions;
 /**
  * Zugriff auf den Bucket. Layout, getrennt nach Gruppe (z. B. travel-open, schwarz-gegen-rot):
  * <pre>
- *   &lt;gruppe&gt;/orig/JJJJ-MM-TT/&lt;uuid&gt;.&lt;endung&gt;   Original vom Handy
- *   &lt;gruppe&gt;/vorschau/JJJJ-MM-TT/&lt;uuid&gt;.jpg       im Browser verkleinert (ca. 1600 px)
+ *   &lt;gruppe&gt;/orig/JJJJ-MM-TT/&lt;uuid&gt;.&lt;endung&gt;   Original vom Handy (Foto oder Video)
+ *   &lt;gruppe&gt;/vorschau/JJJJ-MM-TT/&lt;uuid&gt;.jpg       im Browser verkleinert (ca. 1600 px), bei Videos ein Standbild
  * </pre>
  * Name der Person und die optionale Geschichte stehen URL-kodiert in den Metadaten {@code name} und {@code geschichte},
  * die Aufnahmezeit aus den Bilddaten (Ortszeit) in {@code aufgenommen}. Der Tag im Pfad ist der Aufnahmetag.
@@ -47,7 +47,8 @@ public class FotoSpeicher {
     static final String META_AUFGENOMMEN = "x-goog-meta-aufgenommen";
     private static final DateTimeFormatter ORTSZEIT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.of("Africa/Tunis"));
-    private static final Duration UPLOAD_GUELTIG = Duration.ofMinutes(15);
+    /** Videos sind groß und das Hotel-WLAN langsam: die Adresse muss gelten, bis der Upload startet. */
+    private static final Duration UPLOAD_GUELTIG = Duration.ofHours(2);
     private static final Duration ANSEHEN_GUELTIG = Duration.ofHours(12);
     /** Signierte Ansehen-Adressen werden wiederverwendet, solange sie noch so lange gelten. */
     private static final Duration ANSEHEN_REST = Duration.ofHours(6);
@@ -57,9 +58,11 @@ public class FotoSpeicher {
     /**
      * @param zeit        Zeitpunkt des Hochladens (ISO mit Zeitzone)
      * @param aufgenommen Aufnahmezeit in Ortszeit, leer wenn unbekannt
+     * @param video       true bei Videos: {@code orig} ist dann das Video, {@code vorschau} ein Standbild
+     *                    (oder ebenfalls das Video, wenn der Browser kein Standbild erzeugen konnte)
      */
     public record Foto(String id, String name, String geschichte, String zeit, String aufgenommen,
-                       String vorschau, String orig) {}
+                       String vorschau, String orig, boolean video) {}
     public record Tag(String tag, List<Foto> fotos) {}
 
     private record Signiert(String url, Instant gueltigBis) {}
@@ -141,7 +144,8 @@ public class FotoSpeicher {
             String sortierung = !aufgenommen.isEmpty() ? aufgenommen
                     : o.getCreateTimeOffsetDateTime() != null ? ORTSZEIT.format(o.getCreateTimeOffsetDateTime()) : "";
             nachTag.computeIfAbsent(t, k -> new ArrayList<>())
-                    .add(new Foto(id, meta(o, "name"), meta(o, "geschichte"), zeit, aufgenommen, vorschauUrl, origUrl));
+                    .add(new Foto(id, meta(o, "name"), meta(o, "geschichte"), zeit, aufgenommen, vorschauUrl, origUrl,
+                            o.getContentType() != null && o.getContentType().startsWith("video/")));
             reihenfolge.put(id, sortierung);
         }
         List<Tag> tage = new ArrayList<>();
