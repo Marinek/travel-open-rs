@@ -72,6 +72,7 @@ a.status:hover{text-decoration:underline}
 .liga summary:hover{border-color:var(--ink)}
 .liga-titel{font:800 clamp(1.9rem,6vw,2.6rem)/1 var(--display)}
 .liga-spitze{font-weight:700}
+.liga-unter{font-size:.95rem;color:var(--muted)}
 .liga-auf::after{content:"Tabelle aufklappen ▾";font-size:.9rem;color:var(--accent);font-weight:700}
 .liga[open] .liga-auf::after{content:"Tabelle zuklappen ▴"}
 body.w2 .liga-auf::after{color:#ff5a6e}
@@ -153,7 +154,6 @@ body.w2 .platz{color:#fff}
 .paar.remis .rang{background:#C9CFD8;color:var(--tinte)}
 .duell-tag{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.6rem 0 0;font-weight:700}
 .duell-tag b{font:800 1.5rem/1 var(--display);letter-spacing:.04em}
-.liga tr.summe td{font-weight:700;border-top:2px solid var(--ink);border-bottom:0}
 .kader{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;max-width:34rem}
 .kader div{border:1.5px solid var(--line);border-radius:.8rem;padding:.6rem .8rem}
 .kader .k-rot{border-color:var(--rot)}
@@ -306,7 +306,7 @@ details.formen dd{margin:0;color:var(--muted)}
       const ersterSpieltag = w.tage.find(t => t.art === "golf");
       const stand = st
         ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${standText(st)}.</p>`
-        : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird der Golf-Präsident gekürt.</p>`;
+        : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird die Golf-Präsidentin oder der Golf-Präsident gekürt.</p>`;
       const k = w.kader;
       const kader = k ? `<div class="kader">${[["schwarz","Schwarz"],["rot","Rot"]].map(([f, n]) =>
         `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
@@ -314,7 +314,7 @@ details.formen dd{margin:0;color:var(--muted)}
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
-        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a>${w.tage.some(t => punkteAm(t) || teamPunkteAm(t)) ? `<a class="knopf" href="#liga" onclick="document.getElementById('liga').open=true">Gesamtwertung</a>` : ""}</div>
+        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a>${w.tage.some(t => punkteAm(t) || praesidentAm(t)) ? `<a class="knopf" href="#liga" onclick="document.getElementById('liga').open=true">${w.kader ? "Präsident(in)" : "Gesamtwertung"}</a>` : ""}</div>
       </div></section>`;
   }
 
@@ -355,27 +355,15 @@ details.formen dd{margin:0;color:var(--muted)}
     return tage.reduce((a, p) => ({schwarz: a.schwarz + p.schwarz, rot: a.rot + p.rot}), {schwarz: 0, rot: 0});
   }
   const standText = st => st.schwarz === st.rot ? "Gleichstand" : `${st.schwarz > st.rot ? "Schwarz" : "Rot"} führt`;
-  function teamLiga(w){
-    const tage = w.tage.map(t => ({tag: t, p: teamPunkteAm(t)})).filter(x => x.p);
-    if (!tage.length) return "";
-    const st = teamStand(w), letzter = tage[tage.length - 1].tag;
-    const zeilen = tage.map(({tag, p}) => `<tr><td>${wt(tag.datum)} ${kurz(tag.datum)}<small class="vorher">${esc(tag.titel)}</small></td>
-      <td class="pkt">${p.schwarz}</td><td class="pkt">${p.rot}</td></tr>`).join("");
-    return `<details class="liga" id="liga">
-      <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">Schwarz ${st.schwarz} : ${st.rot} Rot · ${standText(st)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
-      <p>Stand nach ${wtLang(letzter.datum)}, ${kurz(letzter.datum)} · Jeder gewonnene Flight bringt dem Team einen Punkt, bei Unentschieden bekommen beide Teams einen.</p>
-      <div class="liga-rahmen"><table>
-        <thead><tr><th scope="col">Spieltag</th><th scope="col" class="pkt"><span class="team-schwarz">${PUNKT(1)}</span> Schwarz</th><th scope="col" class="pkt"><span class="team-rot">${PUNKT(1)}</span> Rot</th></tr></thead>
-        <tbody>${zeilen}<tr class="summe"><td>Gesamt</td><td class="pkt">${st.schwarz}</td><td class="pkt">${st.rot}</td></tr></tbody></table></div>
-    </details>`;
-  }
-
+  // Schwarz gegen Rot: Präsidentschafts-Wertung, einzeln (tag.praesident)
+  const praesidentAm = t => t.praesident || null;
   function liga(w){
-    if (w.kader) return teamLiga(w);
-    const gewertet = w.tage.map(t => ({tag: t, p: punkteAm(t)})).filter(x => x.p);
+    const praes = !!w.kader, quelle = praes ? praesidentAm : punkteAm;
+    const gewertet = w.tage.map(t => ({tag: t, p: quelle(t)})).filter(x => x.p);
     if (!gewertet.length) return "";
     const alle = new Set();
     w.tage.forEach(t => (t.abschlag && t.abschlag.teams || []).flat().flatMap(spielerVon).forEach(n => alle.add(n)));
+    if (praes) Object.values(w.kader).flat().forEach(n => alle.add(n));
     const stand = {}; alle.forEach(n => stand[n] = 0);
     let vorher = null;
     gewertet.forEach((x, i) => {
@@ -401,12 +389,12 @@ details.formen dd{margin:0;color:var(--muted)}
       }
       const geteilt = (i && l[i-1].rang === s.rang) ? " geteilt" : "";
       return `<tr class="${s.rang === 1 && s.punkte ? "vorn" : ""}${geteilt}">
-        <td class="rang-nr">${geteilt ? "" : s.rang + "."}</td><td>${esc(s.name)}</td>
+        <td class="rang-nr">${geteilt ? "" : s.rang + "."}</td><td>${praes ? (f => `<span class="team-${f}" title="Team ${f === "rot" ? "Rot" : "Schwarz"}">${PUNKT(f)}</span> `)(farbeVon(s.name, letzter.tag)) : ""}${esc(s.name)}</td>
         <td class="pkt">${s.punkte}</td><td class="veraend">${plus}${pfeil}</td></tr>`;
     }).join("");
     return `<details class="liga" id="liga">
-      <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
-      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · Punkte gibt es für die besten Plätze des Tages – bei Team-Spielen für jeden Spieler im Team.</p>
+      <summary><span class="liga-titel">${praes ? "Präsident(in)" : "Gesamtwertung"}</span>${praes ? `<span class="liga-unter">Wer wird Golf-Präsidentin oder Golf-Präsident?</span>` : ""}<span class="liga-spitze">${esc(spitze)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
+      <p>Stand nach ${wtLang(letzter.tag.datum)}, ${kurz(letzter.tag.datum)} · ${praes ? "Einzelwertung über alle Spieltage: Für jede gespielte 5 gibt es einen Punkt. Wer am Freitag vorn liegt, wird Golf-Präsidentin oder Golf-Präsident." : "Punkte gibt es für die besten Plätze des Tages – bei Team-Spielen für jeden Spieler im Team."}</p>
       <div class="liga-rahmen"><table>
         <thead><tr><th scope="col">Platz</th><th scope="col">Name</th><th scope="col" class="pkt">Punkte</th><th scope="col" class="veraend">${alterRang ? "Seit " + kurz(gewertet[gewertet.length - 2].tag.datum) : "Veränderung"}</th></tr></thead>
         <tbody>${zeilen}</tbody></table></div>

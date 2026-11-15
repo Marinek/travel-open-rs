@@ -236,10 +236,10 @@ const REISE = {
       name: "Schwarz gegen Rot",
       von: "2026-11-14",
       bis: "2026-11-21",
-      untertitel: "Zwei Teams, fünf Spieltage, ein Golf-Präsident.",
+      untertitel: "Zwei Teams, fünf Spieltage – und am Ende eine Golf-Präsidentin oder ein Golf-Präsident.",
       // Wer spielt für welches Team? Paare in den Flights werden danach eingefärbt.
       kader: {
-        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Fredericke", "Heike"],
+        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike"],
         rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas"]
       },
       tage: [
@@ -282,11 +282,19 @@ const REISE = {
               ["Dani + Anja", "Michael W. + Dirk"],
               ["Marion + Volker", "Uli + Jascha"],
               ["Mike + Mary", "Martin + Gudrun"],
-              ["Sabine + Thomas", "Fredericke + Heike"]
+              ["Sabine + Thomas", "Friederike + Heike"]
             ],
             // Schwarz gegen Rot: wer hat den Flight gewonnen? "schwarz", "rot" oder
             // "unentschieden" (dann bekommen beide Teams einen Punkt). Ein Sieg = 1 Punkt.
             duell: ["schwarz", "rot", "rot", "unentschieden", "schwarz"]
+          },
+          // Präsidentschafts-Wertung (einzeln): Punkte des Tages pro Person –
+          // für jede gespielte 5 gibt es einen Punkt. Namen wie im kader.
+          praesident: {
+            "Dirk": 9, "Michael W.": 9, "Michael B.": 5, "Friederike": 8, "Heike": 8,
+            "Stefan": 5, "Martin": 4, "Gudrun": 4, "Jascha": 6, "Uli": 6,
+            "Volker": 8, "Marion": 8, "Gerd": 5, "Mary": 9, "Thomas": 11,
+            "Anja": 6, "Sabine": 11, "Mike": 9, "Dani": 6, "Petra": 5
           }
         },
         {
@@ -374,7 +382,7 @@ const REISE = {
             { t: "09:30", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
             { t: "10:30", tee: true, x: "Abschlag „Kampf der Titanen“ – Lochwettspiel Einzel, Schwarz gegen Rot" },
             { t: "16:30", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
-            { t: "18:30", eve: true, bis: "23:59", key: true, x: "Treffen an der Bar – Siegerehrung: Welches Team hat gewonnen? Kürung des Golf-Präsidenten" },
+            { t: "18:30", eve: true, bis: "23:59", key: true, x: "Treffen an der Bar – Siegerehrung: Welches Team hat gewonnen? Wer wird Golf-Präsidentin oder Golf-Präsident?" },
             { t: "19:00", x: "Gala-Abend" },
             { x: "Große Party an der Bar – wir feiern die Siegergruppe. Offenes Ende." }
           ],
