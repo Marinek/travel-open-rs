@@ -147,6 +147,13 @@ body.w2 .platz{color:#fff}
 .punkt{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;flex:none}
 .team-rot .punkt{background:var(--rot)}
 .team-schwarz .punkt{background:var(--schwarz);box-shadow:0 0 0 1.5px var(--ink)}
+.paar.sieger.team-rot,.paar.sieger.team-schwarz{border-color:var(--sonne);border-width:2px}
+.liga th.pkt{white-space:nowrap}
+.paar.remis{border-style:dashed;background:rgba(154,163,178,.14)}
+.paar.remis .rang{background:#C9CFD8;color:var(--tinte)}
+.duell-tag{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.6rem 0 0;font-weight:700}
+.duell-tag b{font:800 1.5rem/1 var(--display);letter-spacing:.04em}
+.liga tr.summe td{font-weight:700;border-top:2px solid var(--ink);border-bottom:0}
 .kader{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;max-width:34rem}
 .kader div{border:1.5px solid var(--line);border-radius:.8rem;padding:.6rem .8rem}
 .kader .k-rot{border-color:var(--rot)}
@@ -291,14 +298,14 @@ details.formen dd{margin:0;color:var(--muted)}
         : `<p>Vier Turnierrunden auf GC Oliver und GC Foret, dazwischen ein freier Tag und der Ausflug nach El Djem und Kairouan. Am Freitagabend wird der Wanderpokal vergeben.</p>`;
       info = `<h2>Wer holt den Wanderpokal?</h2>${pokal}`;
     } else {
-      const st = R.stand;
+      const st = teamStand(w);
       const s1 = st ? st.schwarz : 0, s2 = st ? st.rot : 0;
       innen = `<div class="duell" role="img" aria-label="Spielstand Schwarz ${s1} zu Rot ${s2}">
         <div><b>${s1}</b><span>Schwarz</span></div><div><b>${s2}</b><span>Rot</span></div>
         <p>${kurz(w.von)}–${kurz(w.bis)}2026</p></div>`;
       const ersterSpieltag = w.tage.find(t => t.art === "golf");
       const stand = st
-        ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot}.</p>`
+        ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${standText(st)}.</p>`
         : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird der Golf-Präsident gekürt.</p>`;
       const k = w.kader;
       const kader = k ? `<div class="kader">${[["schwarz","Schwarz"],["rot","Rot"]].map(([f, n]) =>
@@ -307,7 +314,7 @@ details.formen dd{margin:0;color:var(--muted)}
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
-        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a>${w.tage.some(punkteAm) ? `<a class="knopf" href="#liga" onclick="document.getElementById('liga').open=true">Gesamtwertung</a>` : ""}</div>
+        <div class="knopfzeile"><a class="knopf voll" href="#kalender">In den Kalender</a><a class="knopf" href="fotos.html">Fotos</a>${w.tage.some(t => punkteAm(t) || teamPunkteAm(t)) ? `<a class="knopf" href="#liga" onclick="document.getElementById('liga').open=true">Gesamtwertung</a>` : ""}</div>
       </div></section>`;
   }
 
@@ -333,7 +340,38 @@ details.formen dd{margin:0;color:var(--muted)}
     liste.forEach((s, i) => s.rang = i && s.punkte === liste[i-1].punkte && liste[i-1].name !== stecher ? liste[i-1].rang : i + 1);
     return liste;
   }
+  // ---------- Schwarz gegen Rot: Teampunkte ----------
+  // abschlag.duell: pro Flight "schwarz", "rot" oder "unentschieden" (beide +1)
+  function teamPunkteAm(tag){
+    const d = tag.abschlag && tag.abschlag.duell;
+    if (!d) return null;
+    const p = {schwarz: 0, rot: 0};
+    d.forEach(x => x === "unentschieden" ? (p.schwarz++, p.rot++) : p[x] != null && p[x]++);
+    return p;
+  }
+  function teamStand(w){
+    const tage = w.tage.map(teamPunkteAm).filter(Boolean);
+    if (!tage.length) return R.stand;
+    return tage.reduce((a, p) => ({schwarz: a.schwarz + p.schwarz, rot: a.rot + p.rot}), {schwarz: 0, rot: 0});
+  }
+  const standText = st => st.schwarz === st.rot ? "Gleichstand" : `${st.schwarz > st.rot ? "Schwarz" : "Rot"} führt`;
+  function teamLiga(w){
+    const tage = w.tage.map(t => ({tag: t, p: teamPunkteAm(t)})).filter(x => x.p);
+    if (!tage.length) return "";
+    const st = teamStand(w), letzter = tage[tage.length - 1].tag;
+    const zeilen = tage.map(({tag, p}) => `<tr><td>${wt(tag.datum)} ${kurz(tag.datum)}<small class="vorher">${esc(tag.titel)}</small></td>
+      <td class="pkt">${p.schwarz}</td><td class="pkt">${p.rot}</td></tr>`).join("");
+    return `<details class="liga" id="liga">
+      <summary><span class="liga-titel">Gesamtwertung</span><span class="liga-spitze">Schwarz ${st.schwarz} : ${st.rot} Rot · ${standText(st)}</span><span class="liga-auf" aria-hidden="true"></span></summary>
+      <p>Stand nach ${wtLang(letzter.datum)}, ${kurz(letzter.datum)} · Jeder gewonnene Flight bringt dem Team einen Punkt, bei Unentschieden bekommen beide Teams einen.</p>
+      <div class="liga-rahmen"><table>
+        <thead><tr><th scope="col">Spieltag</th><th scope="col" class="pkt"><span class="team-schwarz">${PUNKT(1)}</span> Schwarz</th><th scope="col" class="pkt"><span class="team-rot">${PUNKT(1)}</span> Rot</th></tr></thead>
+        <tbody>${zeilen}<tr class="summe"><td>Gesamt</td><td class="pkt">${st.schwarz}</td><td class="pkt">${st.rot}</td></tr></tbody></table></div>
+    </details>`;
+  }
+
   function liga(w){
+    if (w.kader) return teamLiga(w);
     const gewertet = w.tage.map(t => ({tag: t, p: punkteAm(t)})).filter(x => x.p);
     if (!gewertet.length) return "";
     const alle = new Set();
@@ -397,20 +435,21 @@ details.formen dd{margin:0;color:var(--muted)}
       const medaille = r => r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : r.startsWith("3.") ? " dritter" : r ? " platziert" : "";
       html += `<li class="teams"><ol aria-label="Teams und Ergebnis">` + a.zeiten.map((z,i) => {
         const p = ergebnis[i + 1] || "", erster = p.startsWith("1.");
-        const rangSchild = r => `<span class="rang">${r.startsWith("1.") ? ICON.pokal : ""}${esc(r)}</span>`;
+        const rangSchild = r => `<span class="rang">${r.startsWith("1.") || r.startsWith("Sieg") ? ICON.pokal : ""}${esc(r)}</span>`;
         // An Paar-Tagen („Karin + Melli“) bekommt jedes 2er-Team ein eigenes Kästchen;
         // wer ohne Partner ist, spielt allein. Ergebnisse können auch beim Paar stehen.
         const namen = kaestchen
           ? (a.teams[i] || []).map(t => {
-              const r = ergebnis[t] || "";
-              const f = farbeVon(t, tag);
-              return `<span class="paar${medaille(r)}${f ? " team-" + f : ""}"${f ? ` title="Team ${f === "rot" ? "Rot" : "Schwarz"}"` : ""}>${PUNKT(f)}${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
+              const f = farbeVon(t, tag), d = a.duell && a.duell[i];
+              const r = ergebnis[t] || (d === "unentschieden" && f ? "Unentschieden · 1 Punkt" : d && d === f ? "Sieg · 1 Punkt" : "");
+              const klasse = d === "unentschieden" && f ? " remis" : d && d === f ? " sieger" : medaille(r);
+              return `<span class="paar${klasse}${f ? " team-" + f : ""}"${f ? ` title="Team ${f === "rot" ? "Rot" : "Schwarz"}"` : ""}>${PUNKT(f)}${esc(t)}${paarTag && !t.includes("+") ? "<small>spielt allein</small>" : ""}${r ? rangSchild(r) : ""}</span>`;
             }).join("")
           : (a.teams[i] || []).map(esc).join(", ");
         return `<li class="${erster ? "sieger" : p ? "platziert" : ""}">
           <span class="team-nr">${a.label} ${i+1}<b>${z}</b></span>
           <span class="team-namen${kaestchen ? " paare" : ""}">${namen}${p ? rangSchild(p) : ""}</span></li>`;
-      }).join("") + `</ol>${a.notiz ? `<p class="teams-notiz">${esc(a.notiz)}</p>` : ""}</li>`;
+      }).join("") + `</ol>${teamPunkteAm(tag) ? `<p class="duell-tag">Tagesergebnis: <span class="team-schwarz">${PUNKT(1)}</span> Schwarz <b>${teamPunkteAm(tag).schwarz} : ${teamPunkteAm(tag).rot}</b> Rot <span class="team-rot">${PUNKT(1)}</span></p>` : ""}${a.notiz ? `<p class="teams-notiz">${esc(a.notiz)}</p>` : ""}</li>`;
     } else if (it.tee && tag.abschlag) {
       html += `<li class="flights" aria-label="Abschlagzeiten">` + tag.abschlag.zeiten.map((z,i) =>
         `<span>${tag.abschlag.label} ${i+1}<b>${z}</b></span>`).join("") + `</li>`;

@@ -76,15 +76,21 @@ function tagesText(tag) {
   if (tag.abschlag) {
     z.push("");
     z.push("Abschlagzeiten:");
-    const { teams = [], ergebnis = {} } = tag.abschlag;
+    const { teams = [], ergebnis = {}, duell } = tag.abschlag;
     tag.abschlag.zeiten.forEach((t, i) => {
       const paarTag = teams.some((f) => f.some((t) => t.includes("+")));
       const namen = teams[i]
         ? ` – ${teams[i].map((t) => t + (farbeVon(t, tag) ? ` [${farbeVon(t, tag)}]` : "") + (paarTag && !t.includes("+") ? " (allein)" : "") + (ergebnis[t] ? ` (${ergebnis[t]})` : "")).join(" / ")}`
         : "";
-      const platz = ergebnis[i + 1];
+      const d = duell && duell[i];
+      const platz = ergebnis[i + 1] || (d === "unentschieden" ? "Unentschieden, je 1 Punkt" : d ? `Sieg ${d === "rot" ? "Rot" : "Schwarz"}, 1 Punkt` : "");
       z.push(`${tag.abschlag.label} ${i + 1}: ${t}${namen}${platz ? ` (${platz})` : ""}`);
     });
+    if (duell) {
+      const p = { schwarz: 0, rot: 0 };
+      duell.forEach((x) => (x === "unentschieden" ? (p.schwarz++, p.rot++) : p[x]++));
+      z.push(`Tagesergebnis: Schwarz ${p.schwarz} : ${p.rot} Rot`);
+    }
     if (tag.abschlag.notiz) z.push(tag.abschlag.notiz);
   }
   if (tag.sonderpreise) {

@@ -32,8 +32,8 @@ const REISE = {
   zeitzone: "Africa/Tunis",
   rueckflug: "Flug nach Köln, Abholung ca. 18:00 Uhr",
 
-  // Ergebnisse Schwarz gegen Rot: hier nach jedem Spieltag eintragen,
-  // z. B. stand: { schwarz: 3, rot: 2 }. null = noch nichts gespielt.
+  // Ergebnisse Schwarz gegen Rot: werden aus abschlag.duell der Spieltage
+  // berechnet. Nur zum Überschreiben, z. B. stand: { schwarz: 3, rot: 2 }.
   stand: null,
 
   // Travel Open: Sieger nach der Siegerehrung eintragen, z. B. "Erika Muster"
@@ -283,7 +283,10 @@ const REISE = {
               ["Marion + Volker", "Uli + Jascha"],
               ["Mike + Mary", "Martin + Gudrun"],
               ["Sabine + Thomas", "Fredericke + Heike"]
-            ]
+            ],
+            // Schwarz gegen Rot: wer hat den Flight gewonnen? "schwarz", "rot" oder
+            // "unentschieden" (dann bekommen beide Teams einen Punkt). Ein Sieg = 1 Punkt.
+            duell: ["schwarz", "rot", "rot", "unentschieden", "schwarz"]
           }
         },
         {
