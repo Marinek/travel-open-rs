@@ -384,10 +384,12 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
         <div class="knoepfe">
           <button class="knopf" type="button" data-schritt="-1" aria-label="Vorheriges Foto">‹</button>
           <button class="knopf" type="button" data-schritt="1" aria-label="Nächstes Foto">›</button>
+          <button class="knopf" type="button" data-laden>Herunterladen</button>
           <a class="knopf" target="_blank" rel="noopener">Original</a>
           <button class="knopf" type="button" data-zu>Schließen</button>
         </div></figcaption></figure>`;
       document.body.append(d);
+      d.querySelector("[data-laden]").addEventListener("click", herunterladen);
       d.querySelectorAll("[data-schritt]").forEach(b => b.addEventListener("click", () => grossZeige(grossI + +b.dataset.schritt)));
       d.querySelector("[data-zu]").addEventListener("click", () => d.close());
       d.addEventListener("close", () => d.querySelector("video").pause());
@@ -423,9 +425,53 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       img.src = f.vorschau;
     }
     d.querySelector("a").href = f.orig;
+    ladeDatei = null;
+    const knopf = d.querySelector("[data-laden]");
+    knopf.textContent = "Herunterladen"; knopf.disabled = false;
     d.querySelector(".wer").textContent = [f.name, tagText(f.tag) + uhrzeit(f)].filter(Boolean).join(" · ");
     const g = d.querySelector(".geschichte");
     g.textContent = f.geschichte || ""; g.hidden = !f.geschichte;
+  }
+
+  // Herunterladen: Am Handy öffnet sich das Teilen-Menü („Bild sichern“ / „In Fotos speichern“),
+  // am Rechner wird die Datei gespeichert. Das Original kommt per fetch aus dem Bucket (CORS erlaubt GET).
+  // iOS lässt das Teilen-Menü nur kurz nach dem Tippen zu; dauert das Laden länger, braucht es einen zweiten Tipp.
+  let ladeDatei = null; // { i, datei } – schon geladenes Original des gezeigten Fotos
+  async function herunterladen(){
+    const knopf = $("#gross [data-laden]"), i = grossI, f = galerie[i];
+    if (!f) return;
+    try {
+      if (!ladeDatei || ladeDatei.i !== i) {
+        knopf.disabled = true; knopf.textContent = "Lädt …";
+        const r = await fetch(f.orig);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const blob = await r.blob();
+        if (grossI !== i) return; // inzwischen weitergeblättert
+        const endung = (new URL(f.orig).pathname.match(/\.(\w+)$/) || [, f.video ? "mp4" : "jpg"])[1];
+        const name = ["tunesien-2026", f.tag, f.name].filter(Boolean).join("-").replace(/[^\wÄÖÜäöüß.-]+/g, "_") + "-" + f.id.slice(0, 8) + "." + endung;
+        ladeDatei = { i, datei: new File([blob], name, { type: blob.type || (f.video ? "video/mp4" : "image/jpeg") }) };
+      }
+      const datei = ladeDatei.datei;
+      const handy = matchMedia("(pointer: coarse)").matches;
+      if (handy && navigator.canShare && navigator.canShare({ files: [datei] })) {
+        try {
+          await navigator.share({ files: [datei] });
+        } catch (e) {
+          if (e.name === "NotAllowedError") { knopf.disabled = false; knopf.textContent = "Jetzt speichern"; return; }
+          if (e.name !== "AbortError") throw e;
+        }
+      } else {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(datei); a.download = datei.name;
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      }
+      knopf.disabled = false; knopf.textContent = "Herunterladen";
+    } catch (e) {
+      // Notlösung: Original in neuem Tab öffnen, dort lange drücken bzw. Rechtsklick → Speichern
+      knopf.disabled = false; knopf.textContent = "Herunterladen";
+      window.open(f.orig, "_blank", "noopener");
+    }
   }
 
   // ---------- Aufnahmezeit ----------

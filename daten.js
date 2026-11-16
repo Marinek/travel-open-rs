@@ -300,20 +300,29 @@ const REISE = {
         {
           datum: "2026-11-16",
           art: "golf",
-          titel: "The Power of History",
+          titel: "Scramble Stableford",
           platz: "GC Foret",
-          formen: ["stablefordlwsp", "einzel"],
-          zusatz: "Stableford-Lochwettspiel Einzel",
+          formen: ["scramble", "stableford"],
           items: [
             { t: "08:00", ab: true, x: "Frühstück" },
             { t: "09:30", go: true, x: "Privater Bustransfer zum GC Foret" },
             { t: "10:00", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "10:54", tee: true, x: "Abschlag „The Power of History“ – Stableford-Lochwettspiel Einzel" },
+            { t: "10:54", tee: true, x: "Abschlag Scramble Stableford" },
             { t: "17:00", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
             { t: "19:00", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Flight", zeiten: ["10:54", "11:02", "11:10", "11:18", "11:26"] }
+          abschlag: {
+            label: "Flight",
+            zeiten: ["10:54", "11:02", "11:10", "11:18", "11:26"],
+            teams: [
+              ["Thomas + Mike", "Jascha + Martin"],
+              ["Dani + Marion", "Uli + Heike"],
+              ["Mary + Sabine", "Friederike + Dirk"],
+              ["Gerd + Anja", "Gudrun + Michael B."],
+              ["Volker + Petra", "Michael W. + Stefan"]
+            ]
+          }
         },
         {
           datum: "2026-11-17",
