@@ -321,7 +321,8 @@ const REISE = {
               ["Mary + Sabine", "Friederike + Dirk"],
               ["Gerd + Anja", "Gudrun + Michael B."],
               ["Volker + Petra", "Michael W. + Stefan"]
-            ]
+            ],
+            duell: ["schwarz", "rot", "schwarz", "rot", "rot"]
           },
           praesident: {
             "Dirk": 7, "Michael W.": 10, "Michael B.": 7, "Friederike": 7, "Heike": 8,
