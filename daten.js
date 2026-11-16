@@ -322,6 +322,12 @@ const REISE = {
               ["Gerd + Anja", "Gudrun + Michael B."],
               ["Volker + Petra", "Michael W. + Stefan"]
             ]
+          },
+          praesident: {
+            "Dirk": 7, "Michael W.": 10, "Michael B.": 7, "Friederike": 7, "Heike": 8,
+            "Stefan": 10, "Martin": 3, "Gudrun": 7, "Jascha": 3, "Uli": 8,
+            "Volker": 10, "Marion": 10, "Gerd": 4, "Mary": 8, "Thomas": 8,
+            "Anja": 4, "Sabine": 8, "Mike": 8, "Dani": 10, "Petra": 10
           }
         },
         {
