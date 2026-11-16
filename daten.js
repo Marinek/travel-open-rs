@@ -348,7 +348,17 @@ const REISE = {
             { t: "19:15", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["11:00", "11:08", "11:16", "11:24", "11:32"] }
+          abschlag: {
+            label: "Team",
+            zeiten: ["11:00", "11:08", "11:16", "11:24", "11:32"],
+            teams: [
+              ["Marion + Petra", "Friederike + Jascha"],
+              ["Gerd + Volker", "Michael B. + Martin"],
+              ["Dani + Thomas", "Heike + Uli"],
+              ["Anja + Mary", "Michael W. + Gudrun"],
+              ["Mike + Sabine", "Dirk + Stefan"]
+            ]
+          }
         },
         {
           datum: "2026-11-18",
