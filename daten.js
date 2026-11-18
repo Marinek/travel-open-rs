@@ -394,12 +394,22 @@ const REISE = {
             { t: "08:00", ab: true, x: "Frühstück" },
             { t: "09:00", go: true, x: "Privater Bustransfer zum GC Oliver" },
             { t: "09:30", x: "Gemeinsames Dehnen, Einschlagen auf der Range, Putten" },
-            { t: "10:30", tee: true, x: "Abschlag Lochwettspiel 2er-Team: 9 Loch Auswahl-Drive + 9 Loch Klassischer Vierer" },
+            { t: "10:30", tee: true, x: "Abschlag Lochwettspiel 2er-Team: 9 Loch Auswahl-Drive + 9 Loch Klassischer Vierer (linker Abschlag)" },
             { t: "16:30", back: true, x: "Abholung mit dem privaten Bus ins Hotel" },
             { t: "19:00", eve: true, x: "Treffen an der Bar – Siegerehrung – Abendessen" },
             { x: "Ausklang an der Bar" }
           ],
-          abschlag: { label: "Team", zeiten: ["10:30", "10:38", "10:46", "10:54", "11:02"] }
+          abschlag: {
+            label: "Flight",
+            zeiten: ["10:30", "10:38", "10:46", "10:54", "11:02"],
+            teams: [
+              ["Mike + Dani", "Heike + Stefan"],
+              ["Anja + Petra", "Michael B. + Friederike"],
+              ["Sabine + Marion", "Uli + Martin"],
+              ["Gerd + Volker", "Gudrun + Jascha"],
+              ["Mary + Thomas", "Michael W. + Dirk"]
+            ]
+          }
         },
         {
           datum: "2026-11-20",
