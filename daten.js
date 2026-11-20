@@ -39,6 +39,10 @@ const REISE = {
   // Travel Open: Sieger nach der Siegerehrung eintragen, z. B. "Erika Muster"
   sieger: "Melli (nach einem Stechen)",
 
+  // Schwarz gegen Rot: Golf-Präsident(in) nach der Siegerehrung eintragen,
+  // optional mit Foto (Datei im Projektordner).
+  praesident: { name: "Thomas", foto: "praesident-2026.jpg" },
+
   // Fotos (eigene Seite fotos.html): Adresse des Cloud-Run-Dienstes,
   // gibt fotos-dienst/setup.sh aus. Leer = Fotoseite zeigt „noch nicht eingerichtet“.
   fotos: { dienst: "https://fotos-dienst-zddr4hc3fa-ey.a.run.app" },
@@ -453,6 +457,14 @@ const REISE = {
               ["Marion", "Michael W."],
               ["Dani", "Martin"]
             ]
+          },
+          // Tagespunkte = Endstand laut Plakat minus Stand nach dem 19.11.
+          // Jascha, Uli und Sabine ohne neuen Endstand auf dem Plakat: 0.
+          praesident: {
+            "Dirk": 4, "Michael W.": 7, "Michael B.": 7, "Friederike": 6, "Heike": 3,
+            "Stefan": 7, "Martin": 6, "Gudrun": 3, "Jascha": 0, "Uli": 0,
+            "Volker": 5, "Marion": 7, "Gerd": 4, "Mary": 3, "Thomas": 4,
+            "Anja": 5, "Sabine": 0, "Mike": 3, "Dani": 5, "Petra": 6
           }
         },
         {
