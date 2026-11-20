@@ -244,10 +244,10 @@ const REISE = {
       // Wer spielt für welches Team? Paare in den Flights werden danach eingefärbt.
       kader: {
         schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike", "Lara"],
-        rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas"]
+        rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas", "Claudia"]
       },
       // Captains spielen mit, zählen aber nicht in der Präsidentschafts-Wertung.
-      kapitaen: { schwarz: "Lara" },
+      kapitaen: { schwarz: "Lara", rot: "Claudia" },
       tage: [
         {
           datum: "2026-11-14",
