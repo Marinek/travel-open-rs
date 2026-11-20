@@ -243,9 +243,11 @@ const REISE = {
       untertitel: "Zwei Teams, fünf Spieltage – und am Ende eine Golf-Präsidentin oder ein Golf-Präsident.",
       // Wer spielt für welches Team? Paare in den Flights werden danach eingefärbt.
       kader: {
-        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike"],
+        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike", "Lara"],
         rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas"]
       },
+      // Captains spielen mit, zählen aber nicht in der Präsidentschafts-Wertung.
+      kapitaen: { schwarz: "Lara" },
       tage: [
         {
           datum: "2026-11-14",
@@ -456,7 +458,8 @@ const REISE = {
               ["Mike", "Lara"],
               ["Marion", "Michael W."],
               ["Dani", "Martin"]
-            ]
+            ],
+            duell: ["schwarz", "rot", "rot", "rot", "schwarz", "rot", "schwarz", "schwarz", "rot", "schwarz"]
           },
           // Tagespunkte = Endstand laut Plakat minus Stand nach dem 19.11.
           // Jascha, Uli und Sabine ohne neuen Endstand auf dem Plakat: 0.

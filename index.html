@@ -308,12 +308,17 @@ details.formen dd{margin:0;color:var(--muted)}
         <div><b>${s1}</b><span>Schwarz</span></div><div><b>${s2}</b><span>Rot</span></div>
         <p>${kurz(w.von)}–${kurz(w.bis)}2026</p></div>`;
       const ersterSpieltag = w.tage.find(t => t.art === "golf");
-      const stand = st
+      // Nach dem Finale (alle Spiele eingetragen) steht der Endstand da
+      const fin = w.tage.find(t => t.finale), fa = fin && fin.abschlag;
+      const vorbei = st && fa && fa.duell && fa.teams && fa.duell.filter(Boolean).length === fa.teams.length;
+      const stand = vorbei
+        ? `<p><strong>Endstand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${st.schwarz === st.rot ? "unentschieden!" : `Team ${st.schwarz > st.rot ? "Schwarz" : "Rot"} gewinnt Schwarz gegen Rot 2026! 🏆`}</strong></p>`
+        : st
         ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${standText(st)}.</p>`
         : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird die Golf-Präsidentin oder der Golf-Präsident gekürt.</p>`;
       const k = w.kader;
       const kader = k ? `<div class="kader">${[["schwarz","Schwarz"],["rot","Rot"]].map(([f, n]) =>
-        `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
+        `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}${(w.kapitaen || {})[f] === x ? " <small>(Captain)</small>" : ""}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
       const P = R.praesident;
       const praesident = P && P.name ? `<figure class="praesident">${P.foto ? `<img src="${esc(P.foto)}" alt="${esc(P.name)} mit Krone – Golf-Präsident 2026">` : ""}
         <figcaption><p>👑 Golf-Präsident 2026</p><strong>${esc(P.name)}</strong><p>Herzlichen Glückwunsch!</p></figcaption></figure>` : "";
@@ -371,6 +376,7 @@ details.formen dd{margin:0;color:var(--muted)}
     const alle = new Set();
     w.tage.forEach(t => (t.abschlag && t.abschlag.teams || []).flat().flatMap(spielerVon).forEach(n => alle.add(n)));
     if (praes) Object.values(w.kader).flat().forEach(n => alle.add(n));
+    if (praes) Object.values(w.kapitaen || {}).forEach(n => alle.delete(n));
     const stand = {}; alle.forEach(n => stand[n] = 0);
     let vorher = null;
     gewertet.forEach((x, i) => {
