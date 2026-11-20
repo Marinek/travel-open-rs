@@ -419,7 +419,8 @@ details.formen dd{margin:0;color:var(--muted)}
       const a = tag.abschlag, ergebnis = a.ergebnis || {};
       const paarTag = a.teams.some(f => f.some(t => t.includes("+")));
       // Kästchen pro Paar – oder pro Spieler, wenn an Einzeltagen Spieler platziert sind
-      const kaestchen = paarTag || a.teams.some(f => f.some(t => ergebnis[t]));
+      // (auch an Einzeltagen mit Teamfarben, z. B. Schwarz gegen Rot)
+      const kaestchen = paarTag || a.teams.some(f => f.some(t => ergebnis[t] || farbeVon(t, tag)));
       const medaille = r => r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : r.startsWith("3.") ? " dritter" : r ? " platziert" : "";
       html += `<li class="teams"><ol aria-label="Teams und Ergebnis">` + a.zeiten.map((z,i) => {
         const p = ergebnis[i + 1] || "", erster = p.startsWith("1.");

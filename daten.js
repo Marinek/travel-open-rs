@@ -436,7 +436,24 @@ const REISE = {
             { t: "19:00", x: "Gala-Abend" },
             { x: "Große Party an der Bar – wir feiern die Siegergruppe. Offenes Ende." }
           ],
-          abschlag: { label: "Flight", zeiten: ["10:30", "10:38", "10:46", "10:54", "11:02"] }
+          // Einzel: zwei Spiele pro Flight, deshalb jede Abschlagzeit zweimal.
+          // Ein Ergebnis später als duell mit 10 Einträgen (eins pro Spiel).
+          abschlag: {
+            label: "Einzel",
+            zeiten: ["10:30", "10:30", "10:38", "10:38", "10:46", "10:46", "10:54", "10:54", "11:02", "11:02"],
+            teams: [
+              ["Gerd", "Friederike"],
+              ["Volker", "Michael B."],
+              ["Mary", "Gudrun"],
+              ["Anja", "Stefan"],
+              ["Thomas", "Dirk"],
+              ["Petra", "Heike"],
+              ["Sabine", "Jascha"],
+              ["Mike", "Lara"],
+              ["Marion", "Michael W."],
+              ["Dani", "Martin"]
+            ]
+          }
         },
         {
           datum: "2026-11-21",
