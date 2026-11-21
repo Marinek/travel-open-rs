@@ -32,7 +32,7 @@ public class FotoController {
     /** Aufnahmedaten, die weiter zurückliegen, gelten als unglaubwürdig (falsch gestellte Kamera). */
     static final int MAX_ALTER_TAGE = 60;
     private static final DateTimeFormatter AUFNAHME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    private static final Pattern TAG = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    static final Pattern TAG =Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final Map<String, String> ENDUNG = Map.ofEntries(
             Map.entry("image/jpeg", "jpg"),
             Map.entry("image/png", "png"),

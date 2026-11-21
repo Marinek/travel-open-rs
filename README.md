@@ -78,6 +78,15 @@ Das geht nur direkt im Bucket. In der [Cloud Console](https://console.cloud.goog
 gcloud storage rm "gs://tunesien-2026-fotos-fotos/travel-open/*/2026-11-12/<id>.*"
 ```
 
+### Alle Fotos herunterladen
+
+Jede Gruppe hat einen **geheimen Download-Link** ohne Passwort, z. B. `…/fotos.html#download=3f9c…` (32 zufällige Zeichen, nicht zu erraten). `setup.sh` erzeugt die Links beim ersten Lauf, trägt sie in `.env` ein (`DOWNLOAD_TRAVEL_OPEN`, `DOWNLOAD_SCHWARZ_GEGEN_ROT`) und gibt sie am Ende aus. Wer den Link hat, kann alle Fotos seiner Gruppe laden, deshalb nur an die Gruppe geben.
+
+- **Am Handy:** Die Seite zeigt Päckchen von höchstens 20 Dateien pro Tag. Antippen lädt sie, dann öffnet sich das Teilen-Menü: am iPhone „… Objekte sichern“, bei Android „Google Fotos“ oder „Speichern“. So landen die Originale direkt in der Fotos-App. Dauert das Laden länger, steht „Jetzt sichern“ auf dem Knopf und ein zweiter Tipp öffnet das Menü (das verlangt iOS).
+- **Am Computer:** ein ZIP mit allen Originalen, ein Ordner pro Tag, Dateinamen wie `2026-11-16_10-15_Jürgen_ab12cd34.jpg`. Es gibt auch ein ZIP pro Tag. Der Dienst reicht die Dateien direkt aus dem Bucket durch, ohne Zwischenspeicher. Ein Download darf höchstens eine Stunde dauern; bei langsamer Leitung lieber tageweise.
+
+Link ungültig machen: in `.env` den Wert leeren (dann wird ein neuer erzeugt) und `setup.sh` noch einmal ausführen.
+
 ### Nach der Reise
 
 ```
@@ -93,7 +102,7 @@ lädt die Originale je Gruppe herunter, sortiert in Ordnern pro Tag. Name und Ge
 ./fotos-dienst/start-lokal.sh
 ```
 
-Startet Programm und Fotoseite auf `http://localhost:8000` mit einem nachgebauten Fotodienst und öffnet `fotos.html`. Google Cloud braucht es dafür nicht. Passwörter: `test` (Travel Open) und `test2` (Schwarz gegen Rot). Die Fotos liegen nur im Speicher und sind nach dem Beenden (Ctrl+C) weg. Voraussetzung ist Node.js.
+Startet Programm und Fotoseite auf `http://localhost:8000` mit einem nachgebauten Fotodienst und öffnet `fotos.html`. Google Cloud braucht es dafür nicht. Passwörter: `test` (Travel Open) und `test2` (Schwarz gegen Rot). Download-Seite: `fotos.html#download=download-test-travel-open` bzw. `…-schwarz-gegen-rot`. Die Fotos liegen nur im Speicher und sind nach dem Beenden (Ctrl+C) weg. Voraussetzung ist Node.js.
 
 Mit dem **echten Bucket** (Java 21 nötig, `setup.sh` muss gelaufen sein):
 

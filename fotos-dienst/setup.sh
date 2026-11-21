@@ -68,6 +68,15 @@ if [[ "$(klein "$PASSWORT_TRAVEL_OPEN")" == "$(klein "$PASSWORT_SCHWARZ_GEGEN_RO
 fi
 GRUPPEN="travel-open:${PASSWORT_TRAVEL_OPEN},schwarz-gegen-rot:${PASSWORT_SCHWARZ_GEGEN_ROT}"
 
+# Geheime Download-Links (alle Fotos einer Gruppe herunterladen). Fehlt einer, wird er zufällig
+# erzeugt und in .env eingetragen. Neuer Wert in .env + setup.sh = alter Link geht nicht mehr.
+neuer_token() {      # $1 = Variablenname
+  if [[ -z "${!1:-}" ]]; then printf -v "$1" '%s' "$(openssl rand -hex 16)"; in_env_setzen "$1" "${!1}"; fi
+}
+neuer_token DOWNLOAD_TRAVEL_OPEN
+neuer_token DOWNLOAD_SCHWARZ_GEGEN_ROT
+DOWNLOADS="travel-open:${DOWNLOAD_TRAVEL_OPEN},schwarz-gegen-rot:${DOWNLOAD_SCHWARZ_GEGEN_ROT}"
+
 gcloud config set project "$PROJEKT" >/dev/null
 
 echo "→ APIs aktivieren"
@@ -126,9 +135,9 @@ mit_wiederholung gcloud projects add-iam-policy-binding "$PROJEKT" \
 echo "→ Deploy auf Cloud Run (dauert ein paar Minuten)"
 gcloud run deploy "$DIENST" --source . --region "$REGION" \
   --service-account "$SA" --allow-unauthenticated \
-  --cpu-boost --min-instances 0 --max-instances 3 --memory 512Mi \
+  --cpu-boost --min-instances 0 --max-instances 3 --memory 512Mi --timeout 3600 \
   --set-build-env-vars GOOGLE_RUNTIME_VERSION=21 \
-  --set-env-vars "^@^FOTOS_BUCKET=${BUCKET}@FOTOS_GRUPPEN=${GRUPPEN}@FOTOS_ORIGIN=${ORIGINS}"
+  --set-env-vars "^@^FOTOS_BUCKET=${BUCKET}@FOTOS_GRUPPEN=${GRUPPEN}@FOTOS_ORIGIN=${ORIGINS}@FOTOS_DOWNLOADS=${DOWNLOADS}"
 
 URL="$(gcloud run services describe "$DIENST" --region "$REGION" --format='value(status.url)')"
 SEITE="${SEITE%/}/"
@@ -150,6 +159,11 @@ Fertig.
    ${SEITE}fotos.html#diashow
 
 5. Kärtchen drucken: qr-karte.html im Browser öffnen.
+
+6. Alle Fotos herunterladen (geheime Links, nur an die jeweilige Gruppe geben):
+   Travel Open:        ${SEITE}fotos.html#download=${DOWNLOAD_TRAVEL_OPEN}
+   Schwarz gegen Rot:  ${SEITE}fotos.html#download=${DOWNLOAD_SCHWARZ_GEGEN_ROT}
+   Am Handy in die Fotos-App, am Computer als ZIP. Der Bucket löscht die Fotos nach 90 Tagen.
 
 Alle Einstellungen und Passwörter stehen in fotos-dienst/.env (von Git ausgeschlossen).
 EOF

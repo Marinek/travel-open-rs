@@ -104,6 +104,19 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
 .diashow .zu{all:unset;position:absolute;top:1rem;right:1rem;width:3rem;height:3rem;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.5);font:400 2rem/1 var(--text);cursor:pointer;opacity:.6}
 .diashow .zu:hover,.diashow .zu:focus-visible{opacity:1}
 
+.pakete{display:grid;gap:.5rem;margin-top:1.2rem}
+.paket{justify-content:space-between;width:100%;text-align:left;padding:.8rem 1rem}
+.paket small{display:block;font-weight:400;font-size:.92rem;color:var(--muted)}
+.paket.voll small{color:#fff}
+.paket .zustand{white-space:nowrap;font-size:.95rem}
+.paket.fertig{border-color:var(--line)}
+.paket.fertig .zustand{color:#1F8A4C}
+body.w2 .paket.fertig .zustand{color:#4ED38A}
+.tage-links{margin:.6rem 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.5rem 1.4rem}
+.anleitung .tage-links li{padding:0;font-size:1rem;counter-increment:none}
+.anleitung .tage-links li::before{content:none}
+.kopfbereich h1.lang{font-size:clamp(2.2rem,9.5vw,4rem)}
+
 .fuss{padding:2.5rem 1.25rem 3rem;color:var(--muted);font-size:.95rem;display:flex;flex-wrap:wrap;gap:.4rem 1.2rem}
 </style>
 </head>
@@ -437,19 +450,23 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
   // am Rechner wird die Datei gespeichert. Das Original kommt per fetch aus dem Bucket (CORS erlaubt GET).
   // iOS lässt das Teilen-Menü nur kurz nach dem Tippen zu; dauert das Laden länger, braucht es einen zweiten Tipp.
   let ladeDatei = null; // { i, datei } – schon geladenes Original des gezeigten Fotos
+  async function originalDatei(f){
+    const r = await fetch(f.orig);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const blob = await r.blob();
+    const endung = (new URL(f.orig).pathname.match(/\.(\w+)$/) || [, f.video ? "mp4" : "jpg"])[1];
+    const name = ["tunesien-2026", f.tag, f.name].filter(Boolean).join("-").replace(/[^\wÄÖÜäöüß.-]+/g, "_") + "-" + f.id.slice(0, 8) + "." + endung;
+    return new File([blob], name, { type: blob.type || (f.video ? "video/mp4" : "image/jpeg") });
+  }
   async function herunterladen(){
     const knopf = $("#gross [data-laden]"), i = grossI, f = galerie[i];
     if (!f) return;
     try {
       if (!ladeDatei || ladeDatei.i !== i) {
         knopf.disabled = true; knopf.textContent = "Lädt …";
-        const r = await fetch(f.orig);
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        const blob = await r.blob();
+        const datei = await originalDatei(f);
         if (grossI !== i) return; // inzwischen weitergeblättert
-        const endung = (new URL(f.orig).pathname.match(/\.(\w+)$/) || [, f.video ? "mp4" : "jpg"])[1];
-        const name = ["tunesien-2026", f.tag, f.name].filter(Boolean).join("-").replace(/[^\wÄÖÜäöüß.-]+/g, "_") + "-" + f.id.slice(0, 8) + "." + endung;
-        ladeDatei = { i, datei: new File([blob], name, { type: blob.type || (f.video ? "video/mp4" : "image/jpeg") }) };
+        ladeDatei = { i, datei };
       }
       const datei = ladeDatei.datei;
       const handy = matchMedia("(pointer: coarse)").matches;
@@ -471,6 +488,130 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
       // Notlösung: Original in neuem Tab öffnen, dort lange drücken bzw. Rechtsklick → Speichern
       knopf.disabled = false; knopf.textContent = "Herunterladen";
       window.open(f.orig, "_blank", "noopener");
+    }
+  }
+
+  // ---------- Alle Fotos herunterladen (geheimer Link) ----------
+  // fotos.html#download=<token> – ohne Passwort, nur zum Herunterladen, für die ganze Gruppe.
+  // Am Handy: Päckchen pro Tag → Teilen-Menü → „Sichern“ legt sie in die Fotos-App.
+  // Am Computer (und als Notlösung am Handy): ein ZIP, ein Ordner pro Tag.
+  // Päckchen klein halten: alle Dateien eines Päckchens liegen beim Sichern im Speicher des Handys.
+  const PAKET_DATEIEN = 20, PAKET_BYTES = 150e6;
+  const groesse = b => b >= 1e9 ? (b / 1e9).toLocaleString("de-DE", {maximumFractionDigits: 1}) + " GB"
+    : Math.max(1, Math.round(b / 1e6)) + " MB";
+
+  async function zeigeDownload(token){
+    const basis = F.dienst.replace(/\/+$/, "") + "/download/" + encodeURIComponent(token);
+    $("#abmelden").hidden = true;
+    let d;
+    try {
+      const r = await fetch(basis + "/galerie");
+      if (r.status === 404) throw new Error("link");
+      if (!r.ok) throw new Error("http " + r.status);
+      d = await r.json();
+    } catch(e) {
+      $("#inhalt").innerHTML = `<section class="kopfbereich"><h1 class="lang">Fotos herunterladen</h1>
+        <p>${e.message === "link" ? "Dieser Link stimmt nicht. Bitte den Organisator nach dem richtigen Link fragen."
+          : "Die Fotos lassen sich gerade nicht laden. Bitte gleich noch einmal versuchen."}</p></section>`;
+      return;
+    }
+    fotoGruppe = d.gruppe; farben();
+
+    const alle = d.tage.flatMap(t => t.fotos);
+    const gesamt = alle.reduce((a, f) => a + (f.groesse || 0), 0);
+    if (!alle.length) {
+      $("#inhalt").innerHTML = `<section class="kopfbereich"><h1 class="lang">Fotos herunterladen</h1><p>Noch keine Fotos da.</p></section>`;
+      return;
+    }
+
+    // Päckchen in Reihenfolge der Reise: höchstens 20 Dateien bzw. 150 MB, nie über Tagesgrenzen
+    const pakete = [];
+    for (const t of [...d.tage].reverse()) {
+      let p = null;
+      for (const f of t.fotos) {
+        const b = f.groesse || 0;
+        if (!p || p.fotos.length >= PAKET_DATEIEN || p.bytes + b > PAKET_BYTES) pakete.push(p = { tag: t.tag, fotos: [], bytes: 0 });
+        p.fotos.push({...f, tag: t.tag}); p.bytes += b;
+      }
+    }
+    pakete.forEach(p => {
+      const gleiche = pakete.filter(q => q.tag === p.tag);
+      p.teil = gleiche.length > 1 ? `Teil ${gleiche.indexOf(p) + 1} von ${gleiche.length}` : "";
+    });
+
+    // Teilen-Menü mit Dateien gibt es nur am Handy (iPhone: Safari ab iOS 15, Android: Chrome)
+    let handy = false;
+    try { handy = matchMedia("(pointer: coarse)").matches && !!navigator.canShare
+      && navigator.canShare({ files: [new File(["x"], "test.jpg", { type: "image/jpeg" })] }); } catch(e) {}
+
+    const appTeil = `<section class="anleitung">
+        <h2>In die Fotos-App</h2>
+        <p>Tippe die Knöpfe der Reihe nach an – jeder Knopf ist ein Päckchen Fotos.</p>
+        <ol>
+          <li><b>Knopf antippen und kurz warten</b>Die Fotos werden geladen. <span>Steht dort „Jetzt sichern“, noch einmal antippen.</span></li>
+          <li><b>„Sichern“ wählen</b>Es öffnet sich ein Menü. iPhone: <strong>„… Objekte sichern“</strong>. Android: <strong>„Google Fotos“</strong> oder <strong>„Speichern“</strong>.</li>
+          <li><b>Nächsten Knopf antippen</b><span>Erledigte Päckchen bekommen ein Häkchen.</span></li>
+        </ol>
+        <div class="tipp"><p><strong>Tipp:</strong> Im WLAN herunterladen – zusammen sind es ${groesse(gesamt)}.</p></div>
+        <div class="pakete">${pakete.map((p, i) => `<button class="knopf paket" type="button" data-p="${i}">
+            <span>${tagText(p.tag)}<small>${[anzahlMedien(p.fotos), groesse(p.bytes), p.teil].filter(Boolean).join(" · ")}</small></span>
+            <span class="zustand">Sichern</span></button>`).join("")}</div>
+      </section>`;
+    const tage = [...d.tage].reverse();
+    const zipTeil = `<section class="anleitung">
+        <h2>${handy ? "Auf den Computer (ZIP)" : "Alle Fotos als ZIP"}</h2>
+        <p>Eine Datei mit allen Fotos und Videos in voller Größe, ein Ordner pro Tag.${handy ? " Am besten am Computer öffnen." : ""}</p>
+        <div class="knopfzeile"><a class="knopf voll" href="${esc(basis)}/fotos.zip">Alles herunterladen (${groesse(gesamt)})</a></div>
+        ${tage.length > 1 ? `<p style="margin:1.2rem 0 0">Oder einzelne Tage:</p>
+        <ul class="tage-links">${tage.map(t => `<li><a href="${esc(basis)}/fotos.zip?tag=${t.tag}">${tagText(t.tag)}</a>
+          <span class="leise">(${groesse(t.fotos.reduce((a, f) => a + (f.groesse || 0), 0))})</span></li>`).join("")}</ul>` : ""}
+      </section>`;
+
+    $("#inhalt").innerHTML = `<section class="kopfbereich">
+        <h1 class="lang">Fotos herunterladen</h1>
+        <p>Alle Fotos und Videos der Gruppe <strong>${esc(gruppenName(d.gruppe))}</strong>: ${anzahlMedien(alle)}, zusammen ${groesse(gesamt)}.</p>
+      </section>
+      ${handy ? appTeil + zipTeil : zipTeil}`;
+    $("#inhalt").querySelectorAll(".paket").forEach(b => b.addEventListener("click", () => sichern(pakete[+b.dataset.p], b)));
+  }
+
+  // Ein Päckchen laden und über das Teilen-Menü sichern. iOS erlaubt das Menü nur kurz nach dem Tippen;
+  // dauert das Laden länger, steht „Jetzt sichern“ auf dem Knopf und ein zweiter Tipp öffnet es.
+  let paketLaedt = false;
+  async function sichern(p, knopf){
+    const zustand = t => { knopf.querySelector(".zustand").textContent = t; };
+    if (knopf.disabled || (paketLaedt && !p.dateien)) return;
+    try {
+      if (!p.dateien) {
+        paketLaedt = true; knopf.disabled = true;
+        let n = 0, naechste = 0;
+        const dateien = new Array(p.fotos.length);
+        zustand(`Lädt … 0 von ${p.fotos.length}`);
+        const arbeiter = async () => {
+          while (naechste < p.fotos.length) {
+            const j = naechste++;
+            dateien[j] = await originalDatei(p.fotos[j]);
+            zustand(`Lädt … ${++n} von ${p.fotos.length}`);
+          }
+        };
+        await Promise.all([arbeiter(), arbeiter(), arbeiter(), arbeiter()]);
+        if (!navigator.canShare({ files: dateien })) throw new Error("teilen");
+        p.dateien = dateien;
+        paketLaedt = false; knopf.disabled = false;
+      }
+      await navigator.share({ files: p.dateien });
+      p.dateien = null;   // Speicher wieder freigeben
+      knopf.classList.remove("voll"); knopf.classList.add("fertig");
+      zustand("✓ Gesichert");
+    } catch(e) {
+      paketLaedt = false; knopf.disabled = false;
+      if (p.dateien && (e.name === "NotAllowedError" || e.name === "AbortError")) {
+        knopf.classList.add("voll"); knopf.classList.remove("fertig");
+        zustand("Jetzt sichern");
+        return;
+      }
+      p.dateien = null;
+      zustand(e.message === "teilen" ? "Geht hier nicht – bitte ZIP nehmen" : "Fehler – noch einmal antippen");
     }
   }
 
@@ -715,8 +856,12 @@ dialog.gross .knopf{border-color:#fff;color:#fff;padding:.5rem .85rem}
 
   // Start: ohne Passwort anmelden, sonst Fotos. fotos.html#diashow startet gleich die Diashow.
   // fotos.html#passwort=… (Einladungslink) meldet direkt an.
+  // fotos.html#download=… (geheimer Link) zeigt nur die Download-Seite, ohne Passwort.
   const ausLink = (location.hash.match(/^#passwort=(.+)$/) || [])[1];
-  if (ausLink) {
+  const downloadToken = (location.hash.match(/^#download=([\w-]+)$/) || [])[1];
+  if (downloadToken) {
+    zeigeDownload(downloadToken);
+  } else if (ausLink) {
     try { history.replaceState(null, "", location.pathname + location.search); } catch(e) {}
     let pw = ausLink; try { pw = decodeURIComponent(ausLink); } catch(e) {}
     $("#inhalt").innerHTML = `<p class="leise" style="padding-top:2rem">Du wirst angemeldet …</p>`;

@@ -1,12 +1,18 @@
 package de.golfreise.fotos;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,10 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage;
@@ -48,6 +58,7 @@ public class FotoSpeicher {
     private static final DateTimeFormatter ORTSZEIT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.of("Africa/Tunis"));
     /** Videos sind groß und das Hotel-WLAN langsam: die Adresse muss gelten, bis der Upload startet. */
+    private static final DateTimeFormatter UHRZEIT = DateTimeFormatter.ofPattern("HH-mm");
     private static final Duration UPLOAD_GUELTIG = Duration.ofHours(2);
     private static final Duration ANSEHEN_GUELTIG = Duration.ofHours(12);
     /** Signierte Ansehen-Adressen werden wiederverwendet, solange sie noch so lange gelten. */
@@ -60,10 +71,13 @@ public class FotoSpeicher {
      * @param aufgenommen Aufnahmezeit in Ortszeit, leer wenn unbekannt
      * @param video       true bei Videos: {@code orig} ist dann das Video, {@code vorschau} ein Standbild
      *                    (oder ebenfalls das Video, wenn der Browser kein Standbild erzeugen konnte)
+     * @param groesse     Größe des Originals in Bytes (für die Download-Seite)
      */
     public record Foto(String id, String name, String geschichte, String zeit, String aufgenommen,
-                       String vorschau, String orig, boolean video) {}
+                       String vorschau, String orig, boolean video, long groesse) {}
     public record Tag(String tag, List<Foto> fotos) {}
+    /** Ein Original im ZIP: Objekt im Bucket, Pfad im ZIP (Ordner pro Tag), Aufnahmezeit (Ortszeit, kann fehlen). */
+    public record ZipEintrag(String objekt, String pfad, LocalDateTime zeit) {}
 
     private record Signiert(String url, Instant gueltigBis) {}
 
@@ -145,7 +159,8 @@ public class FotoSpeicher {
                     : o.getCreateTimeOffsetDateTime() != null ? ORTSZEIT.format(o.getCreateTimeOffsetDateTime()) : "";
             nachTag.computeIfAbsent(t, k -> new ArrayList<>())
                     .add(new Foto(id, meta(o, "name"), meta(o, "geschichte"), zeit, aufgenommen, vorschauUrl, origUrl,
-                            o.getContentType() != null && o.getContentType().startsWith("video/")));
+                            o.getContentType() != null && o.getContentType().startsWith("video/"),
+                            o.getSize() != null ? o.getSize() : 0));
             reihenfolge.put(id, sortierung);
         }
         List<Tag> tage = new ArrayList<>();
@@ -154,6 +169,62 @@ public class FotoSpeicher {
             tage.add(new Tag(t, fotos));
         });
         return tage;
+    }
+
+    /**
+     * Inhalt des ZIP-Downloads: alle Originale der Gruppe (oder eines Tages), nach Tag und Uhrzeit sortiert.
+     * Dateinamen wie {@code 2026-11-16/2026-11-16_10-15_Jürgen_ab12cd34.jpg}.
+     */
+    public List<ZipEintrag> zipInhalt(String gruppe, String tag) {
+        String unter = tag == null ? "" : tag + "/";
+        List<ZipEintrag> liste = new ArrayList<>();
+        for (Blob o : storage.list(bucket, BlobListOption.prefix(gruppe + "/orig/" + unter)).iterateAll()) {
+            String[] teile = o.getName().split("/");
+            if (teile.length != 4) continue;
+            String t = teile[2], datei = teile[3];
+            int punkt = datei.lastIndexOf('.');
+            String id = punkt > 0 ? datei.substring(0, punkt) : datei;
+            String endung = punkt > 0 ? datei.substring(punkt + 1) : "jpg";
+            String text = meta(o, "aufgenommen");
+            if (text.isEmpty() && o.getCreateTimeOffsetDateTime() != null) text = ORTSZEIT.format(o.getCreateTimeOffsetDateTime());
+            LocalDateTime zeit = null;
+            try {
+                if (!text.isEmpty()) zeit = LocalDateTime.parse(text);
+            } catch (DateTimeParseException e) {
+                // ohne Uhrzeit im Namen
+            }
+            StringBuilder name = new StringBuilder(t);
+            if (zeit != null && zeit.toLocalDate().toString().equals(t)) name.append('_').append(UHRZEIT.format(zeit));
+            String wer = dateiname(meta(o, "name"));
+            if (!wer.isEmpty()) name.append('_').append(wer);
+            name.append('_').append(id, 0, Math.min(8, id.length())).append('.').append(endung);
+            liste.add(new ZipEintrag(o.getName(), t + "/" + name, zeit));
+        }
+        liste.sort(Comparator.comparing(ZipEintrag::pfad));
+        return liste;
+    }
+
+    /** Schreibt das ZIP direkt aus dem Bucket in den Ausgabestrom (auch bei mehreren GB kein Zwischenspeicher). */
+    public void zipSchreiben(List<ZipEintrag> eintraege, OutputStream out) throws IOException {
+        ZipOutputStream zip = new ZipOutputStream(out, StandardCharsets.UTF_8);
+        zip.setLevel(Deflater.NO_COMPRESSION);   // JPEG, HEIC und Videos sind schon komprimiert
+        for (ZipEintrag e : eintraege) {
+            ZipEntry z = new ZipEntry(e.pfad());
+            if (e.zeit() != null) z.setTimeLocal(e.zeit());
+            zip.putNextEntry(z);
+            try (InputStream in = Channels.newInputStream(storage.reader(BlobId.of(bucket, e.objekt())))) {
+                in.transferTo(zip);
+            }
+            zip.closeEntry();
+        }
+        zip.finish();
+        zip.flush();
+    }
+
+    /** Name der Person für einen Dateinamen: nur Buchstaben, Ziffern und -, höchstens 30 Zeichen. */
+    static String dateiname(String name) {
+        String s = name.replaceAll("[^\\p{L}\\p{N}-]+", "_").replaceAll("^_+|_+$", "");
+        return s.length() > 30 ? s.substring(0, 30) : s;
     }
 
     private Map<String, String> ansehenUrls(List<String> objekte) {

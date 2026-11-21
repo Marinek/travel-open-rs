@@ -33,10 +33,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = FotoController.class, properties = {
+@WebMvcTest(controllers = {FotoController.class, DownloadController.class}, properties = {
         "fotos.gruppen=travel-open:Oliver26,schwarz-gegen-rot:jasmin26",
         "fotos.origin=https://beispiel.github.io",
-        "fotos.bucket=test"
+        "fotos.bucket=test",
+        "fotos.downloads=travel-open:geheim-travel-open-0123456789,schwarz-gegen-rot:geheim-schwarz-rot-0123456789"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD) // Fehlversuche je Test zurücksetzen
 class FotoControllerTest {
@@ -117,7 +118,7 @@ class FotoControllerTest {
     void galerieNurDerEigenenGruppe() throws Exception {
         when(speicher.galerie(eq("schwarz-gegen-rot"), isNull())).thenReturn(List.of(
                 new FotoSpeicher.Tag("2026-11-15", List.of(new FotoSpeicher.Foto(
-                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "2026-11-15T10:58:00", "https://v", "https://o", false)))));
+                        "id-1", "Jürgen", "Birdie an der 7!", "2026-11-15T10:00Z", "2026-11-15T10:58:00", "https://v", "https://o", false, 1234)))));
 
         mvc.perform(get("/api/galerie").header("X-Fotos-Passwort", "jasmin26"))
                 .andExpect(status().isOk())
@@ -215,14 +216,69 @@ class FotoControllerTest {
     }
 
     @Test
+    void downloadMitFalschemTokenGibt404() throws Exception {
+        mvc.perform(get("/download/falsch-falsch-falsch-falsch/galerie")).andExpect(status().isNotFound());
+        mvc.perform(get("/download/falsch-falsch-falsch-falsch/fotos.zip")).andExpect(status().isNotFound());
+        // das Passwort ist kein Download-Token
+        mvc.perform(get("/download/oliver26/galerie")).andExpect(status().isNotFound());
+        verify(speicher, never()).galerie(any(), any());
+        verify(speicher, never()).zipInhalt(any(), any());
+    }
+
+    @Test
+    void downloadTokenBestimmtDieGruppe() throws Exception {
+        when(speicher.galerie(eq("schwarz-gegen-rot"), isNull())).thenReturn(List.of());
+        mvc.perform(get("/download/geheim-schwarz-rot-0123456789/galerie"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gruppe").value("schwarz-gegen-rot"));
+        verify(speicher, never()).galerie(eq("travel-open"), any());
+    }
+
+    @Test
+    void zipAllerFotosOderEinesTages() throws Exception {
+        List<FotoSpeicher.ZipEintrag> inhalt = List.of(new FotoSpeicher.ZipEintrag("travel-open/orig/2026-11-12/a.jpg", "2026-11-12/x.jpg", null));
+        when(speicher.zipInhalt("travel-open", null)).thenReturn(inhalt);
+        mvc.perform(get("/download/geheim-travel-open-0123456789/fotos.zip"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/zip"))
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"tunesien-2026-travel-open.zip\""));
+        verify(speicher).zipSchreiben(eq(inhalt), any());
+
+        mvc.perform(get("/download/geheim-travel-open-0123456789/fotos.zip?tag=2026-11-12"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"tunesien-2026-travel-open-2026-11-12.zip\""));
+        verify(speicher).zipInhalt("travel-open", "2026-11-12");
+
+        mvc.perform(get("/download/geheim-travel-open-0123456789/fotos.zip?tag=../x"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void dateinameImZip() {
+        assertEquals("Jürgen_Müller", FotoSpeicher.dateiname(" Jürgen Müller! "));
+        assertEquals("", FotoSpeicher.dateiname("../"));
+    }
+
+    @Test
+    void kaputteDownloadangabeFaelltBeimStartAuf() {
+        assertThrows(IllegalStateException.class,
+                () -> new FotoEinstellungen("b", "", "", "travel-open:zukurz").downloadZuGruppe());
+        assertThrows(IllegalStateException.class,
+                () -> new FotoEinstellungen("b", "", "", "travel-open:mit/schraegstrich-0123456789").downloadZuGruppe());
+        assertEquals(Map.of(), new FotoEinstellungen("b", "", "", "").downloadZuGruppe());
+        assertEquals(Map.of("abcdefghij0123456789", "travel-open"),
+                new FotoEinstellungen("b", "", "", " travel-open:abcdefghij0123456789 ").downloadZuGruppe());
+    }
+
+    @Test
     void kaputteGruppenangabeFaelltBeimStartAuf() {
         assertThrows(IllegalStateException.class,
-                () -> new FotoEinstellungen("b", "Travel Open:abcd", "").passwortZuGruppe());
+                () -> new FotoEinstellungen("b", "Travel Open:abcd", "", "").passwortZuGruppe());
         assertThrows(IllegalStateException.class,
-                () -> new FotoEinstellungen("b", "a:abc", "").passwortZuGruppe());
+                () -> new FotoEinstellungen("b", "a:abc", "", "").passwortZuGruppe());
         assertThrows(IllegalStateException.class,
-                () -> new FotoEinstellungen("b", "a:Gleich1,b:gleich1", "").passwortZuGruppe());
+                () -> new FotoEinstellungen("b", "a:Gleich1,b:gleich1", "", "").passwortZuGruppe());
         assertEquals(Map.of("oliver26", "travel-open", "jasmin26", "schwarz-gegen-rot"),
-                new FotoEinstellungen("b", " travel-open:Oliver26 , schwarz-gegen-rot:jasmin26 ", "").passwortZuGruppe());
+                new FotoEinstellungen("b", " travel-open:Oliver26 , schwarz-gegen-rot:jasmin26 ", "", "").passwortZuGruppe());
     }
 }

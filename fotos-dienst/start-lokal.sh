@@ -13,6 +13,7 @@ ROOT="$(cd .. && pwd)"
 MODUS="${1:-mock}"
 # Passwörter lokal: test (Travel Open), test2 (Schwarz gegen Rot)
 SEITE="http://localhost:8000/fotos.html"
+DOWNLOAD_HINWEIS="Download-Links: ${SEITE}#download=download-test-travel-open  und  …#download=download-test-schwarz-gegen-rot"
 
 belegt() { lsof -nP -iTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1; }
 oeffne() { [[ -n "${KEIN_BROWSER:-}" ]] || (sleep 1.5; command -v open >/dev/null && open "$SEITE") & }
@@ -23,6 +24,7 @@ if belegt 8000; then echo "Port 8000 ist schon belegt – läuft noch ein andere
 case "$MODUS" in
   mock)
     echo "Öffne $SEITE – Passwörter: test (Travel Open), test2 (Schwarz gegen Rot)"
+    echo "$DOWNLOAD_HINWEIS"
     oeffne
     exec node mock.mjs "$ROOT"
     ;;
@@ -42,6 +44,7 @@ case "$MODUS" in
 
     echo "→ Dienst starten (Bucket $BUCKET)"
     FOTOS_BUCKET="$BUCKET" FOTOS_GRUPPEN=travel-open:test,schwarz-gegen-rot:test2 \
+      FOTOS_DOWNLOADS=travel-open:download-test-travel-open,schwarz-gegen-rot:download-test-schwarz-gegen-rot \
       FOTOS_ORIGIN=http://localhost:8000 PORT=8080 java -jar "$JAR" &
     DIENST_PID=$!
     SEITE_PID=""
@@ -57,6 +60,7 @@ case "$MODUS" in
     done
 
     echo "Öffne $SEITE – Passwörter: test (Travel Open), test2 (Schwarz gegen Rot)"
+    echo "$DOWNLOAD_HINWEIS"
     oeffne
     node mock.mjs "$ROOT" --dienst http://localhost:8080 &
     SEITE_PID=$!

@@ -41,6 +41,7 @@ public class FotosApplication {
         c.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource quelle = new UrlBasedCorsConfigurationSource();
         quelle.registerCorsConfiguration("/api/**", c);
+        quelle.registerCorsConfiguration("/download/**", c);
         FilterRegistrationBean<CorsFilter> reg = new FilterRegistrationBean<>(new CorsFilter(quelle));
         reg.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return reg;
