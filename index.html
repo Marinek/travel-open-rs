@@ -154,6 +154,10 @@ body.w2 .platz{color:#fff}
 .paar.remis .rang{background:#C9CFD8;color:var(--tinte)}
 .duell-tag{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.6rem 0 0;font-weight:700}
 .duell-tag b{font:800 1.5rem/1 var(--display);letter-spacing:.04em}
+.praesident{display:flex;gap:1rem;align-items:center;margin:1rem 0;padding:.75rem;max-width:34rem;border:2px solid var(--sonne);border-radius:.8rem;background:var(--chip)}
+.praesident img{width:7.5rem;height:10rem;object-fit:cover;border-radius:.5rem;flex:none}
+.praesident p{margin:0}
+.praesident strong{display:block;font:800 1.5rem/1.1 var(--display)}
 .kader{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;max-width:34rem}
 .kader div{border:1.5px solid var(--line);border-radius:.8rem;padding:.6rem .8rem}
 .kader .k-rot{border-color:var(--rot)}
@@ -304,13 +308,21 @@ details.formen dd{margin:0;color:var(--muted)}
         <div><b>${s1}</b><span>Schwarz</span></div><div><b>${s2}</b><span>Rot</span></div>
         <p>${kurz(w.von)}–${kurz(w.bis)}2026</p></div>`;
       const ersterSpieltag = w.tage.find(t => t.art === "golf");
-      const stand = st
+      // Nach dem Finale (alle Spiele eingetragen) steht der Endstand da
+      const fin = w.tage.find(t => t.finale), fa = fin && fin.abschlag;
+      const vorbei = st && fa && fa.duell && fa.teams && fa.duell.filter(Boolean).length === fa.teams.length;
+      const stand = vorbei
+        ? `<p><strong>Endstand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${st.schwarz === st.rot ? "unentschieden!" : `Team ${st.schwarz > st.rot ? "Schwarz" : "Rot"} gewinnt Schwarz gegen Rot 2026! 🏆`}</strong></p>`
+        : st
         ? `<p>Aktueller Stand: Schwarz ${st.schwarz}, Rot ${st.rot} – ${standText(st)}.</p>`
         : `<p>Fünf Spieltage auf GC Oliver, GC Foret und GC Jasmin. Der erste Punkt fällt am ${wtLang(ersterSpieltag.datum)}, ${kurz(ersterSpieltag.datum)}, beim Finale am Freitag wird die Golf-Präsidentin oder der Golf-Präsident gekürt.</p>`;
       const k = w.kader;
       const kader = k ? `<div class="kader">${[["schwarz","Schwarz"],["rot","Rot"]].map(([f, n]) =>
-        `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
-      info = `<h2>Schwarz gegen Rot</h2>${stand}${kader}`;
+        `<div class="k-${f}"><h3 class="team-${f}">${PUNKT(f)}Team ${n}</h3><ul>${k[f].map(x => `<li>${esc(x)}${(w.kapitaen || {})[f] === x ? " <small>(Captain)</small>" : ""}</li>`).join("")}</ul></div>`).join("")}</div>` : "";
+      const P = R.praesident;
+      const praesident = P && P.name ? `<figure class="praesident">${P.foto ? `<img src="${esc(P.foto)}" alt="${esc(P.name)} mit Krone – Golf-Präsident 2026">` : ""}
+        <figcaption><p>👑 Golf-Präsident 2026</p><strong>${esc(P.name)}</strong><p>Herzlichen Glückwunsch!</p></figcaption></figure>` : "";
+      info = `<h2>Schwarz gegen Rot</h2>${stand}${praesident}${kader}`;
     }
     return `<section class="buehne"><div class="tor">${tor(w)}${innen}</div>
       <div class="info">${info}${status}
@@ -364,6 +376,7 @@ details.formen dd{margin:0;color:var(--muted)}
     const alle = new Set();
     w.tage.forEach(t => (t.abschlag && t.abschlag.teams || []).flat().flatMap(spielerVon).forEach(n => alle.add(n)));
     if (praes) Object.values(w.kader).flat().forEach(n => alle.add(n));
+    if (praes) Object.values(w.kapitaen || {}).forEach(n => alle.delete(n));
     const stand = {}; alle.forEach(n => stand[n] = 0);
     let vorher = null;
     gewertet.forEach((x, i) => {
@@ -376,6 +389,7 @@ details.formen dd{margin:0;color:var(--muted)}
     const vorn = tabelle.filter(s => s.rang === 1 && s.punkte).map(s => s.name);
     // Nach dem Finale steht oben, wer den Wanderpokal geholt hat
     const spitze = letzter.tag.finale && w.id === "travel-open" && R.sieger ? `🏆 Wanderpokal 2026: ${R.sieger}`
+      : letzter.tag.finale && praes && R.praesident && R.praesident.name ? `👑 Golf-Präsident 2026: ${R.praesident.name}`
       : !vorn.length ? "Noch keine Punkte vergeben"
       : `Vorn: ${vorn.length > 3 ? vorn.slice(0, 2).join(", ") + ` und ${vorn.length - 2} weitere` : vorn.join(", ").replace(/, ([^,]*)$/, " und $1")} · ${tabelle[0].punkte} ${tabelle[0].punkte === 1 ? "Punkt" : "Punkte"}`;
     const zeilen = tabelle.map((s, i, l) => {
@@ -419,7 +433,8 @@ details.formen dd{margin:0;color:var(--muted)}
       const a = tag.abschlag, ergebnis = a.ergebnis || {};
       const paarTag = a.teams.some(f => f.some(t => t.includes("+")));
       // Kästchen pro Paar – oder pro Spieler, wenn an Einzeltagen Spieler platziert sind
-      const kaestchen = paarTag || a.teams.some(f => f.some(t => ergebnis[t]));
+      // (auch an Einzeltagen mit Teamfarben, z. B. Schwarz gegen Rot)
+      const kaestchen = paarTag || a.teams.some(f => f.some(t => ergebnis[t] || farbeVon(t, tag)));
       const medaille = r => r.startsWith("1.") ? " sieger" : r.startsWith("2.") ? " zweiter" : r.startsWith("3.") ? " dritter" : r ? " platziert" : "";
       html += `<li class="teams"><ol aria-label="Teams und Ergebnis">` + a.zeiten.map((z,i) => {
         const p = ergebnis[i + 1] || "", erster = p.startsWith("1.");

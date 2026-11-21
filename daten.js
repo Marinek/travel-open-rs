@@ -39,6 +39,10 @@ const REISE = {
   // Travel Open: Sieger nach der Siegerehrung eintragen, z. B. "Erika Muster"
   sieger: "Melli (nach einem Stechen)",
 
+  // Schwarz gegen Rot: Golf-Präsident(in) nach der Siegerehrung eintragen,
+  // optional mit Foto (Datei im Projektordner).
+  praesident: { name: "Thomas", foto: "praesident-2026.jpg" },
+
   // Fotos (eigene Seite fotos.html): Adresse des Cloud-Run-Dienstes,
   // gibt fotos-dienst/setup.sh aus. Leer = Fotoseite zeigt „noch nicht eingerichtet“.
   fotos: { dienst: "https://fotos-dienst-zddr4hc3fa-ey.a.run.app" },
@@ -239,9 +243,11 @@ const REISE = {
       untertitel: "Zwei Teams, fünf Spieltage – und am Ende eine Golf-Präsidentin oder ein Golf-Präsident.",
       // Wer spielt für welches Team? Paare in den Flights werden danach eingefärbt.
       kader: {
-        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike"],
-        rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas"]
+        schwarz: ["Michael B.", "Stefan", "Michael W.", "Dirk", "Uli", "Jascha", "Martin", "Gudrun", "Friederike", "Heike", "Lara"],
+        rot: ["Petra", "Gerd", "Dani", "Anja", "Marion", "Volker", "Mike", "Mary", "Sabine", "Thomas", "Claudia"]
       },
+      // Captains spielen mit, zählen aber nicht in der Präsidentschafts-Wertung.
+      kapitaen: { schwarz: "Lara", rot: "Claudia" },
       tage: [
         {
           datum: "2026-11-14",
@@ -408,7 +414,14 @@ const REISE = {
               ["Sabine + Marion", "Uli + Martin"],
               ["Gerd + Volker", "Gudrun + Jascha"],
               ["Mary + Thomas", "Michael W. + Dirk"]
-            ]
+            ],
+            duell: ["rot", "rot", "schwarz", "schwarz", "schwarz"]
+          },
+          praesident: {
+            "Dirk": 1, "Michael W.": 1, "Michael B.": 7, "Friederike": 7, "Heike": 5,
+            "Stefan": 5, "Martin": 0, "Gudrun": 7, "Jascha": 7, "Uli": 0,
+            "Volker": 6, "Marion": 6, "Gerd": 6, "Mary": 7, "Thomas": 7,
+            "Anja": 8, "Sabine": 6, "Mike": 5, "Dani": 5, "Petra": 8
           }
         },
         {
@@ -429,7 +442,33 @@ const REISE = {
             { t: "19:00", x: "Gala-Abend" },
             { x: "Große Party an der Bar – wir feiern die Siegergruppe. Offenes Ende." }
           ],
-          abschlag: { label: "Flight", zeiten: ["10:30", "10:38", "10:46", "10:54", "11:02"] }
+          // Einzel: zwei Spiele pro Flight, deshalb jede Abschlagzeit zweimal.
+          // Ein Ergebnis später als duell mit 10 Einträgen (eins pro Spiel).
+          abschlag: {
+            label: "Einzel",
+            zeiten: ["10:30", "10:30", "10:38", "10:38", "10:46", "10:46", "10:54", "10:54", "11:02", "11:02"],
+            teams: [
+              ["Gerd", "Friederike"],
+              ["Volker", "Michael B."],
+              ["Mary", "Gudrun"],
+              ["Anja", "Stefan"],
+              ["Thomas", "Dirk"],
+              ["Petra", "Heike"],
+              ["Sabine", "Jascha"],
+              ["Mike", "Lara"],
+              ["Marion", "Michael W."],
+              ["Dani", "Martin"]
+            ],
+            duell: ["schwarz", "rot", "rot", "rot", "schwarz", "rot", "schwarz", "schwarz", "rot", "schwarz"]
+          },
+          // Tagespunkte = Endstand laut Plakat minus Stand nach dem 19.11.
+          // Jascha, Uli und Sabine ohne neuen Endstand auf dem Plakat: 0.
+          praesident: {
+            "Dirk": 4, "Michael W.": 7, "Michael B.": 7, "Friederike": 6, "Heike": 3,
+            "Stefan": 7, "Martin": 6, "Gudrun": 3, "Jascha": 0, "Uli": 0,
+            "Volker": 5, "Marion": 7, "Gerd": 4, "Mary": 3, "Thomas": 4,
+            "Anja": 5, "Sabine": 0, "Mike": 3, "Dani": 5, "Petra": 6
+          }
         },
         {
           datum: "2026-11-21",
